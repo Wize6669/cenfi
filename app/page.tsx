@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import DashboardAdmin from "@/components/DashboardAdmin";
 import { AuthProvider } from "@/context/authContext";
