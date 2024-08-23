@@ -1,68 +1,68 @@
-import { useAuth } from "@/hooks/useAuth";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {useAuth} from "@/hooks/useAuth";
+import React, {useState, useEffect} from "react";
+import {useRouter} from "next/navigation";
 
 export default function DashboardAdmin() {
-    const {
-        authUser,
-        setAuthUser,
-        isLoggedIn,
-        setIsLoggedIn
-    } = useAuth();
+  const {
+    authUser,
+    setAuthUser,
+    isLoggedIn,
+    setIsLoggedIn
+  } = useAuth();
 
-    const router = useRouter();
-    const [showLoginMessage, setShowLoginMessage] = useState(false);
+  const router = useRouter();
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
 
-    useEffect(() => {
-        if (authUser?.roleId !== 2) {
-            setShowLoginMessage(true);
-            const timer = setTimeout(() => {
-                router.push('/login');
-            }, 2000);
+  useEffect(() => {
+    if (authUser?.roleId !== 2) {
+      setShowLoginMessage(true);
+      const timer = setTimeout(() => {
+        router.push('/login');
+      }, 2000);
 
-            return () => clearTimeout(timer);
-        }
-    }, [isLoggedIn, router]);
-
-    const handleLogIn = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsLoggedIn(true);
-        setAuthUser({
-            name: "Will",
-            lastName: "Zapata",
-            email: "will@example.com",
-            roleId: 1,
-            roleName: "admin",
-        });
+      return () => clearTimeout(timer);
     }
+  }, [isLoggedIn, router]);
 
-    const handleLogOut = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsLoggedIn(false);
-        setAuthUser(null);
-    }
+  // const handleLogIn = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   event.preventDefault();
+  //   setIsLoggedIn(true);
+  //   setAuthUser({
+  //     name: "Will",
+  //     lastName: "Zapata",
+  //     email: "will@example.com",
+  //     roleId: 1,
+  //     roleName: "admin",
+  //   });
+  // }
 
-    if (showLoginMessage) {
-        return <div>Inicia sesión. Redirigiendo a la página de login...</div>;
-    }
+  const handleLogOut = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setIsLoggedIn(false);
+    setAuthUser(null);
+  }
 
-    if (!isLoggedIn) {
-        return null;
-    }
+  if (showLoginMessage) {
+    return <div>Inicia sesión. Redirigiendo a la página de login...</div>;
+  }
 
-    return (
-        <>
-            <div>
-                User: {authUser?.name ?? <span>Null</span>}
-            </div>
+  if (!isLoggedIn) {
+    return null;
+  }
 
-            <button onClick={handleLogOut}>
-                Log out
-            </button>
+  return (
+    <>
+      <div>
+        User: {authUser?.name ?? <span>Null</span>}
+      </div>
 
-            <button onClick={handleLogIn}>
-                Log in
-            </button>
-        </>
-    );
+      <button onClick={handleLogOut}>
+        Log out
+      </button>
+
+      {/*<button onClick={handleLogIn}>*/}
+      {/*  Log in*/}
+      {/*</button>*/}
+    </>
+  );
 }

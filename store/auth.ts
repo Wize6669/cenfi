@@ -1,29 +1,30 @@
-import {persist} from 'zustand/middleware';
-import {type StateCreator, create} from 'zustand';
-import {User} from '@/interfaces/User'
+import { persist } from 'zustand/middleware';
+import { type StateCreator, create } from 'zustand';
+import { User } from '@/interfaces/User'
 
 interface AuthStore {
-  userAuth: User;
-  setUserAuth: (user: User) => void;
+  userAuth: User | null;
+  setUserAuth: (user: User | null) => void;
   isLoggedIn: boolean;
-  setIsLoggedIn: () => void;
+  setIsLoggedIn: (status: boolean) => void;
+  logout: () => void;
 }
 
-const storeAPI: StateCreator<AuthStore> = (set, get) => ({
-  userAuth: {
-    id: '',
-    name: '',
-    lastName: '',
-    email: '',
-    roleId: 0,
-    roleName: '',
-  },
-  setUserAuth: (user: User) => set({ userAuth: user ?? get().userAuth }),
+const initialUserState: User = {
+  id: '',
+  name: '',
+  lastName: '',
+  email: '',
+  roleId: 0,
+  roleName: '',
+};
+
+const storeAPI: StateCreator<AuthStore> = (set) => ({
+  userAuth: null,
+  setUserAuth: (user: User | null) => set({ userAuth: user }),
   isLoggedIn: false,
-  setIsLoggedIn: () => {
-    const {isLoggedIn} = get();
-    set({isLoggedIn: !isLoggedIn});
-  },
+  setIsLoggedIn: (status: boolean) => set({ isLoggedIn: status }),
+  logout: () => set({ userAuth: null, isLoggedIn: false }),
 });
 
 const useAuthStore = create<AuthStore>()(
@@ -31,7 +32,8 @@ const useAuthStore = create<AuthStore>()(
     storeAPI,
     {
       name: 'auth-store',
-    })
+    }
+  )
 );
 
-export {useAuthStore}
+export { useAuthStore };
