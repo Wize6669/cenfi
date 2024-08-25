@@ -1,11 +1,11 @@
 'use client'
 
-import {useParams} from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Footer from "@/components/Footer";
-import {useForm} from "react-hook-form";
-import {axiosInstance} from "@/lib/axios";
-import {AxiosError} from "axios";
-import {useRouter} from "next/navigation";
+import { useForm } from "react-hook-form";
+import { axiosInstance } from "@/lib/axios";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import toast from 'react-hot-toast';
 
 export default function ChangePassword() {

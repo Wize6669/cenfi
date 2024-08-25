@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 import Footer from '@/components/Footer';
-import {ChangeEvent, useState, FormEvent} from 'react';
-import {UserSingIn} from '@/interfaces/User';
-import axios, {AxiosError} from 'axios';
-import {useRouter} from "next/navigation";
-import {config} from '@/config';
-import {useAuthStore} from '@/store/auth';
+import { ChangeEvent, useState, FormEvent } from 'react';
+import { UserSingIn } from '@/interfaces/User';
+import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
+import { config } from '@/config';
+import { useAuthStore } from '@/store/auth';
 
 
 export default function LoginAdmin() {
@@ -17,7 +17,9 @@ export default function LoginAdmin() {
     password: '',
     roleId: 0,
   });
-  const {setUserAuth, setIsLoggedIn} = useAuthStore();
+  const [error, setError] = useState("");
+  const setUserAuth = useAuthStore((state) => state.setUserAuth);
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
   const router = useRouter();
 
@@ -44,22 +46,29 @@ export default function LoginAdmin() {
       const {data} = response
       setIsLoading(prev => !prev);
       const token = response.data.token;
-      localStorage.setItem("authToken", token);
+      localStorage.setItem('authToken', token);
 
       if (response.data.changePassword) {
         return router.push(`/auth/${response.data.id}`);
       }
 
-      setUserAuth(data);
+      const {id, name, lastName, email, roleId } = data;
+
+      setUserAuth({id, name, lastName, email, roleId });
       setIsLoggedIn(true);
+
+      router.push('/menu');
     } catch (error) {
-      setIsLoggedIn(false);
-      setUserAuth(null);
+      setIsLoading(prev => !prev);
 
       if (error instanceof AxiosError) {
-        console.log(error.response?.status)
-        console.log(error.message)
-        setIsLoading(prev => !prev);
+        const errorMessage = error.response?.status === 400 ? 'Credenciales inválidas' : 'Hubo un error con el servidor';
+
+        setError(errorMessage);
+
+        setTimeout(() => {
+          setError("");
+        }, 3000);
       }
     }
   }
@@ -122,10 +131,12 @@ export default function LoginAdmin() {
                       disabled={isLoading}>
                 Iniciar sesión
               </button>
+
+              {error && <span className={'text-red-500 text-sm'}>{error}</span>}
             </form>
           </div>
           <div className={'w-1/2 flex justify-center items-center'}>
-            <Image src={'/images/image-2.png'} alt={'Icono'} width={555} height={619}/>
+            <Image src={'/images/image-2.png'} alt={'Icon'} width={555} height={619}/>
           </div>
         </div>
       </div>
