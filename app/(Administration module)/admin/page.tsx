@@ -2,26 +2,37 @@
 
 import Image from 'next/image';
 import Footer from '@/components/Footer';
-import { ChangeEvent, useState, FormEvent } from 'react';
+import { ChangeEvent, useState, useEffect,FormEvent } from 'react';
 import { UserSingIn } from '@/interfaces/User';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { config } from '@/config';
 import { useAuthStore } from '@/store/auth';
-
+import { setCookie, getCookie } from 'cookies-next';
 
 export default function LoginAdmin() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<UserSingIn>({
     email: '',
     password: '',
-    roleId: 0,
+    roleId: null,
   });
   const [error, setError] = useState("");
   const setUserAuth = useAuthStore((state) => state.setUserAuth);
   const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
   const router = useRouter();
+  const [isRememberCredentials, setIsRememberCredentials] = useState(false);
+
+  useEffect(() => {
+    const credentials = getCookie('credentials');
+    if(credentials) {
+      const { email, password, roleId, isRememberCredentials } = JSON.parse(credentials);
+      const roleIdAux = Number(roleId);
+      setUser({ email, password, roleId:roleIdAux });
+      setIsRememberCredentials(isRememberCredentials);
+    }
+  }, []);
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setUser({
@@ -36,6 +47,10 @@ export default function LoginAdmin() {
       [event.target.name]: event.target.value
     })
   };
+
+  const handleCheckBox = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsRememberCredentials(event.target.checked);
+  }
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -54,6 +69,12 @@ export default function LoginAdmin() {
 
       const {id, name, lastName, email, roleId } = data;
 
+      if(isRememberCredentials) {
+        const {email, password, roleId} = user;
+        const credentials = JSON.stringify({email, password, roleId, isRememberCredentials: isRememberCredentials});
+        setCookie('credentials',credentials, { maxAge: 30 * 24 * 60 * 60 })
+      }
+
       setUserAuth({id, name, lastName, email, roleId });
       setIsLoggedIn(true);
 
@@ -62,7 +83,8 @@ export default function LoginAdmin() {
       setIsLoading(prev => !prev);
 
       if (error instanceof AxiosError) {
-        const errorMessage = error.response?.status === 400 ? 'Credenciales inválidas' : 'Hubo un error con el servidor';
+        const errorMessage = error.response?.status === 400 ? 'Credenciales inválidas'
+          : 'Hubo un error con el servidor';
 
         setError(errorMessage);
 
@@ -94,6 +116,7 @@ export default function LoginAdmin() {
                        type={'email'}
                        placeholder={'Ingresa tu email'}
                        name={'email'}
+                       value={user.email}
                        onChange={handleGetDataInput}
                        required={true}/>
               </div>
@@ -104,15 +127,17 @@ export default function LoginAdmin() {
                        type={'password'}
                        placeholder={'Ingresa tu contraseña'}
                        name={'password'}
+                       value={user.password}
                        onChange={handleGetDataInput}
                        required={true}/>
               </div>
 
               <div className={'flex flex-col mb-3 w-1/2'}>
                 <label className={'text-sm font-medium'} htmlFor={'roleId'}>Rol</label>
-                <select className={'border rounded-md w-full p-2'}
+                <select className={'border rounded-md w-full py-2'}
                         name={'roleId'}
                         onChange={handleGetDataSelect}
+                        value={user.roleId || ''}
                         required={true}>
                   <option value=''>Selecciona tu rol</option>
                   <option value='1'>Admin</option>
@@ -121,13 +146,19 @@ export default function LoginAdmin() {
               </div>
 
               <div className={'flex gap-1 mb-3 items-center'}>
-                <input type={'checkbox'} name={'isRemembered'} id={'isRemembered'}/>
+                <input type={'checkbox'}
+                       name={'isRemembered'}
+                       id={'isRemembered'}
+                       checked={isRememberCredentials}
+                       onChange={handleCheckBox}
+                       />
                 <label className={'text-xs font-medium'} htmlFor={'isRemembered'}>Recuérdame por 30
                   días</label>
               </div>
 
               <button type={'submit'}
-                      className={`text-white text-sm font-bold w-full border rounded-md p-2 ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-not-allowed' : 'bg-[#627BCF]'}`}
+                      className={`text-white text-sm font-bold w-full border rounded-md p-2
+                      ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`}
                       disabled={isLoading}>
                 Iniciar sesión
               </button>

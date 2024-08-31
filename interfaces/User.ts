@@ -8,6 +8,9 @@ export interface User {
     roleName?: string;
 }
 
-export interface UserSingIn extends Pick<User ,'email' | 'password' | 'roleId'> {}
+export interface UserSingIn extends Pick<User, 'email' | 'password'> {
+  roleId: number | null;
+}
+
 export interface UserStore extends Pick<User ,'id' | 'name' | 'lastName' | 'email' | 'roleId'> {}
 
