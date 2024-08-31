@@ -15,11 +15,7 @@ export const metadata: Metadata = {
   description: "CENFI cuenta con un simulador para el ingreso a las universidades",
 };
 
-export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({children}: Readonly<{children: React.ReactNode;}>) {
   return (
     <html lang="es">
     <body className={poppins.className}>

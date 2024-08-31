@@ -57,7 +57,7 @@ export default function LoginAdmin() {
       setUserAuth({id, name, lastName, email, roleId });
       setIsLoggedIn(true);
 
-      router.push('/menu');
+      router.push('/admin/menu');
     } catch (error) {
       setIsLoading(prev => !prev);
 
