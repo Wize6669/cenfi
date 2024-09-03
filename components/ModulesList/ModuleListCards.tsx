@@ -27,28 +27,28 @@ export default function ModuleListCards() {
       </div>
       <div className={'flex justify-between items-center gap-6'}>
         {userAuth?.roleId === 1 ? <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer'}
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}
           onClick={handleUserModule}>
           <FaUser size={65} color={'390BC6'}/>
           <p className={'font-semibold'}>Gestión de Usuarios</p>
         </div> : <></>}
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer'}>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
           <FaRegCircleQuestion size={65} color={'390BC6'}/>
           <p className={'font-semibold'}>Gestión de Preguntas</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer'}>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
           <MdOutlineCategory size={65} color={'390BC6'}/>
           <p className={'font-semibold'}>Gestión de Categorías</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer'}>
+          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
           <IoIosSettings size={70} color={'390BC6'}/>
-          <div>
+          <div className={'text-center items-center'}>
             <p className={'font-semibold'}>Configuración del</p>
             <p className={'font-semibold'}>Simulador</p>
           </div>

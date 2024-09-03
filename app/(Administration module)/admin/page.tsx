@@ -2,13 +2,14 @@
 
 import Image from 'next/image';
 import Footer from '@/components/Footer';
-import { ChangeEvent, useState, useEffect,FormEvent } from 'react';
+import React, { ChangeEvent, useState, useEffect,FormEvent } from 'react';
 import { UserSingIn } from '@/interfaces/User';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { config } from '@/config';
 import { useAuthStore } from '@/store/auth';
 import { setCookie, getCookie } from 'cookies-next';
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +95,40 @@ export default function LoginAdmin() {
       }
     }
   }
+  const PasswordInput = () => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+      <div className="flex flex-col mb-3">
+        <label className="text-md font-medium" htmlFor="password">
+          Contraseña
+        </label>
+        <div className="relative">
+          <input
+            className="border rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500"
+            type={showPassword ? 'text' : 'password'}
+            placeholder={'Ingresa tu contraseña'}
+            name={'password'}
+            value={user.password}
+            onChange={handleGetDataInput}
+            style={{width: '385px', height: '35px'}}
+            required={true}
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-2 flex items-center"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4 text-gray-400 transition-transform duration-200 hover:scale-110" />
+            ) : (
+              <Eye className="w-4 h-4 text-gray-400 transition-transform duration-200 hover:scale-110" />
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={'flex flex-col min-h-screen'}>
@@ -107,42 +142,43 @@ export default function LoginAdmin() {
             <form onSubmit={handleSubmit} className={'w-full max-w-sm'}>
               <div className={'flex flex-col justify-start mb-8 text-center'}>
                 <h1 className={'text-3xl font-medium'}>¡Bienvenido de nuevo!</h1>
-                <p className={'text-base font-medium'}>Ingresa tus credenciales para iniciar sesión</p>
+                <p className={'text-md font-medium'}>Ingresa tus credenciales para iniciar sesión</p>
               </div>
 
               <div className={'flex flex-col mb-3'}>
-                <label className={'text-sm font-medium'} htmlFor={'email'}>Correo electrónico</label>
+                <label className={'text-md font-medium'} htmlFor={'email'}>Correo electrónico</label>
                 <input className={'border rounded-md p-2'}
                        type={'email'}
                        placeholder={'Ingresa tu email'}
                        name={'email'}
                        value={user.email}
                        onChange={handleGetDataInput}
+                       style={{width: '385px', height: '35px'}}
                        required={true}/>
               </div>
 
-              <div className={'flex flex-col mb-3'}>
-                <label className={'text-sm font-medium'} htmlFor={'password'}>Contraseña</label>
-                <input className={'border rounded-md p-2'}
-                       type={'password'}
-                       placeholder={'Ingresa tu contraseña'}
-                       name={'password'}
-                       value={user.password}
-                       onChange={handleGetDataInput}
-                       required={true}/>
-              </div>
+              <PasswordInput/>
 
               <div className={'flex flex-col mb-3 w-1/2'}>
-                <label className={'text-sm font-medium'} htmlFor={'roleId'}>Rol</label>
-                <select className={'border rounded-md w-full py-2'}
-                        name={'roleId'}
-                        onChange={handleGetDataSelect}
-                        value={user.roleId || ''}
-                        required={true}>
-                  <option value=''>Selecciona tu rol</option>
-                  <option value='1'>Admin</option>
-                  <option value='2'>Profesor</option>
-                </select>
+                <label className={'text-md font-medium'} htmlFor={'roleId'}>Rol</label>
+                <div className={'relative'}>
+                  <select
+                    className={'border rounded-md w-full py-1.5 px-1.5 pr-8 text-black bg-white text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-in-out duration-200'}
+                    name={'roleId'}
+                    onChange={handleGetDataSelect}
+                    value={user.roleId || ''}
+                    required={true}>
+                    <option value=''>Selecciona tu rol</option>
+                    <option value='1'>Admin</option>
+                    <option value='2'>Profesor</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" strokeWidth="2"
+                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div className={'flex gap-1 mb-3 items-center'}>
@@ -151,13 +187,13 @@ export default function LoginAdmin() {
                        id={'isRemembered'}
                        checked={isRememberCredentials}
                        onChange={handleCheckBox}
-                       />
+                />
                 <label className={'text-xs font-medium'} htmlFor={'isRemembered'}>Recuérdame por 30
                   días</label>
               </div>
 
               <button type={'submit'}
-                      className={`text-white text-sm font-bold w-full border rounded-md p-2
+                      className={`text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800
                       ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`}
                       disabled={isLoading}>
                 Iniciar sesión
