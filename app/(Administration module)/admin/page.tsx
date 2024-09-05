@@ -10,6 +10,7 @@ import { config } from '@/config';
 import { useAuthStore } from '@/store/auth';
 import { setCookie, getCookie } from 'cookies-next';
 import { Eye, EyeOff } from "lucide-react";
+import {ThemeToggle} from "@/components/ThemeToggle";
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -132,6 +133,9 @@ export default function LoginAdmin() {
 
   return (
     <div className={'flex flex-col min-h-screen'}>
+      <div className={'flex justify-end items-center pt-8 pr-8'}>
+        <ThemeToggle/>
+      </div>
       <div className={'flex-grow flex flex-col justify-center items-center'}>
         <div className={'flex flex-row justify-center items-center w-full'}>
           <div className={'w-1/2 flex flex-col justify-center items-center'}>
