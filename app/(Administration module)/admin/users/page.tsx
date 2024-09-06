@@ -13,7 +13,6 @@ export default function Users() {
   const [showLoginMessage, setShowLoginMessage] = useState(false);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-
   useEffect(() => {
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
       setShowLoginMessage(true);

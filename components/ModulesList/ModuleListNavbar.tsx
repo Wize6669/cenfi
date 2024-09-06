@@ -8,7 +8,7 @@ export default function ModuleListNavbar() {
 
   return(<nav className={'flex justify-between items-center'}>
     <Link href='/admin/menu'>Menú</Link>
-    {userAuth?.roleId === 1 ? <Link href='/admin/users'>Usuarios</Link> : '' }
+    {userAuth?.roleId === 1 && <Link href='/admin/users'>Usuarios</Link> }
     <Link href='/admin/questions'>Preguntas</Link>
     <Link href='/admin/categories'>Categorías</Link>
     <Link href='/admin/simulator'>Simulador</Link>

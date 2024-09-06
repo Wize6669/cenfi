@@ -9,7 +9,6 @@ import React, {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import { useAuthStore} from '@/store/auth';
 
-
 export default function Header({children}: Readonly<{children: React.ReactNode;}>) {
   const [openDropDownProfile, setOpenDropDownProfile] = useState(false);
   const userAuth = useAuthStore((state) => state.userAuth);

@@ -29,8 +29,6 @@ export default function ChangePassword() {
         if (response.status === 200) {
           router.push('/admin');
         }
-        console.log(response.status);
-        console.log(response.data);
       } catch (error) {
         if (error instanceof AxiosError) {
           console.log(error?.response?.data)
