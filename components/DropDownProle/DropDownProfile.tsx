@@ -12,7 +12,7 @@ export default function DropDownProfile() {
     router.replace('/admin');
   }
 
-  const handleMenu = (event: React.MouseEvent<HTMLLIElement>) => { 
+  const handleMenu = (event: React.MouseEvent<HTMLLIElement>) => {
 
   }
 
