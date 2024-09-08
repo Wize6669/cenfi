@@ -8,10 +8,11 @@ import { IoMdArrowDropdown } from 'react-icons/io';
 import React, {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import { useAuthStore} from '@/store/auth';
+import UserDropdown from "@/components/DropDownProle/UserDropdown";
 
 export default function Header({children}: Readonly<{children: React.ReactNode;}>) {
-  const [openDropDownProfile, setOpenDropDownProfile] = useState(false);
-  const userAuth = useAuthStore((state) => state.userAuth);
+  //const [openDropDownProfile, setOpenDropDownProfile] = useState(false);
+  //const userAuth = useAuthStore((state) => state.userAuth);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const router = useRouter();
   const [showLoginMessage, setShowLoginMessage] = useState(false);
@@ -53,14 +54,7 @@ export default function Header({children}: Readonly<{children: React.ReactNode;}
       </div>
 
       <div>
-        <div className={'flex justify-around items-center border-2 rounded-md relative w-[200px] h-[45px]'}
-             onClick={() => setOpenDropDownProfile((prev) => !prev)}>
-          <FaUser/><p className={'font-medium'}>{userAuth && userAuth.name} {userAuth && userAuth.lastName}</p>
-          <div style={{ transform: openDropDownProfile ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
-            <IoMdArrowDropdown />
-          </div>
-        </div>
-        {openDropDownProfile && <DropDownProfile/>}
+        <UserDropdown />
       </div>
     </div>);
 }

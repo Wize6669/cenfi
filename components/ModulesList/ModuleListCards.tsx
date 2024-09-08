@@ -18,7 +18,7 @@ export default function ModuleListCards() {
   }
 
   return (
-    <div>
+    <div className={'dark:bg-black'}>
       <div className={'my-5'}>
         <h1 className={'text-center text-3xl font-bold mb-2.5'}>Módulos</h1>
 

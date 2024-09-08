@@ -4,7 +4,7 @@ import ModuleListCards from '@/components/ModulesList/ModuleListCards';
 
 export default function Menu() {
 
-  return (<div className={'flex flex-col min-h-screen'}>
+  return (<div className={'flex flex-col min-h-screen dark:bg-gray-800'}>
     <Header>
       <></>
     </Header>
