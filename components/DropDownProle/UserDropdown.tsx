@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Sun, Moon, Laptop, Menu, LogOut, User, Mail, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sun, Moon, Laptop, Menu, LogOut, User, ShieldCheck, BookOpen, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from '@/hooks/useTheme'
 import {useAuthStore} from "@/store/auth";
@@ -74,7 +74,11 @@ const UserDropdown = () => {
                 Inicio sesión como
               </div>
               <div className={'flex items-center px-4 py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto whitespace-nowrap'}>
-                <Mail className={'mr-2 h-5 w-5 flex-shrink-0'} />
+                {userAuth?.roleId === 1 ? (
+                  <ShieldCheck className={'mr-2 h-5 w-5 flex-shrink-0'} />
+                ):(
+                  <BookOpen className={'mr-2 h-5 w-5 flex-shrink-0'} />
+                )}
                 <span className={'truncate'}>{userRol}</span>
               </div>
               <hr className={'border-gray-200 dark:border-gray-700'} />
@@ -82,15 +86,15 @@ const UserDropdown = () => {
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
                 onClick={() => router.push('/admin/menu')}
               >
-                <Menu className={'mr-3 h-5 w-5'} />
+                <Menu className={'mr-3 h-5 w-5 text-blue-800'} />
                 Ir al menú
               </button>
               <button
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
                 onClick={handleLogOut}
               >
-                <LogOut className={'mr-3 h-5 w-5'} />
-                Salir
+                <LogOut className={'mr-3 h-5 w-5 text-red-700'} />
+                Cerrar Sesión
               </button>
               <div className={'relative'}>
                 <button

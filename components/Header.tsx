@@ -1,18 +1,13 @@
 'use client'
 
 import Image from 'next/image';
-import DropDownProfile from '@/components/DropDownProle/DropDownProfile';
 import './DropDownProle/DropDownProfile.css';
-import { FaUser } from 'react-icons/fa';
-import { IoMdArrowDropdown } from 'react-icons/io';
 import React, {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import { useAuthStore} from '@/store/auth';
 import UserDropdown from "@/components/DropDownProle/UserDropdown";
 
 export default function Header({children}: Readonly<{children: React.ReactNode;}>) {
-  //const [openDropDownProfile, setOpenDropDownProfile] = useState(false);
-  //const userAuth = useAuthStore((state) => state.userAuth);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const router = useRouter();
   const [showLoginMessage, setShowLoginMessage] = useState(false);
@@ -46,7 +41,13 @@ export default function Header({children}: Readonly<{children: React.ReactNode;}
   return (
     <div className={'container mx-auto py-3 flex justify-between items-center'}>
       <div className={'w-1/4'}>
-        <Image src={'/images/image-1.png'} alt={'Icon'} width={75} height={60} />
+        <Image
+          className={
+            'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+          }
+          src={'/images/image-1.png'}
+          alt={'Icon'} width={75}
+          height={60} />
       </div>
 
       <div className={'w-1/2'}>

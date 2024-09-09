@@ -179,21 +179,21 @@ export default function UserTable() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="px-6 pb-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Usuarios</h2>
+    <div className="px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Usuarios</h2>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-700">Filas por página:</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">Filas por página:</span>
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-between w-20 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex items-center justify-between w-20 px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
-              <span>{table.getState().pagination.pageSize}</span>
-              <ChevronDown className="w-4 h-4 ml-2" />
+              <span className="dark:text-gray-300">{table.getState().pagination.pageSize}</span>
+              <ChevronDown className="w-4 h-4 ml-2 dark:text-gray-300" />
             </button>
             {isOpen && (
-              <div className="absolute z-10 w-20 mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+              <div className="absolute z-10 w-20 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
                 {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                   <button
                     key={pageSize}
@@ -201,7 +201,7 @@ export default function UserTable() {
                       table.setPageSize(pageSize)
                       setIsOpen(false)
                     }}
-                    className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
+                    className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-300"
                   >
                     {pageSize}
                   </button>
@@ -214,22 +214,22 @@ export default function UserTable() {
           <input
             value={globalFilter ?? ''}
             onChange={e => setGlobalFilter(e.target.value)}
-            className="pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-300"
             placeholder="Buscar..."
           />
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className="px-6 py-3 text-center text-xs font-bold text-gray-800 uppercase tracking-wider cursor-pointer"
+                  className="px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -240,11 +240,11 @@ export default function UserTable() {
             </tr>
           ))}
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           {table.getRowModel().rows.map((row, i) => (
-            <tr key={row.id} className={i % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+            <tr key={row.id} className={i % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-blue-50 dark:bg-gray-700'}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -254,12 +254,12 @@ export default function UserTable() {
         </table>
       </div>
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex-1 text-sm text-gray-700">
+        <div className="flex-1 text-sm text-gray-700 dark:text-gray-300">
           Mostrando {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} a {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)} de {table.getFilteredRowModel().rows.length} resultados
         </div>
         <div className="flex items-center space-x-2">
           <button
-            className="px-2 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50"
+            className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm disabled:opacity-50 dark:text-gray-300 dark:disabled:text-gray-500"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -268,9 +268,10 @@ export default function UserTable() {
           {table.getPageCount() > 3 ? (
             <>
               <button
-                className={`px-3 py-1 border ${table.getState().pagination.pageIndex === 0
-                  ? 'bg-button-color text-white'
-                  : 'border-gray-300 text-gray-700'
+                className={`px-3 py-1 border ${
+                  table.getState().pagination.pageIndex === 0
+                    ? 'bg-blue-500 text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
                 } rounded-md text-sm`}
                 onClick={() => table.setPageIndex(0)}
               >
@@ -283,19 +284,20 @@ export default function UserTable() {
                   max={table.getPageCount()}
                   value={gotoPage}
                   onChange={(e) => setGotoPage(e.target.value)}
-                  className="w-16 px-2 py-1 border border-gray-300 rounded-md text-sm text-center"
+                  className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-center dark:bg-gray-700 dark:text-gray-300"
                 />
                 <button
                   type="submit"
-                  className="ml-1 px-2 py-1 bg-button-color text-white rounded-md text-sm"
+                  className="ml-1 px-2 py-1 bg-blue-500 text-white rounded-md text-sm"
                 >
                   Ir
                 </button>
               </form>
               <button
-                className={`px-3 py-1 border ${table.getState().pagination.pageIndex === table.getPageCount() - 1
-                  ? 'bg-blue-500 text-white'
-                  : 'border-gray-300 text-gray-700'
+                className={`px-3 py-1 border ${
+                  table.getState().pagination.pageIndex === table.getPageCount() - 1
+                    ? 'bg-blue-500 text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
                 } rounded-md text-sm`}
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               >
@@ -306,9 +308,10 @@ export default function UserTable() {
             Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
-                className={`px-3 py-1 border ${table.getState().pagination.pageIndex + 1 === page
-                  ? 'bg-blue-500 text-white'
-                  : 'border-gray-300 text-gray-700'
+                className={`px-3 py-1 border ${
+                  table.getState().pagination.pageIndex + 1 === page
+                    ? 'bg-blue-500 text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
                 } rounded-md text-sm`}
                 onClick={() => table.setPageIndex(page - 1)}
               >
@@ -317,7 +320,7 @@ export default function UserTable() {
             ))
           )}
           <button
-            className="px-2 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50"
+            className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm disabled:opacity-50 dark:text-gray-300 dark:disabled:text-gray-500"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

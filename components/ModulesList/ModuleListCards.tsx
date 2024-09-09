@@ -18,37 +18,47 @@ export default function ModuleListCards() {
   }
 
   return (
-    <div className={'dark:bg-black'}>
+    <div className={'dark:bg-gray-900'}>
       <div className={'my-5'}>
-        <h1 className={'text-center text-3xl font-bold mb-2.5'}>Módulos</h1>
-
+        <h1 className={'text-center text-3xl font-bold mb-2.5 dark:text-gray-200'}>Módulos</h1>
         <hr/>
-
       </div>
+
       <div className={'flex justify-between items-center gap-6'}>
-        {userAuth?.roleId === 1 ? <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}
-          onClick={handleUserModule}>
-          <FaUser size={65} color={'390BC6'}/>
-          <p className={'font-semibold'}>Gestión de Usuarios</p>
-        </div> : <></>}
+
+        {userAuth?.roleId === 1 && (
+          <div
+            className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}
+            onClick={handleUserModule}>
+            <div className="text-[#390BC6] dark:text-blue-500">
+              <FaUser size={65} />
+            </div>
+            <p className={'font-semibold dark:text-gray-200'}>Gestión de Usuarios</p>
+          </div>
+        )}
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
-          <FaRegCircleQuestion size={65} color={'390BC6'}/>
-          <p className={'font-semibold'}>Gestión de Preguntas</p>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          <div className="text-[#390BC6] dark:text-blue-500">
+            <FaRegCircleQuestion size={65} />
+          </div>
+          <p className={'font-semibold dark:text-gray-200'}>Gestión de Preguntas</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
-          <MdOutlineCategory size={65} color={'390BC6'}/>
-          <p className={'font-semibold'}>Gestión de Categorías</p>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          <div className="text-[#390BC6] dark:text-blue-500">
+            <MdOutlineCategory size={65} />
+          </div>
+          <p className={'font-semibold dark:text-gray-200'}>Gestión de Categorías</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg'}>
-          <IoIosSettings size={70} color={'390BC6'}/>
-          <div className={'text-center items-center'}>
+          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          <div className="text-[#390BC6] dark:text-blue-500">
+            <IoIosSettings size={70} />
+          </div>
+          <div className={'text-center items-center dark:text-gray-200'}>
             <p className={'font-semibold'}>Configuración del</p>
             <p className={'font-semibold'}>Simulador</p>
           </div>
@@ -56,4 +66,5 @@ export default function ModuleListCards() {
       </div>
     </div>
   );
+
 }

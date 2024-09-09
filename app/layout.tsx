@@ -11,7 +11,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "CENFI",
+  title: "CENFI CIA. LTDA.",
   description: "CENFI cuenta con un simulador para el ingreso a las universidades",
 };
 

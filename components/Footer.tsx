@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className={'container mx-auto py-2 flex justify-between items-center border-t-2 border-gray-300 bg bg-gradient-to-b dark:border-gray-700 dark:from-black dark:to-gray-700'}>
+    <footer className={'container mx-auto py-2 flex justify-between items-center border-t-2 border-gray-300 dark:bg-gray-900'}>
       <div>
         <Image
           src="/images/FooterLogo.png"
