@@ -1,8 +1,8 @@
 "use client"
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
 import { BookOpen, Brain, Lightbulb } from 'lucide-react'
 
 const tabContent = [
@@ -29,7 +29,7 @@ const tabContent = [
   }
 ]
 
-export default function InformacionPrueba() {
+export default function TestInformation() {
   const [selectedTab, setSelectedTab] = useState<string>("estructura")
 
   return (

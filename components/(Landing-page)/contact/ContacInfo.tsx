@@ -1,39 +1,12 @@
-"use client"
+'use client'
 
-import React, { useState } from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { motion } from 'framer-motion';
 import {FaTiktok, FaFacebook, FaInstagram} from "react-icons/fa";
+import {ContactForm} from "@/components/(Landing-page)/contact/ContactForm";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    mensaje: ''
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { nombre, email, mensaje } = formData;
-    if (nombre && email && mensaje) {
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=#&text=Hola, mi nombre es ${encodeURIComponent(nombre)}. Mi correo es ${encodeURIComponent(email)} y este es mi mensaje: ${encodeURIComponent(mensaje)}`;
-      window.open(whatsappUrl, '_blank');
-    } else {
-      alert('Por favor, completa todos los campos antes de enviar.');
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-12 mt-2 bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 min-h-screen">
       <motion.h1
@@ -56,7 +29,7 @@ export default function ContactPage() {
               <div className="space-y-6 text-gray-700 dark:text-gray-300">
                 <div className="flex items-start">
                   <MapPin className="mr-3 flex-shrink-0 text-blue-600 dark:text-blue-400 w-6 h-6" />
-                  <p className="leading-tight">18 de noviembre 197 – 32 entre Colón y José Antonio Eguiguren, edificio &quot hogar & más &quot, 2° Piso</p>
+                  <p className="leading-tight">18 de noviembre 197 – 32 entre Colón y José Antonio Eguiguren, edificio <q>hogar & más</q>, 2° Piso</p>
                 </div>
                 <div className="flex items-center">
                   <Phone className="mr-3 flex-shrink-0 text-blue-600 dark:text-blue-400 w-6 h-6" />
@@ -87,17 +60,7 @@ export default function ContactPage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Card className="h-full shadow-lg dark:border-none hover:shadow-xl transition-shadow duration-300 dark:bg-gray-800 dark:text-white">
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-semibold mb-6 text-blue-900 dark:text-blue-300">Envíanos un mensaje</h2>
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <Input name="nombre" type="text" required placeholder="Ingresa tu nombre" value={formData.nombre} onChange={handleChange} className="border-blue-200 dark:border-blue-600 focus:border-blue-400 dark:focus:border-blue-500" />
-                <Input name="email" type="email" required placeholder="Ingresa tu correo electrónico" value={formData.email} onChange={handleChange} className="border-blue-200 dark:border-blue-600 focus:border-blue-400 dark:focus:border-blue-500" />
-                <Textarea name="mensaje" placeholder="Ingresa el mensaje que quieres enviar" required value={formData.mensaje} onChange={handleChange} className="border-blue-200 dark:border-blue-600 focus:border-blue-400 dark:focus:border-blue-500 h-32" />
-                <Button type="submit" className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white">Enviar mensaje</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <ContactForm />
         </motion.div>
       </div>
       <motion.div

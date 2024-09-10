@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { X, Star, Users, Award } from 'lucide-react';
 
-const NuestrosResultados = () => {
+const OurResults = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -120,4 +120,4 @@ const AnimatedStats = () => {
   );
 };
 
-export default NuestrosResultados;
+export default OurResults;

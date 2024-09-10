@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Home, Cpu, PillBottle, Thermometer } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/Card";
 
 const images = [
-  "/images/image-5.jpg?height=400&width=600&text=Imagen+1",
-  "/images/image-6.jpg?height=400&width=600&text=Imagen+1",
-  "/images/image-7.jpg?height=400&width=600&text=Imagen+1",
-  "/images/image-8.jpg?height=400&width=600&text=Imagen+1",
-  "/images/image-9.jpg?height=400&width=600&text=Imagen+1",
+  "/images/image-5.jpg?height=400&width=600&text=Instalación 1",
+  "/images/image-6.jpg?height=400&width=600&text=Instalación 2",
+  "/images/image-7.jpg?height=400&width=600&text=Instalación 3",
+  "/images/image-8.jpg?height=400&width=600&text=Instalación 4",
+  "/images/image-9.jpg?height=400&width=600&text=Instalación 5",
 ];
 
 const features = [
@@ -21,7 +21,7 @@ const features = [
   { icon: Thermometer, text: "Aulas con sistema de calefacción" },
 ];
 
-const NuestrasInstalaciones = () => {
+const OurFacilities = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -103,4 +103,4 @@ const NuestrasInstalaciones = () => {
   );
 };
 
-export default NuestrasInstalaciones;
+export default OurFacilities;

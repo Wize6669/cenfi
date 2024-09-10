@@ -17,9 +17,9 @@ export default function Footer() {
             </p>
             <div className={'flex space-x-4'}>
               {[
-                { icon: FaFacebook, href: 'https://www.facebook.com/share/3xgwpWEhGxW4kViB/?mibextid=qi2Omg' },
-                { icon: FaInstagram, href: 'https://www.instagram.com/preuniversitario_cenfi?igsh=MTVyZ2c1cnQzNXR3dw==' },
-                { icon: FaTiktok, href: 'https://www.tiktok.com/@preuniversitario.cenfi?_t=8ocuteZQ73G&_r=1' },
+                {icon: FaFacebook, href: 'https://www.facebook.com/share/3xgwpWEhGxW4kViB/?mibextid=qi2Omg'},
+                {icon: FaInstagram, href: 'https://www.instagram.com/preuniversitario_cenfi?igsh=MTVyZ2c1cnQzNXR3dw=='},
+                {icon: FaTiktok, href: 'https://www.tiktok.com/@preuniversitario.cenfi?_t=8ocuteZQ73G&_r=1'},
               ].map((social, index) => (
                 <a
                   key={index}
@@ -28,7 +28,7 @@ export default function Footer() {
                   target={'_blank'}
                   rel={'noopener noreferrer'}
                 >
-                  <social.icon className={'w-5 h-5'} />
+                  <social.icon className={'w-5 h-5'}/>
                 </a>
               ))}
             </div>
@@ -36,28 +36,46 @@ export default function Footer() {
           <div>
             <h4 className={'text-lg font-semibold mb-4 text-gray-800 dark:text-blue-300'}>Enlaces Rápidos</h4>
             <ul className={'space-y-2'}>
-              {['Inicio','Contacto','Sobre nosotros', 'Simuladores'].map((item) => (
-                <li key={item}>
-                  <Link href={`/${item.toLowerCase().replace(/ /g, '-')}`} as={`/${item.toLowerCase().replace(/ /g, '-')}`} className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/"
+                      className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
+                  Inicio
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact"
+                      className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
+                  Contacto
+                </Link>
+              </li>
+              <li>
+                <Link href="/about"
+                      className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
+                  Sobre nosotros
+                </Link>
+              </li>
+              <li>
+                <Link href="#"
+                      className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
+                  Simuladores
+                </Link>
+              </li>
             </ul>
           </div>
+
           <div>
             <h4 className={'text-lg font-semibold mb-4 text-gray-800 dark:text-blue-300'}>Contacto</h4>
             <ul className={'space-y-2'}>
               <li className={'flex items-center text-sm text-gray-600 dark:text-gray-300'}>
-                <Mail className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'} />
+                <Mail className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'}/>
                 cenfilojaecuador@gmail.com
               </li>
               <li className={'flex items-center text-sm text-gray-600 dark:text-gray-300'}>
-                <Phone className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'} />
+                <Phone className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'}/>
                 (+593) 99 256 2952
               </li>
               <li className={'flex items-center text-sm text-gray-600 dark:text-gray-300'}>
-                <MapPin className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'} />
+                <MapPin className={'w-4 h-4 mr-2 text-blue-500 dark:text-blue-400'}/>
                 Loja, Ecuador
               </li>
             </ul>
@@ -71,12 +89,14 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className={'mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center'}>
+        <div
+          className={'mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center'}>
           <p className={'text-sm text-gray-500 dark:text-gray-400'}>
             © {new Date().getFullYear()} CENFI. Todos los derechos reservados.
           </p>
           <p className={'text-sm text-gray-500 mt-2 md:mt-0 dark:text-gray-400'}>
-            Diseñado y desarrollado por <a href={'#'} className={'text-blue-500 hover:underline dark:text-blue-400'}>Francisco Rodríguez y William Zapata</a>
+            Diseñado y desarrollado por <a href={'#'} className={'text-blue-500 hover:underline dark:text-blue-400'}>Francisco
+            Rodríguez y William Zapata</a>
           </p>
         </div>
       </div>

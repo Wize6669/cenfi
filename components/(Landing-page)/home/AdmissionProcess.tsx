@@ -1,8 +1,8 @@
 "use client"
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/Card"
+import { Button } from "@/components/ui/Button"
 import { Flag, Users, BookOpenCheck, School, CheckCircle, Award, ChevronLeft, ChevronRight } from "lucide-react"
 
 const admissionSteps = [
@@ -14,7 +14,7 @@ const admissionSteps = [
   { icon: Award, title: "Matrículas", description: "Cada institución de educación superior llevará a cabo su proceso de matriculación" }
 ]
 
-export default function ProcesoAdmision() {
+export default function AdmissionProcess() {
   const [currentStep, setCurrentStep] = useState(0)
 
   const nextStep = () => setCurrentStep((prev) => (prev + 1) % admissionSteps.length)

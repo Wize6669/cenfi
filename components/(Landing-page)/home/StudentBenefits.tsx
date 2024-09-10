@@ -19,7 +19,7 @@ const benefits: Benefit[] = [
   { icon: Video, title: "Clases grabadas" },
 ];
 
-const BeneficiosEstudiantes: React.FC = () => {
+const StudentBenefits: React.FC = () => {
   return (
     <section className={'py-16 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-gray-800 dark:to-gray-900'}>
       <div className={'max-w-full mx-auto px-4 sm:px-6 lg:px-60'}>
@@ -57,4 +57,4 @@ const BeneficiosEstudiantes: React.FC = () => {
   );
 };
 
-export default BeneficiosEstudiantes;
+export default StudentBenefits;

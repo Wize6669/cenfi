@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { CheckCircle } from 'lucide-react';
 
 const HeroSection: React.FC = () => {

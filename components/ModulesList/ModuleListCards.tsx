@@ -17,6 +17,10 @@ export default function ModuleListCards() {
     router.push('/admin/users');
   }
 
+  const handleCategoryModule = (event: React.MouseEvent<HTMLDivElement>) => {
+    router.push('/admin/categories');
+  }
+
   return (
     <div className={'dark:bg-gray-900'}>
       <div className={'my-5'}>
@@ -46,7 +50,8 @@ export default function ModuleListCards() {
         </div>
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}
+          onClick={handleCategoryModule}>
           <div className="text-[#390BC6] dark:text-blue-500">
             <MdOutlineCategory size={65} />
           </div>

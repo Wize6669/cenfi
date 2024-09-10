@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { BookOpen, Users, Award } from 'lucide-react'
 
 const infoCards = [
@@ -23,7 +23,7 @@ const infoCards = [
   },
 ]
 
-export default function InformacionCentro() {
+export default function InformationCenter() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (

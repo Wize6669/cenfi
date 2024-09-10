@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import { BookOpen, Target, Eye, ChevronDown } from 'lucide-react';
 
@@ -37,7 +37,7 @@ const ElegantExpandableCard: React.FC<ElegantExpandableCardProps> = ({ title, ic
 const HistoriaContent = () => (
   <div className={'space-y-6 text-gray-700 dark:text-gray-300'}>
     <p className={'leading-relaxed text-justify'}>
-      CENTRO DE FORMACIÓN INTENSIVA CIA. LTDA. &quot CENFI &quot, se origina en el año 2018 con el propósito principal de brindar un nivel de educación acorde a las exigencias académicas actuales.
+      CENTRO DE FORMACIÓN INTENSIVA CIA. LTDA. <q>CENFI</q>, se origina en el año 2018 con el propósito principal de brindar un nivel de educación acorde a las exigencias académicas actuales.
     </p>
     <p className={'leading-relaxed text-justify'}>
       Disponemos de un equipo de trabajo con profesionales de tercer y cuarto nivel, con más de 10 años de experiencia en la preparación y asesoría académica de estudiantes de tercero de bachillerato y bachilleres graduados, obteniendo excelentes resultados de ingreso a universidades locales y a nivel nacional. Contamos con alumnos vinculados al programa GAR (Grupo de Alto Rendimiento).

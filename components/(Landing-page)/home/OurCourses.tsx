@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { GraduationCap, BookOpen, Clock, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ const cursos = [
   }
 ];
 
-const NuestrosCursos = () => {
+const OurCourses = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
@@ -72,4 +72,4 @@ const NuestrosCursos = () => {
   );
 };
 
-export default NuestrosCursos;
+export default OurCourses;

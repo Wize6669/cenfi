@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import ElegantContentSection from "./HMV";
+import { Card, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import ElegantContentSection from "./Hmv";
 
 interface ExpandableCardProps {
   title: string;
@@ -43,7 +43,7 @@ const ExpandableCard: React.FC<ExpandableCardProps> = ({ title, content }) => {
   );
 };
 
-const NuestraHistoria = () => {
+const OurHistory = () => {
   return (
     <section className={'h-auto flex items-start bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 pt-10 pb-5 mt-2'}>
       <div className={'max-w-full container mx-auto lg:px-60'}>
@@ -96,4 +96,4 @@ const NuestraHistoria = () => {
   );
 };
 
-export default NuestraHistoria;
+export default OurHistory;
