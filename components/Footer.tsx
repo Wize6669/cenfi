@@ -25,7 +25,7 @@ export default function Footer() {
           className={'border rounded-3xl p-1.5 text-black dark:text-white border-gray-300 dark:border-gray-600'}
           href="https://www.tiktok.com/@preuniversitario.cenfi?_t=8ocuteZQ73G&_r=1"
         >
-          <FaTiktok width={45} height={45} />
+          <FaTiktok width={45} height={45}/>
         </Link>
         <Link
           className={'border rounded-3xl p-1.5 text-blue-800 dark:text-blue-500 border-gray-300 dark:border-gray-600'}

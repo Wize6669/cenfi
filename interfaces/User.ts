@@ -12,5 +12,13 @@ export interface UserSingIn extends Pick<User, 'email' | 'password'> {
   roleId: number | null;
 }
 
+export interface UserNewUpdate extends Pick<User, 'name' | 'lastName' | 'password' | 'email'> {
+  id?: string
+  roleId: number | null;
+}
+
 export interface UserStore extends Pick<User ,'id' | 'name' | 'lastName' | 'email' | 'roleId'> {}
 
+export interface UserTableInterface extends Pick<User, 'id' | 'name' | 'lastName' | 'email' > {
+  role: string
+}
