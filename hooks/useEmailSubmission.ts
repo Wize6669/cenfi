@@ -13,9 +13,8 @@ interface SubmissionResult {
 
 export const useEmailSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<SubmissionResult | null>(null);
 
-  const submitEmail = async (data: EmailData): Promise<void> => {
+  const submitEmail = async (data: EmailData): Promise<SubmissionResult> => {
     setIsSubmitting(true);
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -31,19 +30,19 @@ export const useEmailSubmission = () => {
       });
 
       const json = await response.json();
-      setResult({
+      return {
         success: json.success,
         message: json.message,
-      });
+      };
     } catch (error) {
-      setResult({
+      return {
         success: false,
         message: "An error occurred. Please try again later.",
-      });
+      };
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return { submitEmail, isSubmitting, result };
+  return { submitEmail, isSubmitting };
 };
