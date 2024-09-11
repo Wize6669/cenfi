@@ -1,11 +1,11 @@
 'use client'
 
-import { FaUser } from 'react-icons/fa';
-import { FaRegCircleQuestion } from 'react-icons/fa6';
-import { MdOutlineCategory } from 'react-icons/md';
-import { IoIosSettings } from 'react-icons/io';
+import {FaUser} from 'react-icons/fa';
+import {FaRegCircleQuestion} from 'react-icons/fa6';
+import {MdOutlineCategory} from 'react-icons/md';
+import {IoIosSettings} from 'react-icons/io';
 import {useAuthStore} from '@/store/auth';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import React from "react";
 
 export default function ModuleListCards() {
@@ -28,40 +28,43 @@ export default function ModuleListCards() {
         <hr/>
       </div>
 
-      <div className={'flex justify-between items-center gap-6'}>
-
+      <div className={'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center'}>
         {userAuth?.roleId === 1 && (
           <div
-            className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}
-            onClick={handleUserModule}>
+            className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 mb-5 sm:mb-5 lg:mb-0'}
+            onClick={handleUserModule}
+          >
             <div className="text-[#390BC6] dark:text-blue-500">
-              <FaUser size={65} />
+              <FaUser size={65}/>
             </div>
             <p className={'font-semibold dark:text-gray-200'}>Gestión de Usuarios</p>
           </div>
         )}
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 mb-5 sm:mb-5 lg:mb-0'}
+        >
           <div className="text-[#390BC6] dark:text-blue-500">
-            <FaRegCircleQuestion size={65} />
+            <FaRegCircleQuestion size={65}/>
           </div>
           <p className={'font-semibold dark:text-gray-200'}>Gestión de Preguntas</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}
-          onClick={handleCategoryModule}>
+          className={'flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 mb-5 sm:mb-5 lg:mb-0'}
+          onClick={handleCategoryModule}
+        >
           <div className="text-[#390BC6] dark:text-blue-500">
-            <MdOutlineCategory size={65} />
+            <MdOutlineCategory size={65}/>
           </div>
           <p className={'font-semibold dark:text-gray-200'}>Gestión de Categorías</p>
         </div>
 
         <div
-          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400'}>
+          className={'flex flex-col gap-y-3.5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 mb-5 sm:mb-5 lg:mb-0'}
+        >
           <div className="text-[#390BC6] dark:text-blue-500">
-            <IoIosSettings size={70} />
+            <IoIosSettings size={70}/>
           </div>
           <div className={'text-center items-center dark:text-gray-200'}>
             <p className={'font-semibold'}>Configuración del</p>
@@ -71,5 +74,4 @@ export default function ModuleListCards() {
       </div>
     </div>
   );
-
 }

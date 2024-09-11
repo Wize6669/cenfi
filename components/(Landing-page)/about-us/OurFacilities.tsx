@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Home, Cpu, PillBottle, Thermometer } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Cpu, Thermometer } from 'lucide-react';
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { MdTableBar } from 'react-icons/md'
 
 const images = [
   "/images/image-5.jpg?height=400&width=600&text=Instalación 1",
@@ -17,7 +18,7 @@ const images = [
 const features = [
   { icon: Home, text: "Aulas confortables" },
   { icon: Cpu, text: "Equipos de última tecnología" },
-  { icon: PillBottle, text: "Mesas ergonómicas" },
+  { icon: MdTableBar, text: "Mesas ergonómicas" },
   { icon: Thermometer, text: "Aulas con sistema de calefacción" },
 ];
 

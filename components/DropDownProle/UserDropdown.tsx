@@ -4,18 +4,18 @@ import React, { useState } from 'react'
 import { Sun, Moon, Laptop, Menu, LogOut, User, ShieldCheck, BookOpen, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from '@/hooks/useTheme'
-import {useAuthStore} from "@/store/auth";
-import {useRouter} from "next/navigation";
+import { useAuthStore } from "@/store/auth"
+import { useRouter } from "next/navigation"
 
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isThemeOpen, setIsThemeOpen] = useState(false)
   const { theme, switchTheme } = useTheme()
-  const userAuth = useAuthStore((state) => state.userAuth);
-  const router = useRouter();
+  const userAuth = useAuthStore((state) => state.userAuth)
+  const router = useRouter()
 
-  const userRol = userAuth?.roleId === 1? 'Administrador' : 'Profesor';
-  const userName = userAuth?.name + " " + userAuth?.lastName;
+  const userRol = userAuth?.roleId === 1 ? 'Administrador' : 'Profesor'
+  const userName = userAuth?.name + " " + userAuth?.lastName
 
   const handleMainMenuToggle = () => {
     setIsOpen(prev => {
@@ -27,9 +27,8 @@ const UserDropdown = () => {
   }
 
   const handleLogOut = (event: React.MouseEvent<HTMLButtonElement>) => {
-    localStorage.clear();
-
-    router.replace('/admin');
+    localStorage.clear()
+    router.replace('/admin')
   }
 
   const getThemeIcon = () => {
@@ -46,18 +45,18 @@ const UserDropdown = () => {
   }
 
   return (
-    <div className="relative">
+    <div className={'relative md:ml-auto pr-2'}>
       <button
         onClick={handleMainMenuToggle}
-        className={'flex items-center bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
+        className={'flex items-center bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-full md:rounded-lg lg:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
       >
         <div className={'flex items-center px-4 py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto'}>
-          <User className={'mr-2 h-5 w-5 flex-shrink-0'} />
-          <span className={'truncate'}>{userName}</span>
+          <User className={'lg:mr-2 md:mr-2 h-5 w-5 flex-shrink-0'}/>
+          <span className={'hidden md:inline truncate'}>{userName}</span>
           {isOpen ? (
-            <ChevronUp className={'ml-2 h-5 w-5'} />
+            <ChevronUp className={'lg:ml-2 md:ml-2 h-5 w-5 hidden md:inline'}/>
           ) : (
-            <ChevronDown className={'ml-2 h-5 w-5'} />
+            <ChevronDown className={'lg:ml-2 md:ml-2 h-5 w-5 hidden md:inline'}/>
           )}
         </div>
       </button>
@@ -67,7 +66,7 @@ const UserDropdown = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className={'absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
+            className={'absolute right-3 md:right-auto md:left-0 mt-2 lg:w-56 md:w-52 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
           >
             <div className={'py-1'} role="menu">
               <div className={'px-4 text-sm text-gray-600 dark:text-gray-300 font-semibold'}>
@@ -117,7 +116,7 @@ const UserDropdown = () => {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className={'absolute left-full top-0 mt-0 w-36 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
+                      className={'md:absolute lg:left-full md:down-full md:top-12 md:mt-0 lg:top-0 w-full md:w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
                     >
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "light" ? "bg-gray-100 dark:bg-gray-700" : ""}`}

@@ -39,23 +39,22 @@ export default function Header({children}: Readonly<{children: React.ReactNode;}
   }
 
   return (
-    <div className={'container mx-auto py-3 flex justify-between items-center'}>
-      <div className={'w-1/4'}>
-        <Image
-          className={
-            'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
-          }
-          src={'/images/image-1.png'}
-          alt={'Icon'} width={75}
-          height={60} />
-      </div>
-
+    <div className={'container mx-auto py-2 flex justify-between items-center lg:px-0 md:px-4 sm:px-20'}>
       <div className={'w-1/2'}>
+        <Image
+          className={'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md pl-2'}
+          src={'/images/image-1.png'}
+          alt={'Icon'}
+          width={75}
+          height={60}
+        />
+      </div>
+      <div className={'w-full flex justify-center items-center'}>
         {children}
       </div>
-
-      <div>
-        <UserDropdown />
+      <div className={'w-auto'}>
+        <UserDropdown/>
       </div>
-    </div>);
+    </div>
+  );
 }

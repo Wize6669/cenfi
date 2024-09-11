@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/auth';
 import { setCookie, getCookie } from 'cookies-next';
 import {ChevronDown, ChevronUp, Eye, EyeOff} from "lucide-react";
 import {ThemeToggle} from "@/components/ThemeToggle";
+import { motion } from 'framer-motion';
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -111,29 +112,33 @@ export default function LoginAdmin() {
 
     return (
       <div className={'flex flex-col mb-3'}>
-        <label className={'text-md font-medium text-gray-900 dark:text-gray-300'} htmlFor='password'>
+        <label className={'text-md font-medium text-gray-900 dark:text-gray-300'} htmlFor={'password'}>
           Contraseña
         </label>
         <div className={'relative'}>
           <input
-            className={'border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:focus:ring-blue-400'}
+            className={
+              'border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:focus:ring-blue-400'
+            }
             type={showPassword ? 'text' : 'password'}
             placeholder={'Ingresa tu contraseña'}
             name={'password'}
             value={user.password}
             onChange={handleGetDataInput}
-            style={{width: '385px', height: '35px'}}
             required={true}
+            style={{height: '35px' }}
           />
           <button
-            type="button"
-            className="absolute inset-y-0 right-2 flex items-center"
+            type={'button'}
+            className={'absolute inset-y-0 right-2 flex items-center'}
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
-              <Eye className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'} />
+              <Eye
+                className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'}/>
             ) : (
-              <EyeOff className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'} />
+              <EyeOff
+                className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'}/>
             )}
           </button>
         </div>
@@ -142,13 +147,15 @@ export default function LoginAdmin() {
   };
 
   return (
-    <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
-      <div className={'flex justify-end items-center pt-8 pr-8'}>
-        <ThemeToggle/>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8 }}
+      className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
       <div className={'flex-grow flex flex-col justify-center items-center'}>
-        <div className={'flex flex-row justify-center items-center w-full'}>
-          <div className={'w-1/2 flex flex-col justify-center items-center'}>
+        <div className={'flex flex-col lg:flex-row justify-center items-center w-full px-4 md:px-10'}>
+          {/* Columna de formulario */}
+          <div className={'w-full lg:w-1/2 flex flex-col justify-center items-center'}>
             <div className={'mb-10'}>
               <Image
                 className={
@@ -157,34 +164,55 @@ export default function LoginAdmin() {
                 src={'/images/image-1.png'}
                 alt={'Logo de CENFI'}
                 width={260}
-                height={190}/>
+                height={190}
+              />
             </div>
 
             <form onSubmit={handleSubmit} className={'w-full max-w-sm'}>
               <div className={'flex flex-col justify-start mb-8 text-center'}>
-                <h1 className={'text-3xl font-medium text-gray-900 dark:text-gray-200'}>¡Bienvenido de nuevo!</h1>
-                <p className={'text-md font-medium text-gray-700 dark:text-gray-400'}>Ingresa tus credenciales para iniciar sesión</p>
+                <h1 className={'text-3xl font-medium text-gray-900 dark:text-gray-200'}>
+                  ¡Bienvenido de nuevo!
+                </h1>
+                <p className={'text-md font-medium text-gray-700 dark:text-gray-400'}>
+                  Ingresa tus credenciales para iniciar sesión
+                </p>
               </div>
 
               <div className={'flex flex-col mb-3'}>
-                <label className={'text-md font-medium text-gray-900 dark:text-gray-200'} htmlFor={'email'}>Correo electrónico</label>
-                <input className={'border rounded-md p-2 bg-white dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600'}
-                       type={'email'}
-                       placeholder={'Ingresa tu email'}
-                       name={'email'}
-                       value={user.email}
-                       onChange={handleGetDataInput}
-                       style={{width: '385px', height: '35px'}}
-                       required={true}/>
+                <label
+                  className={'text-md font-medium text-gray-900 dark:text-gray-200'}
+                  htmlFor={'email'}
+                >
+                  Correo electrónico
+                </label>
+                <input
+                  className={
+                    'border rounded-md p-2 bg-white dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 w-full'
+                  }
+                  type={'email'}
+                  placeholder={'Ingresa tu email'}
+                  name={'email'}
+                  value={user.email}
+                  onChange={handleGetDataInput}
+                  required={true}
+                  style={{height: '35px'}}
+                />
               </div>
 
               <PasswordInput/>
 
-              <div className={'flex flex-col mb-3 w-1/2'}>
-                <label className={'text-md font-medium text-gray-900 dark:text-gray-200'} htmlFor={'roleId'}>Rol</label>
-                <div className={'relative'}>
+              <div className={'flex flex-col mb-3'}>
+                <label
+                  className={'text-md font-medium text-gray-900 dark:text-gray-200'}
+                  htmlFor={'roleId'}
+                >
+                  Rol
+                </label>
+                <div className={'relative w-40'}>
                   <select
-                    className={'border rounded-md w-full py-1.5 px-1.5 pr-8 text-black bg-white dark:bg-gray-700 dark:text-gray-300 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-in-out duration-200'}
+                    className={
+                      'border rounded-md w-full py-1.5 px-1.5 pr-8 text-black bg-white dark:bg-gray-700 dark:text-gray-300 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-in-out duration-200'
+                    }
                     name={'roleId'}
                     onChange={handleGetDataSelect}
                     value={user.roleId || ''}
@@ -192,55 +220,72 @@ export default function LoginAdmin() {
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                   >
-                    <option value=''>Selecciona tu rol</option>
-                    <option value='1'>Admin</option>
-                    <option value='2'>Profesor</option>
+                    <option value={''}>Selecciona tu rol</option>
+                    <option value={'1'}>Admin</option>
+                    <option value={'2'}>Profesor</option>
                   </select>
                   <div className={'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'}>
                     {isSelectOpen ? (
-                      <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                      <ChevronUp className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                      <ChevronDown className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className={'flex gap-1 mb-3 items-center'}>
-                <input type={'checkbox'}
-                       name={'isRemembered'}
-                       id={'isRemembered'}
-                       checked={isRememberCredentials}
-                       onChange={handleCheckBox}
+                <input
+                  type={'checkbox'}
+                  name={'isRemembered'}
+                  id={'isRemembered'}
+                  checked={isRememberCredentials}
+                  onChange={handleCheckBox}
                 />
-                <label className={'text-xs font-medium dark:text-gray-200'} htmlFor={'isRemembered'}>Recuérdame por 30
-                  días</label>
+                <label className={'text-xs font-medium dark:text-gray-200'} htmlFor={'isRemembered'}>
+                  Recuérdame por 30 días
+                </label>
               </div>
 
-              <button type={'submit'}
-                      className={`text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200
-                      ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`}
-                      disabled={isLoading}>
+              <button
+                type={'submit'}
+                className={
+                  `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200
+              ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`
+                }
+                disabled={isLoading}
+              >
                 Iniciar sesión
               </button>
 
               {error && <span className={'text-red-500 text-sm'}>{error}</span>}
             </form>
           </div>
-          <div className={'w-1/2 flex justify-center items-center'}>
+
+          {/* Columna de imagen */}
+          <motion.div
+            initial={{opacity: 0, scale: 0.8}}
+            animate={{opacity: 1, scale: 1}}
+            transition={{duration: 0.8}}
+            className={'relative w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0'}
+          >
             <Image
               className={
-                'filter drop-shadow-[0_10px_8px_rgba(25, 82, 94, 0.46)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(25, 82, 94, 0.46)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
               }
               src={'/images/image-2.png'}
               alt={'Icon'}
               width={555}
-              height={619}/>
-          </div>
+              height={619}
+            />
+            <div className={'absolute top-0 right-0 flex justify-end items-start p-2'}>
+              <ThemeToggle/>
+            </div>
+          </motion.div>
         </div>
       </div>
 
       <Footer/>
-    </div>
+    </motion.div>
   );
 }

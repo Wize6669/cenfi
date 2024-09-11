@@ -17,13 +17,15 @@ const PasswordInput = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex flex-col mb-3">
-      <label
+    <div className="grid grid-cols-1 grid-rows-2 gap-x-0 content-start">
+      <div className={'content-end'}>
+        <label
         className="text-base font-medium text-gray-900 dark:text-gray-300"
         htmlFor="password"
       >
         Contraseña
       </label>
+      </div>
       <div className="relative">
         <input
           className="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-400"
@@ -31,7 +33,7 @@ const PasswordInput = () => {
           name="password"
           placeholder="Ingresa una contraseña"
           required={true}
-          style={{ width: '450px', height: '35px' }}// tamaño del recuadro
+          style={{height: '35px' }}
         />
         <button
           type="button"
@@ -99,92 +101,116 @@ export default function Users() {
       <Header>
         <ModuleListNavbar/>
       </Header>
-      <div className={'flex-grow flex flex-col justify-stretch items-center'}>
-        <h1 className={'font-bold text-3xl mt-4 text-gray-900 dark:text-gray-200'}>Administración de Usuarios</h1>
-
-        <div className={'flex justify-between items-center container w-full'}>
-          <div className={'pr-8'}>
+      <div className={'flex-grow flex flex-col items-center place-items-center px-4'}>
+        <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
+          <div className={'w-auto col-span-2'}>
+            <h1 className={'font-bold text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración de
+              Usuarios</h1>
+          </div>
+          <div className={'row-start-2 justify-items-center content-center'}>
             <IconButton sx={{border: '1px solid #ccc'}} onClick={goBack}>
-              <ArrowBack className="text-gray-400 dark:text-gray-300"/>
+              <ArrowBack className={'text-gray-400 dark:text-gray-300'}/>
             </IconButton>
           </div>
-          <div className="border-t-2 container w-full dark:border-gray-600"/>
+          <div className={'w-full row-start-2 content-center justify-items-center'}>
+            <div className={'border-t-2 container dark:border-gray-600'}/>
+          </div>
         </div>
-
-        <form className={"grid grid-rows-2 grid-flow-col gap-x-10 gap-y-4 pt-8"}>
-          <div className={'flex flex-col mb-3'}>
-            <label
-              className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-              htmlFor={'fullName'}>Nombre y Apellido
-            </label>
-            <input
-              className={'border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
-              type={'text'}
-              name={'fullName'}
-              placeholder={'Ingresa tu nombre y apellido'}
-              required={true}
-              style={{width: '450px', height: '35px'}}
-            />
-          </div>
-
-          <PasswordInput/>
-
-          <div className={'flex flex-col mb-3'}>
-            <label
-              className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-              htmlFor={'email'}>Correo
-            </label>
-            <input
-              className={'border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
-              type={'email'}
-              name={'email'}
-              placeholder={'Ingresa tu correo electrónico'}
-              style={{width: '450px', height: '35px'}}
-            />
-          </div>
-
-          <div className={'flex flex-col mb-3 w-1/2'}>
-            <label
-              className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-              htmlFor={'roleId'}>Rol
-            </label>
-            <div className={'relative'}>
-              <select
-                className={'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-800 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
-                name={'roleId'}
-                required={true}
-                style={{height: '35px'}}
-                onFocus={() => setIsSelectOpen(true)}
-                onBlur={() => setIsSelectOpen(false)}
-                onChange={handleSelectChange}
+        <form className={'grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}>
+          {/* Nombre y Apellido */}
+          <div className={'grid grid-cols-1 grid-rows-2 gap-x-0'}>
+            <div className={'content-end'}>
+              <label
+                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                htmlFor="fullName"
               >
-                <option value=''>Selecciona un rol</option>
-                <option value='1'>Admin</option>
-                <option value='2'>Profesor</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                {isSelectOpen ? (
-                  <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                )}
+                Nombre y Apellido
+              </label>
+            </div>
+            <div>
+              <input
+                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                type="text"
+                name="fullName"
+                placeholder="Ingresa tu nombre y apellido"
+                required
+                style={{height: "35px"}}
+              />
+            </div>
+          </div>
+
+          {/* Correo Electrónico */}
+          <div className={'grid grid-cols-1 grid-rows-2 gap-x-0'}>
+            <div className="content-end">
+              <label
+                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                htmlFor="email"
+              >
+                Correo Electrónico
+              </label>
+            </div>
+            <div>
+              <input
+                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                type="email"
+                name="email"
+                placeholder="Ingresa tu correo electrónico"
+                style={{height: "35px"}}
+              />
+            </div>
+          </div>
+
+          {/* Contraseña */}
+          <div>
+            <PasswordInput/>
+          </div>
+
+          {/* Selección de Rol */}
+          <div className={'grid grid-cols-1 gap-x-0'}>
+            <div className={'content-end lg:w-2/4 md:w-3/4 sm:w-full'}>
+              <label
+                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                htmlFor="roleId"
+              >
+                Rol
+              </label>
+              <div className={'relative'}>
+                <select
+                  className={'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-800 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
+                  name="roleId"
+                  required
+                  style={{ height: '35px', maxWidth: '100%' }}
+                  onFocus={() => setIsSelectOpen(true)}
+                  onBlur={() => setIsSelectOpen(false)}
+                  onChange={handleSelectChange}
+                >
+                  <option value="">Selecciona un rol</option>
+                  <option value="1">Admin</option>
+                  <option value="2">Profesor</option>
+                </select>
+                <div className={'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'}>
+                  {isSelectOpen ? (
+                    <ChevronUp className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
+                  ) : (
+                    <ChevronDown className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </form>
-
         <button
-          className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-4 transition-colors ease-in-out duration-200'}>
+          className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-8 transition-colors ease-in-out duration-200'}>
           Registrar
         </button>
       </div>
-  <div className="flex justify-center">
-    <div className="w-2/3 scale-90">
-      <UserTable/>
+      <div className={'flex justify-center'}>
+        <div className="w-2/3 scale-90">
+          <UserTable/>
+        </div>
+      </div>
+      <Footer/>
     </div>
-  </div>
-  <Footer/>
-</div>
-)
-  ;
+  )
+    ;
 }
