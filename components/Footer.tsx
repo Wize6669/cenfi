@@ -9,7 +9,7 @@ export default function Footer() {
       className={'container mx-auto py-4 px-4 flex flex-col md:flex-row justify-between items-center border-t-2 border-gray-300 dark:bg-gray-900'}>
       <div className={'mb-4 md:mb-0'}>
         <Image
-          src="/images/FooterLogo.png"
+          src="/images/image-4.png"
           alt="Logo"
           width={50}
           height={50}
