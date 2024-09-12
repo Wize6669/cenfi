@@ -14,7 +14,7 @@ const OurResults = () => {
     <section className={'py-16 bg-white-50 dark:bg-gray-900'}>
       <div className={'max-w-full container mx-auto lg:px-48'}>
         <motion.h2
-          className={'text-4xl font-bold text-blue-800 mb-12 text-left dark:text-blue-300'}
+          className={'text-4xl font-bold text-blue-800 mb-12 text-left dark:text-blue-300 px-4'}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

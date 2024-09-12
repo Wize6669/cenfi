@@ -3,61 +3,35 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
-import React, { useEffect, useState } from "react";
+import React, {ChangeEvent, FormEvent, useEffect, useState, useRef} from 'react';
 import { useAuthStore } from "@/store/auth";
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, ChevronDown, ChevronUp } from 'lucide-react'; // Importa los íconos
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import {IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
 import UserTable from '@/components/UserTable';
-
-
-// Componente PasswordInput
-const PasswordInput = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  return (
-    <div className="grid grid-cols-1 grid-rows-2 gap-x-0 content-start">
-      <div className={'content-end'}>
-        <label
-        className="text-base font-medium text-gray-900 dark:text-gray-300"
-        htmlFor="password"
-      >
-        Contraseña
-      </label>
-      </div>
-      <div className="relative">
-        <input
-          className="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-400"
-          type={showPassword ? 'text' : 'password'}
-          name="password"
-          placeholder="Ingresa una contraseña"
-          required={true}
-          style={{height: '35px' }}
-        />
-        <button
-          type="button"
-          className="absolute inset-y-0 right-2 flex items-center"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? (
-            <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110" />
-          ) : (
-            <EyeOff className="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110" />
-          )}
-        </button>
-      </div>
-    </div>
-  );
-
-};
+import {PasswordInput} from '@/components/PasswordInput';
+import {UserNewUpdate} from '@/interfaces/User';
+import { axiosInstance } from '@/lib/axios';
+import { AxiosError } from 'axios';
+import { ErrorResponse } from '@/interfaces/ResponseAPI';
+import toast from 'react-hot-toast';
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
+  const [user, setUser] = useState<UserNewUpdate>({
+    name: '',
+    lastName: '',
+    email: '',
+    password: '',
+    roleId: null,
+  });
   const router = useRouter();
   const [showLoginMessage, setShowLoginMessage] = useState(false);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+
 
   useEffect(() => {
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
@@ -70,13 +44,100 @@ export default function Users() {
     }
   }, [userAuth, router, isLoggedIn]);
 
+  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setUser({
+      ...user,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleGetDataSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setUser({
+      ...user,
+      [event.target.name]: event.target.value
+    })
+    handleSelectChange();
+  };
+
+  const handleGetFullNameInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const fullName = event.target.value;
+    const fullNameAux = fullName.split(' ');
+    setUser({
+      ...user,
+      name: fullNameAux[0],
+      lastName: fullNameAux[1]
+    });
+  };
+
+  const resetForm = () => {
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+
+    setUser({
+      name: '',
+      lastName: '',
+      email: '',
+      password: '',
+      roleId: null,
+    });
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    try {
+      await axiosInstance.post('/auth/sign-up', user);
+      toast.success('Usuario creado con éxito');
+
+      resetForm();
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error?.response?.status)
+        if(error?.response?.status === 400) {
+          const errors = error?.response?.data.errors;
+          const errorApi = error?.response?.data.error;
+
+          if (Array.isArray(errors)) {
+            const errorsMessages = errors
+              .map((errorMessage: ErrorResponse) => errorMessage?.message)
+              .join('\n');
+
+            return toast.error(errorsMessages);
+          }
+
+          return toast.error(errorApi.message);
+        }
+
+        if (error?.response?.status === 409) {
+
+          return toast.error('El usuario ya existe');
+        }
+      }
+
+      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+
+      setUser({
+        name: '',
+        lastName: '',
+        email: '',
+        password: '',
+        roleId: null,
+      });
+    }
+  }
+
   if (showLoginMessage) {
     return (
-      <div className={'flex flex-col min-h-screen dark:bg-gray-900'}>
+      <div className={'flex flex-col min-h-screen'}>
         <div className={'flex-grow flex flex-col justify-center items-center'}>
-          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5 dark:bg-gray-700'}>
-            <p className={'text-center font-bold text-3xl mb-3 dark:text-gray-200'}>⚠️ Inicia sesión ⚠️</p>
-            <p className={'text-base dark:text-gray-200'}>Redirigiendo a la página de Log In <b>...</b></p>
+          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5'}>
+            <p className={'text-center font-bold text-3xl mb-3'}>⚠️ Inicia sesión ⚠️</p>
+            <p className={'text-base'}>Redirigiendo a la página de Log In <b>...</b></p>
           </div>
         </div>
       </div>
@@ -116,45 +177,50 @@ export default function Users() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <form className={'grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}>
+        <form className={'mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}
+              ref={formRef} onSubmit={handleSubmit}
+        >
           {/* Nombre y Apellido */}
-          <div className={'grid grid-cols-1 grid-rows-2 gap-x-0'}>
-            <div className={'content-end'}>
+          <div>
+            <div className={'content-start'}>
               <label
                 className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-                htmlFor="fullName"
+                htmlFor={'fullName'}
               >
                 Nombre y Apellido
               </label>
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
-                type="text"
-                name="fullName"
-                placeholder="Ingresa tu nombre y apellido"
-                required
+                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                type={'text'}
+                name={'fullName'}
+                onChange={handleGetFullNameInput}
+                placeholder={'Ingresa tu nombre y apellido'}
+                required={true}
                 style={{height: "35px"}}
               />
             </div>
           </div>
 
           {/* Correo Electrónico */}
-          <div className={'grid grid-cols-1 grid-rows-2 gap-x-0'}>
-            <div className="content-end">
+          <div>
+            <div className="content-start">
               <label
                 className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-                htmlFor="email"
+                htmlFor={'email'}
               >
                 Correo Electrónico
               </label>
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
-                type="email"
-                name="email"
-                placeholder="Ingresa tu correo electrónico"
+                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                type={'email'}
+                name={'email'}
+                required={true}
+                onChange={handleGetDataInput}
+                placeholder={'Ingresa tu correo electrónico'}
                 style={{height: "35px"}}
               />
             </div>
@@ -162,27 +228,27 @@ export default function Users() {
 
           {/* Contraseña */}
           <div>
-            <PasswordInput/>
+            <PasswordInput password={user.password} handleGetDataInput={handleGetDataInput}/>
           </div>
 
           {/* Selección de Rol */}
-          <div className={'grid grid-cols-1 gap-x-0'}>
-            <div className={'content-end lg:w-2/4 md:w-3/4 sm:w-full'}>
+          <div>
+            <div className={'content-start lg:w-2/4 md:w-3/4 sm:w-full'}>
               <label
                 className={'text-base font-medium text-gray-900 dark:text-gray-300'}
-                htmlFor="roleId"
+                htmlFor={'roleId'}
               >
                 Rol
               </label>
               <div className={'relative'}>
                 <select
-                  className={'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-800 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
-                  name="roleId"
-                  required
-                  style={{ height: '35px', maxWidth: '100%' }}
+                  className={'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
+                  name={'roleId'}
+                  onChange={handleGetDataSelect}
+                  required={true}
+                  style={{height: '35px', maxWidth: '100%'}}
                   onFocus={() => setIsSelectOpen(true)}
                   onBlur={() => setIsSelectOpen(false)}
-                  onChange={handleSelectChange}
                 >
                   <option value="">Selecciona un rol</option>
                   <option value="1">Admin</option>
@@ -198,11 +264,16 @@ export default function Users() {
               </div>
             </div>
           </div>
+          <div className={'col-span-full flex justify-center items-center'}>
+            <button
+              className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+              type={'submit'}
+            >
+              Registrar
+            </button>
+          </div>
         </form>
-        <button
-          className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-8 transition-colors ease-in-out duration-200'}>
-          Registrar
-        </button>
+
       </div>
       <div className={'flex justify-center'}>
         <div className="w-2/3 scale-90">

@@ -45,7 +45,7 @@ const ExpandableCard: React.FC<ExpandableCardProps> = ({ title, content }) => {
 
 const OurHistory = () => {
   return (
-    <section className={'h-auto flex items-start bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 pt-10 pb-5 mt-2'}>
+    <section className={'h-auto flex items-start bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 pt-10 pb-5 mt-2 lg:px-0'}>
       <div className={'max-w-full container mx-auto lg:px-60'}>
         <motion.h1
           className={'text-4xl font-bold text-center mb-8 text-blue-900 dark:text-blue-300'}
@@ -58,7 +58,7 @@ const OurHistory = () => {
         <div className={'flex flex-col md:flex-row'}>
           <div className={'w-full md:w-1/2 pr-0 md:pr-8 mb-8 md:mb-0'}>
             <motion.h2
-              className={'text-4xl font-bold text-blue-800 dark:text-blue-400 mb-2'}
+              className={'text-4xl font-bold text-blue-800 dark:text-blue-400 mb-2 lg:px-0 px-4'}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -74,16 +74,16 @@ const OurHistory = () => {
               <ElegantContentSection />
             </motion.div>
           </div>
-          <div className={'w-full md:w-1/2 lg:mt-10 md:mt-16'}>
+          <div className={'w-full md:w-1/2 lg:mt-10 md:mt-16 lg:px-0 px-4'}>
             <motion.div
               className={'sticky top-4 aspect-video md:aspect-auto md:h-[calc(28vh-2rem)] lg:h-[calc(40vh-2rem)]'}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+              initial={{opacity: 0, scale: 0.9}}
+              animate={{opacity: 1, scale: 1}}
+              transition={{delay: 0.4, duration: 0.5}}
             >
+              <link rel="prefetch" as="video/mp4" href="https://drive.google.com/file/d/17-I0QWEIhEPYtjsTUyUHUpDuLySq5JY1/preview"/>
               <iframe
                 src={'https://drive.google.com/file/d/17-I0QWEIhEPYtjsTUyUHUpDuLySq5JY1/preview'}
-                frameBorder={'0'}
                 allow={'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'}
                 allowFullScreen
                 className={'w-full h-full rounded-lg shadow-2xl object-contain dark:bg-gray-700'}

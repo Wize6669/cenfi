@@ -12,6 +12,7 @@ import { setCookie, getCookie } from 'cookies-next';
 import {ChevronDown, ChevronUp, Eye, EyeOff} from "lucide-react";
 import {ThemeToggle} from "@/components/ThemeToggle";
 import { motion } from 'framer-motion';
+import {PasswordInput} from '@/components/PasswordInput';
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -107,44 +108,6 @@ export default function LoginAdmin() {
       }
     }
   }
-  const PasswordInput = () => {
-    const [showPassword, setShowPassword] = useState(false);
-
-    return (
-      <div className={'flex flex-col mb-3'}>
-        <label className={'text-md font-medium text-gray-900 dark:text-gray-300'} htmlFor={'password'}>
-          Contraseña
-        </label>
-        <div className={'relative'}>
-          <input
-            className={
-              'border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full pr-10 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:focus:ring-blue-400'
-            }
-            type={showPassword ? 'text' : 'password'}
-            placeholder={'Ingresa tu contraseña'}
-            name={'password'}
-            value={user.password}
-            onChange={handleGetDataInput}
-            required={true}
-            style={{height: '35px' }}
-          />
-          <button
-            type={'button'}
-            className={'absolute inset-y-0 right-2 flex items-center'}
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <Eye
-                className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'}/>
-            ) : (
-              <EyeOff
-                className={'w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 hover:scale-110'}/>
-            )}
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <motion.div
@@ -152,7 +115,10 @@ export default function LoginAdmin() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8 }}
       className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
-      <div className={'flex-grow flex flex-col justify-center items-center'}>
+      <div className={'flex-grow flex flex-col justify-center items-center relative'}>
+        <div className={'absolute top-1 right-5 lg:p-4 md:p-4 sm:p-0'}>
+          <ThemeToggle/>
+        </div>
         <div className={'flex flex-col lg:flex-row justify-center items-center w-full px-4 md:px-10'}>
           {/* Columna de formulario */}
           <div className={'w-full lg:w-1/2 flex flex-col justify-center items-center'}>
@@ -165,6 +131,7 @@ export default function LoginAdmin() {
                 alt={'Logo de CENFI'}
                 width={260}
                 height={190}
+                priority={true}
               />
             </div>
 
@@ -198,10 +165,8 @@ export default function LoginAdmin() {
                   style={{height: '35px'}}
                 />
               </div>
-
-              <PasswordInput/>
-
-              <div className={'flex flex-col mb-3'}>
+              <PasswordInput password={user.password} handleGetDataInput={handleGetDataInput}/>
+              <div className={'flex flex-col my-3 dark:border-gray-800'}>
                 <label
                   className={'text-md font-medium text-gray-900 dark:text-gray-200'}
                   htmlFor={'roleId'}
@@ -211,7 +176,7 @@ export default function LoginAdmin() {
                 <div className={'relative w-40'}>
                   <select
                     className={
-                      'border rounded-md w-full py-1.5 px-1.5 pr-8 text-black bg-white dark:bg-gray-700 dark:text-gray-300 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-in-out duration-200'
+                      'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'
                     }
                     name={'roleId'}
                     onChange={handleGetDataSelect}
@@ -277,10 +242,8 @@ export default function LoginAdmin() {
               alt={'Icon'}
               width={555}
               height={619}
+              priority={true}
             />
-            <div className={'absolute top-0 right-0 flex justify-end items-start p-2'}>
-              <ThemeToggle/>
-            </div>
           </motion.div>
         </div>
       </div>

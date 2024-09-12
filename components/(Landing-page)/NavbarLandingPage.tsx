@@ -12,7 +12,7 @@ const navItems = [
   { name: 'Contacto', href: '/contact', icon: Phone },
   { name: 'Sobre nosotros', href: '/about', icon: Users },
   { name: 'Administración', href: '/admin', icon: ShieldCheck },
-  { name: 'Simuladores', href: '#', icon: BookOpen },
+  { name: 'Simuladores', href: '/simulator', icon: BookOpen },
 ]
 
 export default function Navbar() {
@@ -24,7 +24,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" passHref>
-              <Image src="/images/image-1.png" alt="CENFI Logo" width={80} height={90} />
+              <Image src="/images/image-1.png" alt="CENFI Logo" width={80} height={90} priority={true}/>
             </Link>
             <span className="hidden lg:inline ml-4 text-l font-bold text-blue-900 dark:text-gray-400">
               CENTRO DE FORMACIÓN INTENSIVA CIA. LTDA.

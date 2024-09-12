@@ -40,6 +40,7 @@ const HeroSection: React.FC = () => {
               alt={'Estudiantes mostrando sus resultados'}
               width={700}
               height={600}
+              priority={true}
               className={'rounded p-1 shadow-xl shadow-blue-500/50 w-full h-auto md:w-auto'}
             />
             <div className={'absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg shadow-cyan-500/50 mt-4 md:scale-100'}>

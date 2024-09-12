@@ -36,8 +36,8 @@ export default function Categories() {
             <div className="border-t-2 container dark:border-gray-600"/>
           </div>
         </div>
-        <form className={"grid grid-cols-1 gap-x-10 gap-y-5 lg:w-3/12 md:w-4/5"}>
-          <div className={'grid grid-cols-1 grid-rows-2 gap-x-0'}>
+        <form className={"grid gap-x-10 gap-y-5 lg:w-3/12 md:w-4/5 mt-2"}>
+          <div className={'gap-x-0'}>
             <div className="content-end">
               <label
                 className={'text-base font-medium text-gray-900 dark:text-gray-300'}
@@ -48,7 +48,7 @@ export default function Categories() {
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-800 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
                 type="text"
                 name="fullName"
                 placeholder="Ingresa tu nombre de la nueva categoría"
@@ -57,11 +57,15 @@ export default function Categories() {
               />
             </div>
           </div>
+          <div className={'col-span-full flex justify-center items-center'}>
+            <button
+              className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'}
+              type={'submit'}
+            >
+              Registrar
+            </button>
+          </div>
         </form>
-        <button
-          className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 mt-8 rounded-full transition-colors ease-in-out duration-200'}>
-          Registrar
-        </button>
       </div>
       <div className="flex justify-center">
         <div className="w-2/3 scale-90">

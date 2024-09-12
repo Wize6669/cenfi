@@ -45,11 +45,11 @@ export default function Header({children}: Readonly<{children: React.ReactNode;}
           className={'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md pl-2'}
           src={'/images/image-1.png'}
           alt={'Icon'}
-          width={75}
-          height={60}
+          width={80}
+          height={65}
         />
       </div>
-      <div className={'w-full flex justify-center items-center'}>
+      <div className={'w-full flex justify-center items-center lg:pr-10'}>
         {children}
       </div>
       <div className={'w-auto'}>

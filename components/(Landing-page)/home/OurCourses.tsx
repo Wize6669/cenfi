@@ -41,7 +41,7 @@ const OurCourses = () => {
         >
           Nuestros Cursos
         </motion.h2>
-        <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
+        <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:px-0 px-4'}>
           {cursos.map((curso, index) => (
             <motion.div
               key={index}

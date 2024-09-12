@@ -55,7 +55,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#"
+                <Link href="/simulator"
                       className={'text-sm text-gray-600 hover:text-blue-500 transition-colors dark:text-gray-300 dark:hover:text-blue-400'}>
                   Simuladores
                 </Link>

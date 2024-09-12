@@ -35,9 +35,9 @@ const OurFacilities = () => {
 
   return (
     <section className={'bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-16'}>
-      <div className={'max-w-full container mx-auto lg:px-48'}>
+      <div className={'max-w-full container mx-auto lg:px-48 md:px-4'}>
         <motion.h2
-          className={'text-4xl font-bold text-blue-800 mb-8 text-right dark:text-blue-300'}
+          className={'text-4xl font-bold text-blue-800 mb-8 text-right dark:text-blue-300 px-4'}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -78,10 +78,10 @@ const OurFacilities = () => {
             </CardContent>
           </Card>
           <div className={'w-full md:w-1/2 flex flex-col justify-center'}>
-            <p className={'text-lg text-gray-700 mb-6 leading-relaxed dark:text-gray-300'}>
+            <p className={'text-lg text-gray-700 mb-6 leading-relaxed dark:text-gray-300 mx-4'}>
               Nuestras modernas instalaciones están diseñadas para proporcionar el mejor ambiente de aprendizaje. Contamos con aulas equipadas con la última tecnología, ofreciendo comodidad y eficiencia a nuestros estudiantes.
             </p>
-            <ul className={'space-y-4'}>
+            <ul className={'space-y-4 mx-4'}>
               {features.map((feature, index) => (
                 <motion.li
                   key={index}

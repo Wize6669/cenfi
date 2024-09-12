@@ -13,14 +13,14 @@ export default function Footer() {
           alt="Logo"
           width={50}
           height={50}
-          className={'rounded-full'}
+          className={'rounded-full lg:w-12 lg:h-12 md:w-8 md:h-8 sm:w-5 sm:h-5'}
         />
       </div>
       <div className={'text-center mb-4 md:mb-0'}>
         <span className={'hidden lg:inline text-sm font-medium text-gray-800 dark:text-gray-300'}>
           © 2024 Todos los derechos reservados | CENTRO DE FORMACIÓN INTENSIVA CIA. LTDA. “CENFI” | Loja - Ecuador
         </span>
-        <span className="lg:hidden ml-4 text-l font-bold text-blue-900 dark:text-gray-400">
+        <span className="lg:hidden ml-4 text-xs font-bold text-blue-900 dark:text-gray-400">
           © 2024 | CENFI CIA. LTDA. | Loja - Ecuador
         </span>
       </div>
