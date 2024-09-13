@@ -46,7 +46,7 @@ export default function ModuleListCards() {
   return (
     <div className={'dark:bg-gray-900 p-4'}>
       <div className={'my-5'}>
-        <h1 className={'text-center text-3xl font-bold mb-2.5 dark:text-gray-200'}>Módulos del Sistema</h1>
+        <h1 className={'text-center text-2xl lg:text-3xl font-bold mb-2.5 dark:text-gray-200'}>Módulos del Sistema</h1>
         <hr className="border-gray-300 dark:border-gray-700" />
       </div>
 

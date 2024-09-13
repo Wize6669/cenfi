@@ -19,7 +19,7 @@ export default function ModuleListNavbar() {
   return (
     <nav className="relative w-full">
       {/* Hamburger menu for mobile and tablet */}
-      <div className="lg:hidden flex justify-end">
+      <div className="lg:hidden flex justify-start">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 text-gray-900 dark:text-gray-200"
@@ -32,7 +32,7 @@ export default function ModuleListNavbar() {
       {/* Navigation items */}
       <div className={`
         lg:flex lg:space-x-8 items-center
-        ${isOpen ? 'absolute top-full left-0 right-0 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg' : 'hidden lg:flex'}
+        ${isOpen ? 'absolute top-full left-0 right-0 w-36 bg-white dark:bg-gray-800 shadow-md rounded-lg z-10' : 'hidden lg:flex'}
       `}>
         {navItems.map((item, index) => (
           (item.roleRequired === undefined || userAuth?.roleId === item.roleRequired) && (

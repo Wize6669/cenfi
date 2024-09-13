@@ -1,5 +1,8 @@
+'use client'
+
 import React from 'react';
-import { FiClock, FiHelpCircle, FiPlay } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { Clock, HelpCircle, Play } from 'lucide-react';
 
 const simuladores = [
   { nombre: "Simulador Universidad de Loja", duracion: 70, preguntas: 120 },
@@ -10,27 +13,52 @@ const simuladores = [
   { nombre: "Universidad Técnica Particular de Loja", duracion: 70, preguntas: 120 },
 ];
 
+interface SimuladorProps {
+  nombre: string
+  duracion: number
+  preguntas: number
+}
+
+const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas }) => (
+  <motion.div
+    initial={{opacity: 0, y: 20}}
+    animate={{opacity: 1, y: 0}}
+    transition={{duration: 0.5}}
+    className="bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-600 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+  >
+    <div className="p-6 flex flex-col flex-grow">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-blue-300 mb-4 flex-grow">{nombre}</h2>
+      <div className="flex justify-between items-center mt-auto">
+        <div className="space-y-2">
+          <div className="flex items-center text-gray-600 dark:text-gray-300">
+            <Clock className="w-4 h-4 mr-2 text-cyan-950"/>
+            <span className="text-sm">{duracion} min</span>
+          </div>
+          <div className="flex items-center text-gray-600 dark:text-gray-300">
+            <HelpCircle className="w-4 h-4 mr-2 text-amber-600"/>
+            <span className="text-sm">{preguntas} preguntas</span>
+          </div>
+        </div>
+        <motion.button
+          whileHover={{scale: 1.05}}
+          whileTap={{scale: 0.95}}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300"
+        >
+          Iniciar
+          <Play className="w-4 h-4 ml-2"/>
+        </motion.button>
+      </div>
+    </div>
+  </motion.div>
+);
+
 export default function CenfiSimulator() {
   return (
-    <div className="container mx-auto px-4 py-8 dark:from-gray-800 dark:to-gray-900">
-      <p className="text-lg mb-6 text-gray-700 dark:text-gray-300">Simuladores disponibles: {simuladores.length}</p>
+    <div className="container mx-auto px-4 py-8">
+      <p className="text-xl font-bold mb-6 text-blue-900 dark:text-blue-500">Simuladores disponibles: {simuladores.length}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {simuladores.map((simulador, index) => (
-          <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-blue-400">{simulador.nombre}</h2>
-            <div className="flex items-center mb-2 text-gray-600 dark:text-gray-400">
-              <FiClock className="mr-2" />
-              <p>{simulador.duracion} min</p>
-            </div>
-            <div className="flex items-center mb-4 text-gray-600 dark:text-gray-400">
-              <FiHelpCircle className="mr-2" />
-              <p>{simulador.preguntas} preguntas</p>
-            </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center w-full">
-              <FiPlay className="mr-2" />
-              Iniciar
-            </button>
-          </div>
+          <SimuladorCard key={index} {...simulador} />
         ))}
       </div>
     </div>

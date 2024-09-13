@@ -24,7 +24,7 @@ export default function Categories() {
       <div className={'flex-grow flex flex-col justify-stretch items-center'}>
         <div className="w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center">
           <div className="w-auto col-span-2">
-            <h1 className={'font-bold text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración de
+            <h1 className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración de
               Categorías</h1>
           </div>
           <div className="row-start-2 justify-items-center content-center">

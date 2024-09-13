@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { Sun, Moon, Laptop, Menu, LogOut, User, ShieldCheck, BookOpen, ChevronLeft, ChevronUp, ChevronDown, AlertTriangle } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Sun, Moon, Laptop, Menu, LogOut, ShieldCheck, BookOpen, ChevronLeft, ChevronDown, AlertTriangle, ChevronUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuthStore } from "@/store/auth"
 import { useRouter } from "next/navigation"
 import toast, { Toaster } from 'react-hot-toast'
+import Image from 'next/image'
 
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -14,18 +15,29 @@ const UserDropdown = () => {
   const { theme, switchTheme } = useTheme()
   const userAuth = useAuthStore((state) => state.userAuth)
   const router = useRouter()
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const toastRef = useRef<string | null>(null);
 
   const userRol = userAuth?.roleId === 1 ? 'Administrador' : 'Profesor'
   const userName = userAuth?.name + " " + userAuth?.lastName
-  const toastRef = useRef<string | null>(null);
 
-  const handleMainMenuToggle = () => {
-    setIsOpen(prev => {
-      if (!prev) {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
         setIsThemeOpen(false)
       }
-      return !prev
-    })
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const handleMainMenuToggle = () => {
+    setIsOpen(prev => !prev)
+    setIsThemeOpen(false)
   }
 
   const handleLogOut = () => {
@@ -38,16 +50,16 @@ const UserDropdown = () => {
           t.visible ? 'animate-enter' : 'animate-leave'
         } max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
       >
-        <div className="flex-1 w-0 p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 pt-0.5">
-              <AlertTriangle className="h-10 w-10 text-yellow-500" />
+        <div className="flex-1 w-0 p-1">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink pt-0.5">
+              <AlertTriangle className="h-10 w-10 mx-1 text-yellow-500" />
             </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-center text-gray-900 dark:text-white">
                 Cerrar Sesión
               </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+              <p className="mt-1 text-sm text-center text-gray-500 dark:text-gray-400 sm:block">
                 ¿Estás seguro de que quieres cerrar sesión?
               </p>
             </div>
@@ -59,8 +71,9 @@ const UserDropdown = () => {
               localStorage.clear()
               router.replace('/admin')
               toast.dismiss(t.id)
+              setIsOpen(false)
             }}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-red-600 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full border border-transparent rounded-none p-2 flex items-center justify-center text-sm font-medium text-red-600 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Confirmar
           </button>
@@ -68,7 +81,7 @@ const UserDropdown = () => {
         <div className="flex border-l border-gray-200 dark:border-gray-700">
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-transparent rounded-none rounded-r-lg p-2 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Cancelar
           </button>
@@ -92,14 +105,28 @@ const UserDropdown = () => {
     }
   }
 
+  const handleOptionClick = (action: () => void) => {
+    action()
+    setIsOpen(false)
+    setIsThemeOpen(false)
+  }
+
   return (
-    <div className={'relative md:ml-auto pr-2'}>
+    <div className={'relative'} ref={dropdownRef}>
       <button
         onClick={handleMainMenuToggle}
-        className={'flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-full w-10 h-10 md:w-auto md:h-auto md:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
+        className={'flex items-center bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-full border border-gray-400 dark:border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
       >
-        <div className={'flex items-center px-2 py-2 md:px-4 md:py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto'}>
-          <User className={'h-5 w-5 flex-shrink-0'}/>
+        <div className={'flex items-center lg:px-2 lg:py-1.5 md:px-2 md:py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto'}>
+          <div className={'w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200 dark:bg-gray-700'}>
+            <Image
+              src={userAuth?.roleId === 1 ? '/images/image-11.png' : '/images/image-4.png'}
+              alt="User Avatar"
+              width={32}
+              height={32}
+              className="object-cover w-full h-full"
+            />
+          </div>
           <span className={'hidden md:inline ml-2 truncate'}>{userName}</span>
           {isOpen ? (
             <ChevronUp className={'lg:ml-2 md:ml-2 h-5 w-5 hidden md:inline'}/>
@@ -111,10 +138,10 @@ const UserDropdown = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className={'absolute right-0 md:right-auto md:left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={'absolute right-2 mt-2 w-52 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
           >
             <div className={'py-1'} role="menu">
               <div className={'px-4 text-sm text-gray-600 dark:text-gray-300 font-semibold'}>
@@ -131,14 +158,14 @@ const UserDropdown = () => {
               <hr className={'border-gray-200 dark:border-gray-700'} />
               <button
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
-                onClick={() => router.push('/admin/menu')}
+                onClick={() => handleOptionClick(() => router.push('/admin/menu'))}
               >
                 <Menu className={'mr-3 h-5 w-5 text-blue-800'} />
                 Ir al menú
               </button>
               <button
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
-                onClick={handleLogOut}
+                onClick={() => handleOptionClick(handleLogOut)}
               >
                 <LogOut className={'mr-3 h-5 w-5 text-red-700'} />
                 Cerrar Sesión
@@ -164,34 +191,25 @@ const UserDropdown = () => {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
-                      className={'absolute right-full top-0 mt-0 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
+                      className={'absolute right-full top-0 mt-0 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50'}
                     >
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "light" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => {
-                          switchTheme("light")
-                          setIsThemeOpen(false)
-                        }}
+                        onClick={() => handleOptionClick(() => switchTheme("light"))}
                       >
                         <Sun className={'mr-3 h-5 w-5 text-yellow-500'} />
                         Claro
                       </button>
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "dark" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => {
-                          switchTheme("dark")
-                          setIsThemeOpen(false)
-                        }}
+                        onClick={() => handleOptionClick(() => switchTheme("dark"))}
                       >
                         <Moon className={'mr-3 h-5 w-5 text-blue-500'} />
                         Oscuro
                       </button>
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "system" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => {
-                          switchTheme("system")
-                          setIsThemeOpen(false)
-                        }}
+                        onClick={() => handleOptionClick(() => switchTheme("system"))}
                       >
                         <Laptop className={'mr-3 h-5 w-5 text-gray-500'} />
                         Sistema
