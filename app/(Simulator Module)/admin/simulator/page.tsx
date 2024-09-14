@@ -15,6 +15,7 @@ import { ErrorResponse } from '@/interfaces/ResponseAPI';
 import toast from 'react-hot-toast';
 import DynamicInputs from "@/components/DynamicInputs";
 import PasswordInputSimulator from "@/components/PasswordInputSimulator";
+import RadioNavigation from "@/components/RadioNavigation";
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
@@ -43,6 +44,13 @@ export default function Users() {
   }, [userAuth, router, isLoggedIn]);
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setUser({
+      ...user,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUser({
       ...user,
       [event.target.name]: event.target.value
@@ -222,8 +230,8 @@ export default function Users() {
             <PasswordInputSimulator password={user.password} handleGetDataInput={handleGetDataInput}/>
           </div>
 
-          {/* Radio Button */}
-          <div className={'flex flex-col space-y-1.5'}>
+          {/* Radio Button sin mensajes */}
+          {/*<div className={'flex flex-col space-y-1.5'}>
             <label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium">
               Navegación
             </label>
@@ -234,6 +242,7 @@ export default function Users() {
                   type="radio"
                   name="option"
                   value="opcion1"
+                  required={true}
                   className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
                 />
                 <span className="ml-2 text-gray-700 text-sm sm:text-base font-medium dark:text-gray-400">Libre</span>
@@ -244,16 +253,23 @@ export default function Users() {
                   type="radio"
                   name="option"
                   value="opcion2"
+                  required={true}
                   className="form-radio h-5 w-5 text-blue-600 transition duration-150 ease-in-out"
                 />
                 <span className="ml-2 text-gray-700 text-sm sm:text-base font-medium dark:text-gray-400">Secuencial</span>
               </label>
             </div>
-          </div>
+          </div>*/}
+
+          {/*Radio Button con mensajes*/}
+          <RadioNavigation/>
+
+          {/*Para cuando ya este el input real funcionando*/}
+          {/*<RadioNavigation navigation={simulator.navigate} handleRadioChange={handleRadioChange}/>*/}
           <div className={'col-span-full'}>
             <DynamicInputs/>
           </div>
-          <div className={'col-span-full flex justify-center items-center'}>
+          <div className={'col-span-full flex justify-center items-center mb-3'}>
             <button
               className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
               type={'submit'}

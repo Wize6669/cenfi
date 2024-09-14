@@ -192,14 +192,18 @@ export default function Users() {
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                  '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'text'}
                 name={'fullName'}
                 onChange={handleGetFullNameInput}
-                placeholder={'Ingresa tu nombre y apellido'}
+                placeholder={'Ingresa un nombre y un apellido'}
                 required={true}
-                style={{height: "35px"}}
+                minLength={3}
               />
+              <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+                Ingresa un nombre válido ejm: Juan Pérez.
+              </p>
             </div>
           </div>
 
@@ -215,14 +219,17 @@ export default function Users() {
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                  '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'email'}
                 name={'email'}
                 required={true}
                 onChange={handleGetDataInput}
-                placeholder={'Ingresa tu correo electrónico'}
-                style={{height: "35px"}}
+                placeholder={'Ingresa un correo electrónico'}
               />
+              <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+                Ingresa un correo válido. Ejm: you@example.com
+              </p>
             </div>
           </div>
 

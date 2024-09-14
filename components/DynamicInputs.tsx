@@ -70,6 +70,7 @@ const DynamicInputs: React.FC = () => {
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 onFocus={() => setOpenSelect(index)}
                 onBlur={() => setOpenSelect(null)}
+                required={true}
                 className="appearance-none text-sm  w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
               >
                 <option value=" ">Seleccione una categoría</option>

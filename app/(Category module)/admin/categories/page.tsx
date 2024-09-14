@@ -48,13 +48,17 @@ export default function Categories() {
             </div>
             <div>
               <input
-                className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                  '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type="text"
                 name="fullName"
                 placeholder="Ingresa el nombre de la nueva categoría"
-                required
-                style={{height: "35px"}}
+                required={true}
+                minLength={3}
               />
+              <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+                El nombre de la categoría debe contener mínimo 3 caracteres.
+              </p>
             </div>
           </div>
           <div className={'col-span-full flex justify-center items-center'}>

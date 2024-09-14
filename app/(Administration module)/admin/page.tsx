@@ -9,10 +9,10 @@ import { useRouter } from 'next/navigation';
 import { config } from '@/config';
 import { useAuthStore } from '@/store/auth';
 import { setCookie, getCookie } from 'cookies-next';
-import {ChevronDown, ChevronUp, Eye, EyeOff} from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import {ThemeToggle} from "@/components/ThemeToggle";
 import { motion } from 'framer-motion';
-import {PasswordInput} from '@/components/PasswordInput';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +145,7 @@ export default function LoginAdmin() {
                 </p>
               </div>
 
-              <div className={'flex flex-col mb-3'}>
+              <div className={'relative flex flex-col mb-3'}>
                 <label
                   className={'text-md font-medium text-gray-900 dark:text-gray-200'}
                   htmlFor={'email'}
@@ -154,7 +154,8 @@ export default function LoginAdmin() {
                 </label>
                 <input
                   className={
-                    'border rounded-md p-2 bg-white dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 w-full'
+                    'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                    '          peer-valid:border-green-500 peer-invalid:border-pink-600'
                   }
                   type={'email'}
                   placeholder={'Ingresa tu email'}
@@ -162,8 +163,10 @@ export default function LoginAdmin() {
                   value={user.email}
                   onChange={handleGetDataInput}
                   required={true}
-                  style={{height: '35px'}}
                 />
+                <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs bottom-[-17px]">
+                  Por favor ingresa un correo electrónico válido.
+                </p>
               </div>
               <PasswordInput password={user.password} handleGetDataInput={handleGetDataInput}/>
               <div className={'flex flex-col my-3 dark:border-gray-800'}>
@@ -176,7 +179,7 @@ export default function LoginAdmin() {
                 <div className={'relative w-40'}>
                   <select
                     className={
-                      'border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'
+                      'peer border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200 peer-invalid:border-pink-600'
                     }
                     name={'roleId'}
                     onChange={handleGetDataSelect}
@@ -196,10 +199,13 @@ export default function LoginAdmin() {
                       <ChevronDown className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
                     )}
                   </div>
+                  <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+                    Selecciona un rol válido.
+                  </p>
                 </div>
               </div>
 
-              <div className={'flex gap-1 mb-3 items-center'}>
+              <div className={'flex gap-1 mb-3 mt-4 items-center'}>
                 <input
                   type={'checkbox'}
                   name={'isRemembered'}
