@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { useRouter } from "next/navigation"
 import toast from 'react-hot-toast'
 import { AlertTriangle } from 'lucide-react'
@@ -15,20 +15,23 @@ export const useLogoutTooltip = (onClose: () => void) => {
       <div
         className={`${
           t.visible ? 'animate-enter' : 'animate-leave'
-        } max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+        } max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg dark:shadow-lg dark:shadow-blue-500/50 rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
       >
         <div className={'flex-1 w-0 p-1'}>
           <div className={'flex items-center justify-center'}>
             <div className={'flex-shrink pt-0.5'}>
-              <AlertTriangle className={'h-10 w-10 mx-1 text-yellow-500'}/>
+              <AlertTriangle className={'h-10 w-10 ml-2 text-yellow-500'}/>
             </div>
             <div className={'flex-1'}>
               <p className={'text-sm font-medium text-center text-gray-900 dark:text-white'}>
                 Cerrar Sesión
               </p>
-              <p className={'mt-1 text-sm text-center text-gray-500 dark:text-gray-400 sm:block'}>
+              <p className={'mt-1 text-sm text-center text-gray-500 dark:text-gray-400 hidden lg:block'}>
                 ¿Estás seguro de que quieres cerrar sesión?
               </p>
+              <p className="lg:hidden text-sm text-center text-gray-500 dark:text-gray-400">
+              ¿Estás Seguro?
+            </p>
             </div>
           </div>
         </div>
@@ -40,7 +43,7 @@ export const useLogoutTooltip = (onClose: () => void) => {
               toast.dismiss(t.id)
               onClose()
             }}
-            className={'w-full border border-transparent rounded-none p-2 flex items-center justify-center text-sm font-medium text-red-600 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500'}
+            className={'w-full rounded-none p-1 flex items-center justify-center text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-red-800'}
           >
             Confirmar
           </button>
@@ -48,7 +51,7 @@ export const useLogoutTooltip = (onClose: () => void) => {
         <div className={'flex border-l border-gray-200 dark:border-gray-700'}>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className={'w-full border border-transparent rounded-none rounded-r-lg p-2 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500'}
+            className={'w-full rounded-none rounded-r-lg p-1 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-blue-400'}
           >
             Cancelar
           </button>

@@ -67,9 +67,9 @@ const UserDropdown = () => {
     <div className={'relative'} ref={dropdownRef}>
       <button
         onClick={handleMainMenuToggle}
-        className={'flex items-center bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-2xl border border-gray-400 dark:border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
+        className={'flex items-center bg-[#F1F9FB] dark:bg-gray-800 text-gray-800 dark:text-white rounded-full border border-gray-200 dark:border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-gray-500'}
       >
-        <div className={'flex items-center lg:px-2 lg:py-1 md:px-2 md:py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto'}>
+        <div className={'flex items-center lg:px-1 lg:py-1 md:px-2 md:py-2 text-sm text-gray-800 dark:text-white min-w-0 w-auto'}>
           <div className={'w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200 dark:bg-gray-700 sm:w-[36px] sm:h-[36px]'}>
             <Image
               src={userAuth?.roleId === 1 ? '/images/image-11.png' : '/images/image-4.png'}
