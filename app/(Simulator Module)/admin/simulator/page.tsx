@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/auth";
 import { useRouter } from 'next/navigation';
 import {IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
-import {UserNewUpdate} from '@/interfaces/User';
+import {UserNewUpdate, UserSingIn} from '@/interfaces/User';
 import { axiosInstance } from '@/lib/axios';
 import { AxiosError } from 'axios';
 import { ErrorResponse } from '@/interfaces/ResponseAPI';
@@ -18,134 +18,19 @@ import PasswordInputSimulator from "@/components/PasswordInputSimulator";
 import RadioNavigation from "@/components/RadioNavigation";
 
 export default function Users() {
-  const userAuth = useAuthStore((state) => state.userAuth);
-  const [user, setUser] = useState<UserNewUpdate>({
-    name: '',
-    lastName: '',
+  const [userSimulator, setUser] = useState<UserSingIn>({
     email: '',
     password: '',
     roleId: null,
   });
   const router = useRouter();
-  const [showLoginMessage, setShowLoginMessage] = useState(false);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-
-  useEffect(() => {
-    if (userAuth?.roleId !== 1 || !isLoggedIn) {
-      setShowLoginMessage(true);
-      const timer = setTimeout(() => {
-        router.replace('/admin');
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [userAuth, router, isLoggedIn]);
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setUser({
-      ...user,
+      ...userSimulator,
       [event.target.name]: event.target.value
     });
   };
-
-  const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setUser({
-      ...user,
-      [event.target.name]: event.target.value
-    });
-  };
-
-
-  const handleGetFullNameInput = (event: ChangeEvent<HTMLInputElement>) => {
-    const fullName = event.target.value;
-    const fullNameAux = fullName.split(' ');
-    setUser({
-      ...user,
-      name: fullNameAux[0],
-      lastName: fullNameAux[1]
-    });
-  };
-
-  const resetForm = () => {
-    if (formRef.current) {
-      formRef.current.reset();
-    }
-
-    setUser({
-      name: '',
-      lastName: '',
-      email: '',
-      password: '',
-      roleId: null,
-    });
-  };
-
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-
-    try {
-      await axiosInstance.post('/auth/sign-up', user);
-      toast.success('Usuario creado con éxito');
-
-      resetForm();
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.log(error?.response?.status)
-        if(error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-
-        if (error?.response?.status === 409) {
-
-          return toast.error('El usuario ya existe');
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
-
-      if (formRef.current) {
-        formRef.current.reset();
-      }
-
-      setUser({
-        name: '',
-        lastName: '',
-        email: '',
-        password: '',
-        roleId: null,
-      });
-    }
-  }
-
-  if (showLoginMessage) {
-    return (
-      <div className={'flex flex-col min-h-screen'}>
-        <div className={'flex-grow flex flex-col justify-center items-center'}>
-          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5'}>
-            <p className={'text-center font-bold text-3xl mb-3'}>⚠️ Inicia sesión ⚠️</p>
-            <p className={'text-base'}>Redirigiendo a la página de Log In <b>...</b></p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   const goBack = () => {
     router.back();
@@ -173,7 +58,6 @@ export default function Users() {
           </div>
         </div>
         <form className={'mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}
-              ref={formRef} onSubmit={handleSubmit}
         >
           {/* Título del Simulador */}
           <div>
@@ -191,7 +75,7 @@ export default function Users() {
                   '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'text'}
                 name={'fullName'}
-                onChange={handleGetFullNameInput}
+                //onChange={handleGetFullNameInput}
                 placeholder={'Ingresa el título del simulador'}
                 required={true}
                 minLength={3}
@@ -219,7 +103,7 @@ export default function Users() {
                 name={'duration'}
                 min={'1'}
                 required={true}
-                onChange={handleGetDataInput}
+                //onChange={handleGetDataInput}
                 placeholder={'Ingresa la duración del simulador en minutos, ejm: 80'}
               />
             </div>
@@ -227,7 +111,7 @@ export default function Users() {
 
           {/* Contraseña */}
           <div>
-            <PasswordInputSimulator password={user.password} handleGetDataInput={handleGetDataInput}/>
+            <PasswordInputSimulator password={userSimulator.password} handleGetDataInput={handleGetDataInput}/>
           </div>
 
           {/* Radio Button sin mensajes */}
