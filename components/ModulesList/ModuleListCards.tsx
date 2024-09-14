@@ -20,6 +20,10 @@ export default function ModuleListCards() {
     router.push('/admin/categories');
   }
 
+  const handleSimulatorModule = () => {
+    router.push('/admin/simulator');
+  }
+
   const modules = [
     userAuth?.roleId === 1 ? {
       icon: <FaUser size={65} />,
@@ -39,7 +43,7 @@ export default function ModuleListCards() {
     {
       icon: <IoIosSettings size={70} />,
       title: "Configuración del Simulador",
-      onClick: () => {}
+      onClick: handleSimulatorModule
     }
   ].filter(Boolean);
 

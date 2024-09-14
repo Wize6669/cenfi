@@ -51,7 +51,7 @@ export default function Categories() {
                 className={'w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 dark:bg-gray-700 dark:text-gray-200 transition-all ease-in-out duration-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
                 type="text"
                 name="fullName"
-                placeholder="Ingresa tu nombre de la nueva categoría"
+                placeholder="Ingresa el nombre de la nueva categoría"
                 required
                 style={{height: "35px"}}
               />
@@ -59,7 +59,7 @@ export default function Categories() {
           </div>
           <div className={'col-span-full flex justify-center items-center'}>
             <button
-              className={'bg-blue-600 hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'}
+              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'}
               type={'submit'}
             >
               Registrar
