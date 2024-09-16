@@ -141,7 +141,7 @@ export default function LoginStudents() {
               className={
                 'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(25, 82, 94, 0.46)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
               }
-              src={'/images/image-13.png'}
+              src={'/images/image-2.png'}
               alt={'Icon'}
               width={555}
               height={619}

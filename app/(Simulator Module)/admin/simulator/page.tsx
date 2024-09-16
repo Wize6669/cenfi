@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 import DynamicInputs from "@/components/DynamicInputs";
 import PasswordInputSimulator from "@/components/PasswordInputSimulator";
 import RadioNavigation from "@/components/RadioNavigation";
+import RadioVisible from "@/components/RadioVisible";
 
 export default function Users() {
   const [userSimulator, setUser] = useState<UserSingIn>({
@@ -150,6 +151,9 @@ export default function Users() {
 
           {/*Para cuando ya este el input real funcionando*/}
           {/*<RadioNavigation navigation={simulator.navigate} handleRadioChange={handleRadioChange}/>*/}
+          <div className={'col-span-full'}>
+            <RadioVisible />
+          </div>
           <div className={'col-span-full'}>
             <DynamicInputs/>
           </div>

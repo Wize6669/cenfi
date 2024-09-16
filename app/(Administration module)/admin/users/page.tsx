@@ -280,7 +280,6 @@ export default function Users() {
             </button>
           </div>
         </form>
-
       </div>
       <div className={'flex justify-center'}>
         <div className="w-2/3 scale-90">
@@ -289,6 +288,5 @@ export default function Users() {
       </div>
       <Footer/>
     </div>
-  )
-    ;
+  );
 }

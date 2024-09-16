@@ -51,7 +51,7 @@ export const useLogoutTooltip = (onClose: () => void) => {
         <div className={'flex border-l border-gray-200 dark:border-gray-700'}>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className={'w-full rounded-none rounded-r-lg p-1 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-blue-400'}
+            className={'w-full rounded-none rounded-r-lg p-1 flex items-center justify-center text-sm font-medium text-blue-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-blue-400'}
           >
             Cancelar
           </button>

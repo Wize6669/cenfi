@@ -56,13 +56,13 @@ const RadioNavigation: React.FC = () => {
         />
       </div>
       {selectedOption === 'libre' && (
-        <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-          En la navegación libre puedes moverte entre las preguntas en cualquier orden.
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          Puedes moverte entre las preguntas en cualquier orden.
         </div>
       )}
       {selectedOption === 'secuencial' && (
-        <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-          En la navegación es secuencial debes responder las preguntas en orden.
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          Debes responder las preguntas en orden.
         </div>
       )}
     </div>

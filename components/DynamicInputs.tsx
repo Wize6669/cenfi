@@ -40,9 +40,9 @@ const DynamicInputs: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className={'lg:w-[452px] sm:w-1/2'}>
-        <label htmlFor="count" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label htmlFor="count" className="block text-base font-medium text-gray-700 dark:text-gray-300">
           Número de Secciones
         </label>
         <input
@@ -60,7 +60,7 @@ const DynamicInputs: React.FC = () => {
       {inputs.map((item, index) => (
         <div key={index} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-10">
           <div className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2 lg:pl-44">
-            <label htmlFor={`category-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor={`category-${index}`} className="block text-base font-medium text-gray-700 dark:text-gray-300">
               Categorías
             </label>
             <div className="relative">
@@ -88,7 +88,7 @@ const DynamicInputs: React.FC = () => {
             </div>
           </div>
           <div className="w-full sm:w-1/2 lg:pr-20">
-            <label htmlFor={`questions-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor={`questions-${index}`} className="block text-base font-medium text-gray-700 dark:text-gray-300">
               Número de preguntas
             </label>
             <input
