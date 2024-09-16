@@ -1,7 +1,7 @@
-import type {Metadata} from "next";
-import "./globals.css";
-import {Poppins} from "next/font/google";
-import React from "react";
+import type {Metadata} from 'next';
+import './globals.css';
+import {Poppins} from 'next/font/google';
+import React from 'react';
 import {Toaster} from 'react-hot-toast';
 
 const poppins = Poppins({
@@ -11,16 +11,17 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "CENFI",
-  description: "CENFI cuenta con un simulador para el ingreso a las universidades",
+  title: 'CENFI',
+  description: 'CENFI cuenta con un simulador para el ingreso a las universidades',
 };
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode;}>) {
   return (
-    <html lang="es">
+    <html lang='es'>
     <body className={poppins.className}>
     {children}
-    <Toaster position="top-center"
+
+    <Toaster position='top-center'
              reverseOrder={false}/>
     </body>
     </html>

@@ -22,3 +22,7 @@ export interface UserStore extends Pick<User ,'id' | 'name' | 'lastName' | 'emai
 export interface UserTableInterface extends Pick<User, 'id' | 'name' | 'lastName' | 'email' > {
   role: string
 }
+
+export interface UserModalUpdate extends Pick<User, 'name' | 'lastName' | 'email' > {
+  role: string
+}

@@ -8,7 +8,7 @@ import {useAuthStore} from '@/store/auth';
 import {useRouter} from 'next/navigation';
 import {IconButton} from '@mui/material'
 import {ArrowBack} from '@mui/icons-material';
-import UserTable from '@/components/UserTable';
+import UserTable from '@/components/UserTable/UserTable';
 import {PasswordInput} from '@/components/PasswordInput';
 import {UserNewUpdate} from '@/interfaces/User';
 import { axiosInstance } from '@/lib/axios';
@@ -212,18 +212,6 @@ export default function Users() {
                   <option value='1'>Admin</option>
                   <option value='2'>Profesor</option>
                 </select>
-                <div className={'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'}>
-                  <svg
-                    className={'w-4 h-4 text-gray-600'}
-                    fill='none'
-                    stroke='currentColor'
-                    strokeWidth='2'
-                    viewBox='0 0 24 24'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M19 9l-7 7-7-7'></path>
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
