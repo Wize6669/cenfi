@@ -6,22 +6,42 @@ import {ThemeToggle} from "@/components/ThemeToggle";
 import { motion } from 'framer-motion';
 import { PasswordInput } from '@/components/PasswordInput';
 import React, {ChangeEvent, useState} from "react";
-import {UserSingIn} from "@/interfaces/User";
+import { useRouter } from "next/navigation";
+
+interface UserStudent {
+  fullName: string;
+  email: string;
+  password: string;
+}
 
 export default function LoginStudents() {
 
-  const [userSimulator, setUser] = useState<UserSingIn>({
+  const [userSimulator, setUser] = useState<UserStudent>({
+    fullName: '',
     email: '',
     password: '',
-    roleId: null,
   });
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setUser({
       ...userSimulator,
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   };
+
+  const router = useRouter()
+
+  const handleClickStart = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const queryParams = new URLSearchParams({
+      fullName: userSimulator.fullName,
+      email: userSimulator.email
+    }).toString();
+
+    router.push(`/simulator/start-simulator/exam?${queryParams}`);
+  };
+
 
   return (
     <motion.div
@@ -73,8 +93,10 @@ export default function LoginStudents() {
                       '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                     type="text"
                     name="fullName"
-                    placeholder="Ingresa el nombre de la nueva categoría"
+                    placeholder="Ingresa tu nombre y apellido"
                     required={true}
+                    value={userSimulator.fullName}
+                    onChange={handleGetDataInput}
                   />
                   <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
                     Ingresa un nombre válido.
@@ -97,8 +119,8 @@ export default function LoginStudents() {
                   type={'email'}
                   placeholder={'Ingresa tu email'}
                   name={'email'}
-                  //value={user.email}
-                  //onChange={handleGetDataInput}
+                  value={userSimulator.email}
+                  onChange={handleGetDataInput}
                   required={true}
                 />
                 <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs bottom-[-17px]">
@@ -121,6 +143,7 @@ export default function LoginStudents() {
 
               <button
                 type={'submit'}
+                onClick={handleClickStart}
                 className={
                   `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 bg-button-color cursor-progress' : 'bg-[#627BCF]'}`
                 }

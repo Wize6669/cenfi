@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import Footer from "@/components/Footer"
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
+import { useSearchParams } from 'next/navigation';
 
 interface Question {
   id: number
@@ -15,6 +15,8 @@ interface Question {
   content: string
   options: string[]
   section: string
+  correctAnswer: string
+  justification: string
 }
 
 export default function ExamInterface() {
@@ -27,17 +29,83 @@ export default function ExamInterface() {
   const [fiveMinWarningShown, setFiveMinWarningShown] = useState<boolean>(false)
   const [isFreeNavigation, setIsFreeNavigation] = useState<boolean>(true)
 
-  const totalQuestions = 120
-  const userName = "Juan Pérez"
   const router = useRouter()
 
+  const searchParams = useSearchParams();
+  const fullName = searchParams.get('fullName');
+  const email = searchParams.get('email');
+
+  useEffect(() => {
+    console.log('Full Name:', fullName);
+    console.log('Email:', email);
+  }, [fullName, email]);
+
   const handleExit = () => {
-    // Lógica adicional para manejar la salida si es necesario
     console.log("Saliendo del examen")
   }
 
-  const { showExitFinishToast } = useExitFinishToast(handleExit)
-  const { showFiveMinuteWarning } = useFiveMinuteWarning(userName)
+  const questions: Question[] = [
+    {
+      id: 1,
+      title: "Pregunta 1",
+      content: "¿Cuánto es 1 + 1?",
+      options: ["3", "2", "2.1", "1"],
+      section: "Razonamiento Lógico",
+      correctAnswer: "2",
+      justification: "La suma de 1 + 1 es igual a 2, que es el resultado básico de la adición de dos unidades."
+    },
+    {
+      id: 2,
+      title: "Pregunta 2",
+      content: "¿Cuánto es 8 + 1?",
+      options: ["3", "2", "9", "1"],
+      section: "Razonamiento Lógico",
+      correctAnswer: "9",
+      justification: "La suma de 8 + 1 es igual a 9, que es el resultado básico de la adición de dos unidades."
+    },
+    {
+      id: 3,
+      title: "Pregunta 3",
+      content: "¿Cuánto es 6 + 1?",
+      options: ["3", "2", "7", "1"],
+      section: "Razonamiento Lógico",
+      correctAnswer: "7",
+      justification: "La suma de 6 + 1 es igual a 7, que es el resultado básico de la adición de dos unidades."
+    },
+
+
+  ]
+
+  const totalQuestions = questions.length
+
+  const calculateScore = useCallback(() => {
+    let correctAnswers = 0;
+
+    questions.forEach((question, index) => {
+      if (selectedOptions[index + 1] === question.correctAnswer) {
+        correctAnswers++;
+      }
+    });
+
+    return (correctAnswers / totalQuestions) * 100;
+  }, [questions, selectedOptions, totalQuestions]);
+
+  const saveExamData = useCallback(() => {
+    const examData = {
+      questions,
+      userAnswers: selectedOptions,
+      timeSpent: 3000 - timeRemaining,
+      fullName,
+      email,
+      score: calculateScore(),
+    }
+    localStorage.setItem('examData', JSON.stringify(examData))
+    localStorage.setItem('reviewAvailable', 'true')
+    router.replace('/simulator/start-simulator/exam/score')
+  }, [questions, selectedOptions, timeRemaining, router, calculateScore])
+
+  const { showExitFinishToast } = useExitFinishToast(handleExit, saveExamData)
+  const { showFiveMinuteWarning } = useFiveMinuteWarning(fullName ?? 'Usuario')
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,7 +116,7 @@ export default function ExamInterface() {
         }
         if (prevTime === 0) {
           clearInterval(timer)
-          router.replace('/simulator/start-simulator/exam/score')
+          saveExamData()
           return 0
         }
         return prevTime > 0 ? prevTime - 1 : 0
@@ -56,7 +124,7 @@ export default function ExamInterface() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [fiveMinWarningShown, showFiveMinuteWarning, router])
+  }, [fiveMinWarningShown, showFiveMinuteWarning, saveExamData])
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
@@ -105,17 +173,6 @@ export default function ExamInterface() {
     showExitFinishToast(action)
   }
 
-  const questions: Question[] = [
-    {
-      id: 1,
-      title: "Pregunta 1",
-      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      options: ["Opción A", "Opción B", "Opción C", "Opción D"],
-      section: "Razonamiento Lógico"
-    },
-    // Agregar más preguntas aquí...
-  ]
-
   const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]
 
   const QuestionGrid = () => (
@@ -158,10 +215,10 @@ export default function ExamInterface() {
       <main className="container mx-auto px-2 pb-2 flex-grow">
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-end pb-2">
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
-            <span className="font-bold dark:text-gray-300">Usuario: </span>juanperez@cenfi.com
+            <span className="font-bold dark:text-gray-300">Usuario: </span>{email}
           </span>
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
-            <span className="font-bold dark:text-gray-300">Nombre: </span> {userName}
+            <span className="font-bold dark:text-gray-300">Nombre: </span> {fullName}
           </span>
         </div>
         <div className="flex flex-col lg:flex-row gap-4">
@@ -287,10 +344,7 @@ export default function ExamInterface() {
           </div>
         </div>
       </main>
-
-      <Footer/>
-
-      <Toaster />
+      <Toaster/>
     </div>
   )
 }

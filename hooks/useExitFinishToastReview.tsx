@@ -3,11 +3,11 @@ import { toast } from 'react-hot-toast'
 import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => void) => {
+export const useExitFinishToastReview = () => {
   const toastRef = useRef<string | null>(null)
   const router = useRouter()
 
-  const showExitFinishToast = (action: string) => {
+  const showExitFinishToastReview = (action: string) => {
     if (toastRef.current) {
       toast.dismiss(toastRef.current)
     }
@@ -28,7 +28,7 @@ export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => voi
                   ¿Estás seguro de que quieres {action}?
                 </p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Esta acción no puede deshacerse.
+                  Una vez que salgas, no podrás volver a ingresar a la revisión.
                 </p>
               </div>
             </div>
@@ -44,12 +44,9 @@ export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => voi
           <div className="flex border-l border-gray-200 dark:border-gray-700">
             <button
               onClick={() => {
-                if (action === 'finalizar' && saveExamData || 'salir' && saveExamData) {
-                  saveExamData()
-                }
-                router.replace('/simulator/start-simulator/exam/score')
+                localStorage.removeItem('reviewAvailable')
                 toast.dismiss(t.id)
-                if (onExit) onExit()
+                router.replace('/simulator/start-simulator/exam/score')
               }}
               className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-300"
             >
@@ -62,5 +59,5 @@ export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => voi
     )
   }
 
-  return { showExitFinishToast }
+  return { showExitFinishToastReview }
 }
