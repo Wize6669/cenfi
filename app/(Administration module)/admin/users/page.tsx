@@ -169,8 +169,8 @@ export default function Users() {
               Usuarios</h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton sx={{border: '1px solid #ccc'}} onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-300'}/>
+            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
+              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>

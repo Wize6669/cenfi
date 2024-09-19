@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck } from 'lucide-react'
-import { toast, Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview";
 
@@ -58,34 +58,6 @@ export default function ExamReview() {
 
   const { showExitFinishToastReview } = useExitFinishToastReview();
 
-  const handleExit = () => {
-    toast((t) => (
-      <div>
-        <p>¿Estás seguro de que quieres salir?</p>
-        <p>Una vez que salgas, no podrás volver a ingresar a la revisión.</p>
-        <div className="mt-4">
-          <button
-            className="mr-2 px-4 py-2 bg-red-500 text-white rounded"
-            onClick={() => {
-              localStorage.removeItem('examData')
-              localStorage.removeItem('reviewAvailable')
-              toast.dismiss(t.id)
-              router.push('/')
-            }}
-          >
-            Sí, salir
-          </button>
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={() => toast.dismiss(t.id)}
-          >
-            Cancelar
-          </button>
-        </div>
-      </div>
-    ), { duration: Infinity })
-  }
-
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
       <h2
@@ -110,7 +82,7 @@ export default function ExamReview() {
               key={num}
               className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${
                 num === currentQuestion
-                  ? 'bg-sky-300 text-gray-800'
+                  ? 'border-2 border-sky-300 text-gray-800 dark:text-gray-200'
                   : userAnswer
                     ? isCorrect
                       ? 'bg-green-300 text-gray-800'
@@ -141,7 +113,7 @@ export default function ExamReview() {
 
   return (
     <div
-      className={'min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
+      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}

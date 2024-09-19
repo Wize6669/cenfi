@@ -13,6 +13,8 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import {ThemeToggle} from "@/components/ThemeToggle";
 import { motion } from 'framer-motion';
 import { PasswordInput } from '@/components/PasswordInput';
+import {IconButton} from "@mui/material";
+import { Home } from "@mui/icons-material";
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -109,6 +111,10 @@ export default function LoginAdmin() {
     }
   }
 
+  const goHome = () => {
+    router.push('/');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -50 }}
@@ -116,6 +122,12 @@ export default function LoginAdmin() {
       transition={{ duration: 0.8 }}
       className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
       <div className={'flex-grow flex flex-col justify-center items-center relative'}>
+        <div className={'absolute top-1 left-5 lg:p-4 md:p-4 sm:p-0 row-start-2 justify-items-center content-center'}>
+          <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600 h-10 w-10 dark:border-none dark:bg-gray-800'} sx={{border: '1px solid #dedede'}}
+                      onClick={goHome}>
+            <Home className={'text-gray-400 dark:text-blue-500'}/>
+          </IconButton>
+        </div>
         <div className={'absolute top-1 right-5 lg:p-4 md:p-4 sm:p-0'}>
           <ThemeToggle/>
         </div>
@@ -125,7 +137,7 @@ export default function LoginAdmin() {
             <div className={'mb-10'}>
               <Image
                 className={
-                  'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+                  'filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
                 }
                 src={'/images/image-1.png'}
                 alt={'Logo de CENFI'}
@@ -221,7 +233,7 @@ export default function LoginAdmin() {
               <button
                 type={'submit'}
                 className={
-                  `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200
+                  `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 dark:border-none
               ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`
                 }
                 disabled={isLoading}
@@ -242,7 +254,7 @@ export default function LoginAdmin() {
           >
             <Image
               className={
-                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(25, 82, 94, 0.46)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
               }
               src={'/images/image-13.png'}
               alt={'Icon'}

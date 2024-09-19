@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { CheckCircle } from 'lucide-react';
+import Typewriter from '@/components/Typewriter';
 
 const HeroSection: React.FC = () => {
 
   const handleClick = () => {
     window.open('https://api.whatsapp.com/send/?phone=593992562952&text&type=phone_number&app_absent=0', '_blank');
   };
+
 
   return (
     <section className={'lg:min-h-[45vh] md:min-h-[30vh] bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 flex items-center mt-2'}>
@@ -20,7 +22,7 @@ const HeroSection: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <h1 className={'text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-300 mb-4'}>
-              Prepárate para tu futuro universitario
+              <Typewriter text="Prepárate para tu futuro universitario" speed={100} />
             </h1>
             <p className={'text-lg text-blue-700 dark:text-blue-100 mb-6'}>
               Alcanza tu máximo potencial con nuestros cursos preuniversitarios diseñados para asegurar tu ingreso a la universidad de tus sueños.

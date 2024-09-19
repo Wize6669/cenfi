@@ -33,7 +33,7 @@ export default function ExamScore() {
   const handleNewAttempt = () => {
     localStorage.removeItem('examData')
     localStorage.removeItem('reviewAvailable')
-    router.push('/simulator/start-simulator')
+    router.push('/simulator/')
   }
 
   const handleExit = () => {
@@ -48,17 +48,13 @@ export default function ExamScore() {
         <div className="container mx-auto">
           <div className="flex items-center justify-between sm:justify-center">
             <div className="flex items-center sm:justify-start">
-              <Image className="sm:justify-start" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
+              <Image className="sm:justify-start mb-2" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
             </div>
             <div className="flex-grow ml-4 hidden sm:block">
               <h1
                 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex justify-center dark:text-gray-400 text-blue-900">
                 Simuladores Preuniversitario CENFI
               </h1>
-              <h2
-                className="text-sm sm:text-base md:text-lg lg:text-2xl font-medium flex justify-center mt-3 dark:text-gray-400 pb-3">
-                Simulador Universidad Nacional de Loja
-              </h2>
             </div>
             <div className="sm:flex-grow-0 sm:justify-end">
               <ThemeToggle/>

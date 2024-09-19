@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
-import { useSearchParams } from 'next/navigation';
+import { useUserStore } from '@/store/userStore'
 
 interface Question {
   id: number
@@ -31,20 +31,13 @@ export default function ExamInterface() {
 
   const router = useRouter()
 
-  const searchParams = useSearchParams();
-  const fullName = searchParams.get('fullName');
-  const email = searchParams.get('email');
-
-  useEffect(() => {
-    console.log('Full Name:', fullName);
-    console.log('Email:', email);
-  }, [fullName, email]);
+  const { userSimulator } = useUserStore()
 
   const handleExit = () => {
     console.log("Saliendo del examen")
   }
 
-  const questions: Question[] = [
+  const questions: Question[] = useMemo(() => [
     {
       id: 1,
       title: "Pregunta 1",
@@ -72,9 +65,7 @@ export default function ExamInterface() {
       correctAnswer: "7",
       justification: "La suma de 6 + 1 es igual a 7, que es el resultado básico de la adición de dos unidades."
     },
-
-
-  ]
+  ], [])
 
   const totalQuestions = questions.length
 
@@ -95,17 +86,17 @@ export default function ExamInterface() {
       questions,
       userAnswers: selectedOptions,
       timeSpent: 3000 - timeRemaining,
-      fullName,
-      email,
+      fullName: userSimulator.fullName,
+      email: userSimulator.email,
       score: calculateScore(),
     }
     localStorage.setItem('examData', JSON.stringify(examData))
     localStorage.setItem('reviewAvailable', 'true')
     router.replace('/simulator/start-simulator/exam/score')
-  }, [questions, selectedOptions, timeRemaining, router, calculateScore])
+  }, [questions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email])
 
   const { showExitFinishToast } = useExitFinishToast(handleExit, saveExamData)
-  const { showFiveMinuteWarning } = useFiveMinuteWarning(fullName ?? 'Usuario')
+  const { showFiveMinuteWarning } = useFiveMinuteWarning(userSimulator.fullName ?? 'Usuario')
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -205,7 +196,7 @@ export default function ExamInterface() {
   )
 
   return (
-    <div className={'min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
+    <div className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}
@@ -215,10 +206,10 @@ export default function ExamInterface() {
       <main className="container mx-auto px-2 pb-2 flex-grow">
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-end pb-2">
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
-            <span className="font-bold dark:text-gray-300">Usuario: </span>{email}
+            <span className="font-bold dark:text-gray-300">Usuario: </span>{userSimulator.email}
           </span>
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
-            <span className="font-bold dark:text-gray-300">Nombre: </span> {fullName}
+            <span className="font-bold dark:text-gray-300">Nombre: </span> {userSimulator.fullName}
           </span>
         </div>
         <div className="flex flex-col lg:flex-row gap-4">

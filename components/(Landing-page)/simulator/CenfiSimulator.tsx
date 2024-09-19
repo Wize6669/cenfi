@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, HelpCircle, Play } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import LoginStudentsModal from '@/components/Modal/LoginStudentsModal';
 
 const simuladores = [
   { nombre: 'Simulador Universidad de Loja', duracion: 70, preguntas: 120 },
@@ -21,11 +21,10 @@ interface SimuladorProps {
 }
 
 const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas }) => {
-  const router = useRouter();
 
-  const handleStartSimulator = () => {
-    router.push('/simulator/start-simulator');
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
 
   return (
     <motion.div
@@ -41,7 +40,7 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas }
         <div className={'flex justify-between items-center mt-auto'}>
           <div className={'space-y-2'}>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
-              <Clock className={'w-4 h-4 mr-2 text-cyan-950'} />
+              <Clock className={'w-4 h-4 mr-2 text-cyan-950 dark:text-gray-200'} />
               <span className={'text-sm'}>
                 {duracion} min
               </span>
@@ -57,13 +56,14 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas }
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300'}
-            onClick={handleStartSimulator}
+            onClick={openModal}
           >
             Iniciar
             <Play className={'w-4 h-4 ml-2'} />
           </motion.button>
         </div>
       </div>
+      <LoginStudentsModal isOpenModal={isModalOpen} setIsOpenModal={setIsModalOpen} />
     </motion.div>
   );
 };

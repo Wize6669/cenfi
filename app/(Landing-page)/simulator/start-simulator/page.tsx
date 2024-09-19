@@ -1,54 +1,47 @@
 'use client';
 
-import Image from 'next/image';
-import Footer from '@/components/Footer';
-import {ThemeToggle} from "@/components/ThemeToggle";
-import { motion } from 'framer-motion';
-import { PasswordInput } from '@/components/PasswordInput';
-import React, {ChangeEvent, useState} from "react";
-import { useRouter } from "next/navigation";
-
-interface UserStudent {
-  fullName: string;
-  email: string;
-  password: string;
-}
+import Image from 'next/image'
+import Footer from '@/components/Footer'
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { motion } from 'framer-motion'
+import { PasswordInput } from '@/components/PasswordInput'
+import React, { ChangeEvent, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useUserStore } from '@/store/userStore'
 
 export default function LoginStudents() {
-
-  const [userSimulator, setUser] = useState<UserStudent>({
-    fullName: '',
-    email: '',
-    password: '',
-  });
-
-  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setUser({
-      ...userSimulator,
-      [event.target.name]: event.target.value,
-    });
-  };
-
+  const { userSimulator, setUserSimulator } = useUserStore()
+  const [acceptTerms, setAcceptTerms] = useState(false)
   const router = useRouter()
 
+  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setUserSimulator({
+      ...userSimulator,
+      [event.target.name]: event.target.value,
+    })
+  }
+
   const handleClickStart = (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
+    if (acceptTerms && userSimulator.fullName && userSimulator.email && userSimulator.password) {
+      localStorage.setItem('userSimulator', JSON.stringify(userSimulator))
+      router.push('/simulator/start-simulator/exam')
+    } else if (!acceptTerms) {
+      alert('Por favor, acepta los términos y condiciones para continuar.')
+    } else {
+      alert('Por favor, completa todos los campos del formulario.')
+    }
+  }
 
-    const queryParams = new URLSearchParams({
-      fullName: userSimulator.fullName,
-      email: userSimulator.email
-    }).toString();
-
-    router.push(`/simulator/start-simulator/exam?${queryParams}`);
-  };
-
+  const isFormValid = userSimulator.fullName && userSimulator.email && userSimulator.password && acceptTerms
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.8 }}
-      className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
+      initial={{opacity: 0, x: -50}}
+      animate={{opacity: 1, x: 0}}
+      transition={{duration: 0.8}}
+      className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}
+    >
       <div className={'flex-grow flex flex-col justify-center items-center relative'}>
         <div className={'absolute top-1 right-5 lg:p-4 md:p-4 sm:p-0'}>
           <ThemeToggle/>
@@ -59,7 +52,7 @@ export default function LoginStudents() {
             <div className={'mb-10'}>
               <Image
                 className={
-                  'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+                  'filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-[0_10px_8px_rgba(74,153,144,0.8)]'
                 }
                 src={'/images/image-1.png'}
                 alt={'Logo de CENFI'}
@@ -77,7 +70,6 @@ export default function LoginStudents() {
                   Ingresa tus credenciales para comenzar el simulador
                 </p>
               </div>
-
               <div className={'gap-x-0 pb-3'}>
                 <div className="content-end">
                   <label
@@ -103,7 +95,6 @@ export default function LoginStudents() {
                   </p>
                 </div>
               </div>
-
               <div className={'relative flex flex-col mb-3'}>
                 <label
                   className={'text-md font-medium text-gray-900 dark:text-gray-200'}
@@ -117,7 +108,7 @@ export default function LoginStudents() {
                     '          peer-valid:border-green-500 peer-invalid:border-pink-600'
                   }
                   type={'email'}
-                  placeholder={'Ingresa tu email'}
+                  placeholder={'Ingresa tu correo electrónico'}
                   name={'email'}
                   value={userSimulator.email}
                   onChange={handleGetDataInput}
@@ -131,28 +122,27 @@ export default function LoginStudents() {
               <div className={'flex gap-1 mb-3 mt-5 items-center'}>
                 <input
                   type={'checkbox'}
-                  name={'isRemembered'}
-                  id={'isRemembered'}
-                  //checked={isRememberCredentials}
-                  //onChange={handleCheckBox}
+                  name={'acceptTerms'}
+                  id={'acceptTerms'}
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
                 />
-                <label className={'text-xs font-medium dark:text-gray-200'} htmlFor={'isRemembered'}>
+                <label className={'text-xs font-medium dark:text-gray-200'} htmlFor={'acceptTerms'}>
                   Acepto los términos y condiciones de uso.
                 </label>
               </div>
-
               <button
                 type={'submit'}
                 onClick={handleClickStart}
                 className={
-                  `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 bg-button-color cursor-progress' : 'bg-[#627BCF]'}`
+                  `text-white text-sm font-bold w-full border dark:border-none rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 bg-button-color cursor-progress ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`
                 }
+                disabled={!isFormValid}
               >
                 Iniciar Simulador
               </button>
             </form>
           </div>
-
           {/* Columna de imagen */}
           <motion.div
             initial={{opacity: 0, scale: 0.8}}
@@ -162,7 +152,7 @@ export default function LoginStudents() {
           >
             <Image
               className={
-                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(25, 82, 94, 0.46)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] drop-shadow-md'
+                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(74,153,144,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
               }
               src={'/images/image-2.png'}
               alt={'Icon'}
@@ -173,7 +163,6 @@ export default function LoginStudents() {
           </motion.div>
         </div>
       </div>
-
       <Footer/>
     </motion.div>
   );
