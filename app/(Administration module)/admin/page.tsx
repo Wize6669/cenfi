@@ -141,9 +141,10 @@ export default function LoginAdmin() {
                 }
                 src={'/images/image-1.png'}
                 alt={'Logo de CENFI'}
-                width={260}
-                height={190}
+                width={250}
+                height={250}
                 priority={true}
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
 

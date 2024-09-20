@@ -16,7 +16,7 @@ interface Question {
   options: string[]
   section: string
   correctAnswer: string
-  justification: string
+  justification?: string
 }
 
 export default function ExamInterface() {
@@ -54,7 +54,6 @@ export default function ExamInterface() {
       options: ["3", "2", "9", "1"],
       section: "Razonamiento Lógico",
       correctAnswer: "9",
-      justification: "La suma de 8 + 1 es igual a 9, que es el resultado básico de la adición de dos unidades."
     },
     {
       id: 3,

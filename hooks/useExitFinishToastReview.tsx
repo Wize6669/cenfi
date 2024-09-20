@@ -21,7 +21,7 @@ export const useExitFinishToastReview = () => {
           <div className="flex-1 w-0 py-1 px-2">
             <div className="flex items-center">
               <div className="mr-2 flex items-center justify-center h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-600">
-                <AlertCircle className="text-yellow-500 dark:text-yellow-300 h-10 w-10"/>
+                <AlertCircle className="text-yellow-500 dark:text-yellow-300 h-5 w-5"/>
               </div>
               <div className="ml-3 flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">

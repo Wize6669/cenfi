@@ -201,5 +201,12 @@ input::placeholder {
     }
 }
 
+.image-class {
+    object-fit: cover;
+}
+
+.image-class-contain{
+    object-fit: contain;
+}
 
 

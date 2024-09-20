@@ -24,7 +24,14 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" passHref>
-              <Image src="/images/image-1.png" alt="CENFI Logo" width={80} height={90} priority={true}/>
+              <Image
+                src="/images/image-1.png"
+                alt="CENFI Logo"
+                width={60}
+                height={70}
+                priority={true}
+                style={{ width: 'auto', height: 'auto' }}
+              />
             </Link>
             <span className="hidden lg:inline ml-4 text-l font-bold text-blue-900 dark:text-gray-400">
               CENTRO DE FORMACIÓN INTENSIVA CIA. LTDA.

@@ -60,9 +60,10 @@ const OurFacilities = () => {
                     <Image
                       src={images[currentIndex]}
                       alt={`Instalación ${currentIndex + 1}`}
-                      layout={'fill'}
-                      objectFit={'cover'}
-                      className={'rounded-lg'}
+                      fill
+                      priority={true}
+                      className={'rounded-lg image-class'}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </motion.div>
                 </AnimatePresence>

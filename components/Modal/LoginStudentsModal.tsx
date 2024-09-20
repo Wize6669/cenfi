@@ -42,8 +42,9 @@ export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { is
             src="/images/image-1.png"
             alt="Logo de CENFI"
             width={200}
-            height={146}
+            height={200}
             priority={true}
+            style={{ width: 'auto', height: 'auto' }}
           />
         </div>
         <form onSubmit={handleClickStart}>

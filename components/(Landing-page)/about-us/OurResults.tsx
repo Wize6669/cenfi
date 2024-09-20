@@ -35,9 +35,8 @@ const OurResults = () => {
                   <Image
                     src={'/images/image-10.jpg?height=800&width=600&text=Estudiantes'}
                     alt={'Estudiantes exitosos'}
-                    layout={'fill'}
-                    objectFit={'cover'}
-                    className={'rounded-lg'}
+                    fill
+                    className={'rounded-lg image-class'}
                   />
                   <div className={'absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300'}>
                     <p className={'text-white text-lg font-semibold'}>Click para ampliar</p>
@@ -61,8 +60,8 @@ const OurResults = () => {
               <Image
                 src={'/images/image-10.jpg?height=800&width=600&text=Estudiantes'}
                 alt={'Estudiantes exitosos'}
-                layout={'fill'}
-                objectFit={'contain'}
+                fill
+                className={'rounded-lg image-class-contain'}
               />
               <Button
                 variant={'outline'}
