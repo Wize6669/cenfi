@@ -106,7 +106,6 @@ export default function ExamScore() {
             <div className="flex items-center justify-between">
               <span className="text-lg font-semibold text-blue-800 dark:text-blue-200">Número total de preguntas:</span>
               <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalQuestions}</span>
-              <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalQuestions}</span>
             </div>
           </div>
           {score !== null && (
