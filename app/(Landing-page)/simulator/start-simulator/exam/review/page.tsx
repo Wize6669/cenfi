@@ -1,20 +1,27 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck, ImageIcon } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview";
+
+interface Option {
+  text: string
+  image?: string
+}
 
 interface Question {
   id: number
   title: string
   content: string
-  options: string[]
+  options: Option[]
   section: string
   correctAnswer: string
   justification?: string
+  images?: string[]
 }
 
 interface ExamData {
@@ -76,19 +83,21 @@ export default function ExamReview() {
           const question = examData?.questions[num - 1]
           const userAnswer = examData?.userAnswers[num]
           const isCorrect = userAnswer === question?.correctAnswer
+          const isAnswered = userAnswer !== null && userAnswer !== undefined
+
+          let bgColor
+          if (isAnswered) {
+            bgColor = isCorrect ? 'bg-green-300 dark:bg-green-600' : 'bg-red-300 dark:bg-red-600'
+          } else {
+            bgColor = 'bg-orange-300 dark:bg-orange-600'
+          }
 
           return (
             <button
               key={num}
-              className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${
-                num === currentQuestion
-                  ? 'border-2 border-sky-300 text-gray-800 dark:text-gray-200'
-                  : userAnswer
-                    ? isCorrect
-                      ? 'bg-green-300 text-gray-800'
-                      : 'bg-red-300 text-gray-800'
-                    : 'border dark:border-none bg-white dark:bg-gray-700 text-gray-800 dark:text-white'
-              }`}
+              className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${bgColor} ${
+                num === currentQuestion ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+              } text-gray-800 dark:text-white`}
               onClick={() => handleQuestionChange(num)}
             >
               {num.toString().padStart(2, '0')}
@@ -184,25 +193,58 @@ export default function ExamReview() {
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
               <p className="mb-6 text-sm sm:text-base md:text-lg dark:text-gray-400">{currentQuestionData.content}</p>
+              {currentQuestionData.images && currentQuestionData.images.length > 0 && (
+                <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2 flex items-center">
+                    <ImageIcon className="mr-2"/>
+                    Imágenes de la pregunta
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {currentQuestionData.images.map((image, index) => (
+                      <div key={index} className="relative h-48 w-full">
+                        <Image
+                          src={image}
+                          alt={`Imagen ${index + 1} de la pregunta ${currentQuestion}`}
+                          fill={true}
+                          className="rounded-lg image-class-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="w-full flex items-center pb-5">
                 <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
               </div>
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
-                  <div key={index} className={`flex items-center p-2 rounded ${
-                    option === currentQuestionData.correctAnswer
+                  <div key={index} className={`flex flex-col p-2 rounded ${
+                    option.text === currentQuestionData.correctAnswer
                       ? 'bg-green-100 dark:bg-green-800'
-                      : option === userAnswer && option !== currentQuestionData.correctAnswer
+                      : option.text === userAnswer && option.text !== currentQuestionData.correctAnswer
                         ? 'bg-red-100 dark:bg-red-800'
                         : ''
                   }`}>
-                    <span className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                    <span className="text-sm sm:text-base">{option}</span>
-                    {option === currentQuestionData.correctAnswer && (
-                      <CheckCircle className="ml-2 text-green-500"/>
-                    )}
-                    {option === userAnswer && option !== currentQuestionData.correctAnswer && (
-                      <XCircle className="ml-2 text-red-500"/>
+                    <div className="flex items-center">
+                      <span
+                        className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
+                      <span className="text-sm sm:text-base">{option.text}</span>
+                      {option.text === currentQuestionData.correctAnswer && (
+                        <CheckCircle className="ml-2 text-green-500"/>
+                      )}
+                      {option.text === userAnswer && option.text !== currentQuestionData.correctAnswer && (
+                        <XCircle className="ml-2 text-red-500"/>
+                      )}
+                    </div>
+                    {option.image && (
+                      <div className="mt-2 relative h-32 w-full sm:w-1/2 md:w-1/3">
+                        <Image
+                          src={option.image}
+                          alt={`Imagen para la opción ${String.fromCharCode(65 + index)}`}
+                          fill={true}
+                          className="rounded-lg image-class-contain"
+                        />
+                      </div>
                     )}
                   </div>
                 ))}

@@ -95,20 +95,28 @@ export default function ExamScore() {
             <Image
               src="/images/image-1.png"
               alt="CENFI Logo"
-              width={240}
-              height={80}
-              className="h-20 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
+              width={300}
+              height={100}
+              className="h-40 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
             />
           </div>
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-blue-400">Resultados del Examen</h2>
-          <p className={'dark:text-gray-200 font-base lg:text-xl sm:text-lg'}><span className={'font-semibold text-blue-500'}>Número total de preguntas: </span>{totalQuestions}</p>
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-blue-400">Resultados del
+            Examen</h2>
+          <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-2">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-blue-800 dark:text-blue-200">Número total de preguntas:</span>
+              <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalQuestions}</span>
+              <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalQuestions}</span>
+            </div>
+          </div>
           {score !== null && (
             <>
               <div className="mb-8">
-                <div className="relative pt-1">
+              <div className="relative pt-1">
                   <div className="flex mb-2 items-center justify-between">
                     <div>
-                      <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                      <span
+                        className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
                         Progreso
                       </span>
                     </div>
@@ -119,7 +127,8 @@ export default function ExamScore() {
                     </div>
                   </div>
                   <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-                    <div style={{ width: `${percentage}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                    <div style={{width: `${percentage}%`}}
+                         className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
                   </div>
                 </div>
               </div>
@@ -129,21 +138,21 @@ export default function ExamScore() {
                     <p className="text-green-800 dark:text-green-200 font-semibold">Correctas</p>
                     <p className="text-3xl font-bold text-green-600 dark:text-green-300">{correctAnswers}</p>
                   </div>
-                  <CheckCircle className="h-12 w-12 text-green-500" />
+                  <CheckCircle className="h-12 w-12 text-green-500"/>
                 </div>
                 <div className="bg-red-100 dark:bg-red-800 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-red-800 dark:text-red-200 font-semibold">Incorrectas</p>
                     <p className="text-3xl font-bold text-red-600 dark:text-red-300">{incorrectAnswers}</p>
                   </div>
-                  <XCircle className="h-12 w-12 text-red-500" />
+                  <XCircle className="h-12 w-12 text-red-500"/>
                 </div>
                 <div className="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-yellow-800 dark:text-yellow-200 font-semibold">Sin responder</p>
                     <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-300">{unanswered}</p>
                   </div>
-                  <AlertCircle className="h-12 w-12 text-yellow-500" />
+                  <AlertCircle className="h-12 w-12 text-yellow-500"/>
                 </div>
               </div>
               <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">

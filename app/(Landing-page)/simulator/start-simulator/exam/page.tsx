@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock, Image as ImageIcon } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
@@ -9,14 +10,20 @@ import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
 import { useUserStore } from '@/store/userStore'
 
+interface Option {
+  text: string
+  image?: string
+}
+
 interface Question {
   id: number
   title: string
   content: string
-  options: string[]
+  options: Option[]
   section: string
   correctAnswer: string
   justification?: string
+  images?: string[]
 }
 
 export default function ExamInterface() {
@@ -28,6 +35,7 @@ export default function ExamInterface() {
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
   const [fiveMinWarningShown, setFiveMinWarningShown] = useState<boolean>(false)
   const [isFreeNavigation, setIsFreeNavigation] = useState<boolean>(true)
+  const [showImages, setShowImages] = useState<boolean>(false)
 
   const router = useRouter()
 
@@ -41,17 +49,28 @@ export default function ExamInterface() {
     {
       id: 1,
       title: "Pregunta 1",
-      content: "¿Cuánto es 1 + 1?",
-      options: ["3", "2", "2.1", "1"],
+      content: "¿Cuál de las siguientes imágenes representa mejor el concepto de suma?",
+      options: [
+        { text: "Imagen A", image: "/images/image-2.png" },
+        { text: "Imagen B", image: "/images/image-3.png" },
+        { text: "Imagen C", image: "/images/image-14.png" },
+        { text: "Ninguna de las anteriores" }
+      ],
       section: "Razonamiento Lógico",
-      correctAnswer: "2",
-      justification: "La suma de 1 + 1 es igual a 2, que es el resultado básico de la adición de dos unidades."
+      correctAnswer: "Imagen A",
+      justification: "La imagen A muestra claramente una representación visual de la suma de dos números.",
+      images: ["/images/image-1.png"]
     },
     {
       id: 2,
       title: "Pregunta 2",
       content: "¿Cuánto es 8 + 1?",
-      options: ["3", "2", "9", "1"],
+      options: [
+        { text: "3" },
+        { text: "2" },
+        { text: "9" },
+        { text: "1" }
+      ],
       section: "Razonamiento Lógico",
       correctAnswer: "9",
     },
@@ -59,7 +78,12 @@ export default function ExamInterface() {
       id: 3,
       title: "Pregunta 3",
       content: "¿Cuánto es 6 + 1?",
-      options: ["3", "2", "7", "1"],
+      options: [
+        { text: "3" },
+        { text: "2" },
+        { text: "7" },
+        { text: "1" }
+      ],
       section: "Razonamiento Lógico",
       correctAnswer: "7",
       justification: "La suma de 6 + 1 es igual a 7, que es el resultado básico de la adición de dos unidades."
@@ -137,8 +161,8 @@ export default function ExamInterface() {
     }
   }
 
-  const handleAnswerSelect = (option: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: option }))
+  const handleAnswerSelect = (optionText: string) => {
+    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: optionText }))
     setAnsweredQuestions((prev) => new Set(prev).add(currentQuestion))
   }
 
@@ -164,6 +188,10 @@ export default function ExamInterface() {
   }
 
   const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]
+
+  useEffect(() => {
+    setShowImages(!!currentQuestionData.images && currentQuestionData.images.length > 0)
+  }, [currentQuestionData])
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
@@ -290,6 +318,26 @@ export default function ExamInterface() {
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
               <p className="mb-6 text-sm sm:text-base md:text-lg dark:text-gray-400">{currentQuestionData.content}</p>
+              {showImages && (
+                <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2 flex items-center">
+                    <ImageIcon className="mr-2" />
+                    Imágenes de la pregunta
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {currentQuestionData.images?.map((image, index) => (
+                      <div key={index} className="relative h-48 w-full">
+                        <Image
+                          src={image}
+                          alt={`Imagen ${index + 1} de la pregunta ${currentQuestion}`}
+                          fill={true}
+                          className="rounded-lg image-class-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="w-full flex items-center pb-5">
                 <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
               </div>
@@ -297,16 +345,28 @@ export default function ExamInterface() {
                 {currentQuestionData.options.map((option, index) => (
                   <label key={index}
                          className={'flex items-center p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-300 dark:text-gray-400'}>
-                    <input
-                      type="radio"
-                      name="answer"
-                      value={option}
-                      checked={selectedOptions[currentQuestion] === option}
-                      onChange={() => handleAnswerSelect(option)}
-                      className="h-5 w-5 mr-2 rounded-full border text-blue-600 dark:text-blue-400 transition-colors duration-300"
-                    />
-                    <span className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                    <span className="text-sm sm:text-base">{option}</span>
+                    <div className={'flex items-center'}>
+                      <input
+                        type="radio"
+                        name="answer"
+                        value={option.text}
+                        checked={selectedOptions[currentQuestion] === option.text}
+                        onChange={() => handleAnswerSelect(option.text)}
+                        className="h-5 w-5 mr-2 rounded-full border text-blue-600 dark:text-blue-400 transition-colors duration-300"
+                      />
+                      <span className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
+                      <span className="text-sm sm:text-base">{option.text}</span>
+                    </div>
+                    {option.image && (
+                      <div className="mt-2 relative h-32 w-full sm:w-1/2 md:w-1/3">
+                        <Image
+                          src={option.image}
+                          alt={`Imagen para la opción ${String.fromCharCode(65 + index)}`}
+                          fill={true}
+                          className="rounded-lg image-class-contain"
+                        />
+                      </div>
+                    )}
                   </label>
                 ))}
               </div>
