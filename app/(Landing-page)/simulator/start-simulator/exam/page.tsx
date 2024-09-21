@@ -195,14 +195,18 @@ export default function ExamInterface() {
   )
 
   return (
-    <div className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
+    <div
+      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
+      <div
+        className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background"
+      />
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}
         onExitOrFinish={handleExitOrFinish}
       />
 
-      <main className="container mx-auto px-2 pb-2 flex-grow">
+      <main className="container mx-auto px-2 pb-2 flex-grow relative z-10">
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-end pb-2">
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
             <span className="font-bold dark:text-gray-300">Usuario: </span>{userSimulator.email}
@@ -249,22 +253,26 @@ export default function ExamInterface() {
                   {currentQuestionData.section}
                 </h3>
                 <div className="order-2 sm:order-1">
-                  <h2 className="text-lg sm:text-base md:text-xl font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
-                  <p className={`text-sm sm:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
+                  <h2
+                    className="text-lg sm:text-base md:text-xl font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                  <p
+                    className={`text-sm sm:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
                     {answeredQuestions.has(currentQuestion) ? 'Pregunta contestada' : 'Sin responder aún'}
                   </p>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2">
                 {isFreeNavigation && (
-                  <label className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} mb-2 sm:mb-0`}>
+                  <label
+                    className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} mb-2 sm:mb-0`}>
                     <input
                       type="checkbox"
                       checked={markedQuestions.has(currentQuestion)}
                       onChange={handleMarkQuestion}
                       className="hidden"
                     />
-                    <Flag className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
+                    <Flag
+                      className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
                     <span className="text-sm sm:text-base">Marcar pregunta</span>
                   </label>
                 )}

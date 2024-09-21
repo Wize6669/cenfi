@@ -209,4 +209,22 @@ input::placeholder {
     object-fit: contain;
 }
 
+/*Marca de Agua*/
+.responsive-background {
+    background-image: url("../public/images/image-1.png");
+    background-repeat: repeat;
+    background-size: 10% 10%;
+}
+
+@media (max-width: 1024px) {
+    .responsive-background {
+        background-size: 20% 20%;
+    }
+}
+
+@media (max-width: 640px) {
+    .responsive-background {
+        background-size: 50% 25%;
+    }
+}
 
