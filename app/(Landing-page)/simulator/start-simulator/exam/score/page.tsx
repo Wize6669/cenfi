@@ -97,7 +97,7 @@ export default function ExamScore() {
               alt="CENFI Logo"
               width={300}
               height={100}
-              className="h-40 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
+              className="h-40 w-auto"
             />
           </div>
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-blue-400">Resultados del
