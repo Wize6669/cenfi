@@ -15,7 +15,7 @@ const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, total
       <div className="container mx-auto">
         <div className="flex items-center justify-between sm:justify-center">
           <div className="flex items-center sm:justify-start">
-            <Image className="sm:justify-start" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85} />
+            <Image className="sm:justify-start filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85} />
           </div>
           <div className="flex-grow ml-4 hidden sm:block">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex justify-center dark:text-gray-400 text-blue-900">

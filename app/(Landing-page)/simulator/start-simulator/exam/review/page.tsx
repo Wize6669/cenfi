@@ -113,14 +113,17 @@ export default function ExamReview() {
 
   return (
     <div
-      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300'}>
+      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
+      <div
+        className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background"
+      />
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}
         onExitOrFinish={handleExitOrFinish}
       />
 
-      <main className="container mx-auto px-2 pb-20 flex-grow">
+      <main className="container mx-auto px-2 pb-20 flex-grow relative z-10">
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-end pb-2">
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
             <span className="font-bold dark:text-gray-300">Usuario: </span>{examData.email}
@@ -156,11 +159,11 @@ export default function ExamReview() {
               </button>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <Clock className="h-5 w-5 mr-1" />
+                  <Clock className="h-5 w-5 mr-1"/>
                   <span className="text-sm">{formatTime(examData.timeSpent)}</span>
                 </div>
                 <div className="flex items-center">
-                  <Award className="h-5 w-5 mr-1" />
+                  <Award className="h-5 w-5 mr-1"/>
                   <span className="text-sm">{examData.score.toFixed(2)}/100</span>
                 </div>
               </div>
