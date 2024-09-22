@@ -10,7 +10,7 @@ import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview";
 
 interface Option {
   text: string
-  image?: string
+  images?: string[]
 }
 
 interface Question {
@@ -236,14 +236,18 @@ export default function ExamReview() {
                         <XCircle className="ml-2 text-red-500"/>
                       )}
                     </div>
-                    {option.image && (
-                      <div className="mt-2 relative h-32 w-full sm:w-1/2 md:w-1/3">
-                        <Image
-                          src={option.image}
-                          alt={`Imagen para la opción ${String.fromCharCode(65 + index)}`}
-                          fill={true}
-                          className="rounded-lg image-class-contain"
-                        />
+                    {option.images && option.images.length > 0 && (
+                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        {option.images.map((image, imageIndex) => (
+                          <div key={imageIndex} className="relative h-32 w-full">
+                            <Image
+                              src={image}
+                              alt={`Imagen ${imageIndex + 1} para la opción ${String.fromCharCode(65 + index)}`}
+                              fill={true}
+                              className="rounded-lg object-contain"
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
