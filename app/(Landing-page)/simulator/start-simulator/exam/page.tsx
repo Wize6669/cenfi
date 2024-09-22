@@ -12,7 +12,7 @@ import { useUserStore } from '@/store/userStore'
 
 interface Option {
   text: string
-  image?: string
+  images?: string[]
 }
 
 interface Question {
@@ -28,7 +28,7 @@ interface Question {
 
 export default function ExamInterface() {
   const [currentQuestion, setCurrentQuestion] = useState<number>(1)
-  const [timeRemaining, setTimeRemaining] = useState<number>(3000) // 1 hora en segundos
+  const [timeRemaining, setTimeRemaining] = useState<number>(3000)
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set())
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
   const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: string | null }>({})
@@ -51,9 +51,9 @@ export default function ExamInterface() {
       title: "Pregunta 1",
       content: "¿Cuál de las siguientes imágenes representa mejor el concepto de suma?",
       options: [
-        { text: "Imagen A", image: "/images/image-2.png" },
-        { text: "Imagen B", image: "/images/image-3.png" },
-        { text: "Imagen C", image: "/images/image-14.png" },
+        { text: "Imagen A", images: ["/images/image-2.png", "/images/image-2.png"]},
+        { text: "Imagen B", images: ["/images/image-3.png"] },
+        { text: "Imagen C", images: ["/images/image-14.png"] },
         { text: "Ninguna de las anteriores" }
       ],
       section: "Razonamiento Lógico",
@@ -344,8 +344,8 @@ export default function ExamInterface() {
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
                   <label key={index}
-                         className={'flex items-center p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-300 dark:text-gray-400'}>
-                    <div className={'flex items-center'}>
+                         className={'flex flex-col p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-300 dark:text-gray-400'}>
+                    <div className="flex items-center">
                       <input
                         type="radio"
                         name="answer"
@@ -357,14 +357,18 @@ export default function ExamInterface() {
                       <span className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
                       <span className="text-sm sm:text-base">{option.text}</span>
                     </div>
-                    {option.image && (
-                      <div className="mt-2 relative h-32 w-full sm:w-1/2 md:w-1/3">
-                        <Image
-                          src={option.image}
-                          alt={`Imagen para la opción ${String.fromCharCode(65 + index)}`}
-                          fill={true}
-                          className="rounded-lg image-class-contain"
-                        />
+                    {option.images && option.images.length > 0 && (
+                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        {option.images.map((image, imageIndex) => (
+                          <div key={imageIndex} className="relative h-32 w-full">
+                            <Image
+                              src={image}
+                              alt={`Imagen ${imageIndex + 1} para la opción ${String.fromCharCode(65 + index)}`}
+                              fill={true}
+                              className="rounded-lg object-contain"
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </label>

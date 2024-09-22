@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock } from 'lucide-react'
 import Confetti from 'react-confetti'
 
 export default function ExamScore() {
@@ -16,12 +16,13 @@ export default function ExamScore() {
   const [unanswered, setUnanswered] = useState<number>(0)
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
+  const [timeSpent, setTimeSpent] = useState<number>(0)
   const router = useRouter()
 
   useEffect(() => {
     const examData = localStorage.getItem('examData')
     if (examData) {
-      const { questions, userAnswers } = JSON.parse(examData)
+      const { questions, userAnswers, timeSpent } = JSON.parse(examData)
       const correct = questions.filter((q: any, index: number) =>
         q.correctAnswer === userAnswers[index + 1] && userAnswers[index + 1] !== null
       ).length
@@ -38,6 +39,7 @@ export default function ExamScore() {
       setCorrectAnswers(correct)
       setIncorrectAnswers(incorrect)
       setUnanswered(notAnswered)
+      setTimeSpent(timeSpent)
 
       if (correct === total) {
         setShowConfetti(true)
@@ -72,6 +74,13 @@ export default function ExamScore() {
 
   const percentage = score !== null ? (score / totalQuestions) * 100 : 0
 
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const remainingSeconds = seconds % 60
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       {showConfetti && (
@@ -90,94 +99,136 @@ export default function ExamScore() {
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-4xl">
-          <div className="flex justify-center mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-3xl">
+          <div className="flex justify-center mb-4">
             <Image
               src="/images/image-1.png"
               alt="CENFI Logo"
-              width={300}
-              height={100}
-              className="h-40 w-auto"
+              width={200}
+              height={67}
+              className="h-24 w-auto"
             />
           </div>
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-blue-400">Resultados del
-            Examen</h2>
-          <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-2">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-blue-800 dark:text-blue-200">Número total de preguntas:</span>
-              <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalQuestions}</span>
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">Resultados del Examen</h2>
+
+          <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-3 rounded-lg shadow-inner">
+            <div className="flex items-center justify-center space-x-3">
+              <Clock className="w-6 h-6 text-blue-500 dark:text-blue-300" />
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Tiempo empleado</h3>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatTime(timeSpent)}</p>
+              </div>
             </div>
           </div>
-          {score !== null && (
-            <>
-              <div className="mb-8">
-              <div className="relative pt-1">
-                  <div className="flex mb-2 items-center justify-between">
-                    <div>
-                      <span
-                        className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
-                        Progreso
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-blue-600">
-                        {percentage.toFixed(0)}%
-                      </span>
-                    </div>
+
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-base font-semibold text-gray-700 dark:text-gray-300">Progreso</span>
+              <span className="text-base font-bold text-blue-600 dark:text-blue-400">{percentage.toFixed(0)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
+              <div
+                className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${percentage}%` }}
+              ></div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+                <BarChart2 className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
+                Estadísticas
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
+                  <span className="text-gray-600 dark:text-gray-300 flex items-center text-sm">
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-500 dark:text-green-400" />
+                    Correctas
+                  </span>
+                  <span className="text-green-600 dark:text-green-400 font-semibold">{correctAnswers}</span>
+                </div>
+                <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
+                  <span className="text-gray-600 dark:text-gray-300 flex items-center text-sm">
+                    <XCircle className="w-4 h-4 mr-2 text-red-500 dark:text-red-400" />
+                    Incorrectas
+                  </span>
+                  <span className="text-red-600 dark:text-red-400 font-semibold">{incorrectAnswers}</span>
+                </div>
+                <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
+                  <span className="text-gray-600 dark:text-gray-300 flex items-center text-sm">
+                    <AlertCircle className="w-4 h-4 mr-2 text-yellow-500 dark:text-yellow-400" />
+                    Sin responder
+                  </span>
+                  <span className="text-yellow-600 dark:text-yellow-400 font-semibold">{unanswered}</span>
+                </div>
+                <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">Total de preguntas</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-semibold">{totalQuestions}</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+                <BarChart2 className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
+                Gráfico
+              </h3>
+              <div className="flex items-end h-36 space-x-2">
+                <div className="flex-1 bg-green-500 dark:bg-green-600 rounded-t-lg relative group" style={{ height: `${(correctAnswers / totalQuestions) * 100}%` }}>
+                  <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
+                    {((correctAnswers / totalQuestions) * 100).toFixed(1)}%
                   </div>
-                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-                    <div style={{width: `${percentage}%`}}
-                         className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                </div>
+                <div className="flex-1 bg-red-500 dark:bg-red-600 rounded-t-lg relative group" style={{ height: `${(incorrectAnswers / totalQuestions) * 100}%` }}>
+                  <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
+                    {((incorrectAnswers / totalQuestions) * 100).toFixed(1)}%
+                  </div>
+                </div>
+                <div className="flex-1 bg-yellow-500 dark:bg-yellow-600 rounded-t-lg relative group" style={{ height: `${(unanswered / totalQuestions) * 100}%` }}>
+                  <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
+                    {((unanswered / totalQuestions) * 100).toFixed(1)}%
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-green-100 dark:bg-green-800 p-4 rounded-lg flex items-center justify-between">
-                  <div>
-                    <p className="text-green-800 dark:text-green-200 font-semibold">Correctas</p>
-                    <p className="text-3xl font-bold text-green-600 dark:text-green-300">{correctAnswers}</p>
-                  </div>
-                  <CheckCircle className="h-12 w-12 text-green-500"/>
-                </div>
-                <div className="bg-red-100 dark:bg-red-800 p-4 rounded-lg flex items-center justify-between">
-                  <div>
-                    <p className="text-red-800 dark:text-red-200 font-semibold">Incorrectas</p>
-                    <p className="text-3xl font-bold text-red-600 dark:text-red-300">{incorrectAnswers}</p>
-                  </div>
-                  <XCircle className="h-12 w-12 text-red-500"/>
-                </div>
-                <div className="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg flex items-center justify-between">
-                  <div>
-                    <p className="text-yellow-800 dark:text-yellow-200 font-semibold">Sin responder</p>
-                    <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-300">{unanswered}</p>
-                  </div>
-                  <AlertCircle className="h-12 w-12 text-yellow-500"/>
-                </div>
+              <div className="flex justify-between mt-2 text-xs text-gray-600 dark:text-gray-400">
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                  Correctas
+                </span>
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+                  Incorrectas
+                </span>
+                <span className="flex items-center">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></div>
+                  Sin responder
+                </span>
               </div>
-              <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                {reviewAvailable && (
-                  <button
-                    onClick={handleReview}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
-                  >
-                    Revisar Intento
-                  </button>
-                )}
-                <button
-                  onClick={handleNewAttempt}
-                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
-                >
-                  Nuevo Intento
-                </button>
-                <button
-                  onClick={handleExit}
-                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
-                >
-                  Salir
-                </button>
-              </div>
-            </>
-          )}
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+            {reviewAvailable && (
+              <button
+                onClick={handleReview}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+              >
+                Revisar Intento
+              </button>
+            )}
+            <button
+              onClick={handleNewAttempt}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+            >
+              Nuevo Intento
+            </button>
+            <button
+              onClick={handleExit}
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+            >
+              Salir
+            </button>
+          </div>
         </div>
       </main>
     </div>
