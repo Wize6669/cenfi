@@ -1,24 +1,29 @@
 'use client';
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
 import React, {ChangeEvent, FormEvent, useEffect, useState, useRef} from 'react';
-import { useAuthStore } from "@/store/auth";
-import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import {IconButton } from '@mui/material'
-import { ArrowBack } from "@mui/icons-material";
-import UserTable from '@/components/UserTable';
+import {useAuthStore} from '@/store/auth';
+import {useRouter} from 'next/navigation';
+import {ChevronDown, ChevronUp} from 'lucide-react';
+import {IconButton} from '@mui/material'
+import {ArrowBack} from '@mui/icons-material';
+import UserTable from '@/components/UserTable/UserTable';
 import {PasswordInput} from '@/components/PasswordInput';
 import {UserNewUpdate} from '@/interfaces/User';
-import { axiosInstance } from '@/lib/axios';
-import { AxiosError } from 'axios';
-import { ErrorResponse } from '@/interfaces/ResponseAPI';
+import {axiosInstance} from '@/lib/axios';
+import {AxiosError} from 'axios';
+import {ErrorResponse} from '@/interfaces/ResponseAPI';
 import toast from 'react-hot-toast';
+import {Pagination} from '@/interfaces/Pagination';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
   const [user, setUser] = useState<UserNewUpdate>({
     name: '',
     lastName: '',
@@ -26,12 +31,24 @@ export default function Users() {
     password: '',
     roleId: null,
   });
-  const router = useRouter();
-  const [showLoginMessage, setShowLoginMessage] = useState(false);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: true,
+    previousPage: 0,
+    nextPage: 0,
+    total: 0,
+    pageSize: 10
+  });
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-
+  const queryClient = useQueryClient();
+  const {data: users, isLoading, isError} = useQuery({
+    queryFn: () => fetchUser(),
+    queryKey: ['users', pagination.currentPage, pagination.pageSize],
+  });
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
@@ -56,7 +73,6 @@ export default function Users() {
       ...user,
       [event.target.name]: event.target.value
     })
-    handleSelectChange();
   };
 
   const handleGetFullNameInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -83,9 +99,52 @@ export default function Users() {
     });
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({...prev, currentPage: newPage}));
+      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
+      router.push(`/admin/users?${urlParams.toString()}`);
+    }
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination(prev => ({...prev, pageSize: newPageSize}));
+    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
+    router.push(`/admin/users?${urlParams.toString()}`);
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    await addUserMutation()
+  }
 
+  const fetchUser = async () => {
+    const response = await axiosInstance.get(`/users?page=${pagination.currentPage}&count=${pagination.pageSize}`);
+    const {
+      data,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total
+    } = response.data;
+    setPagination(prev => ({
+      ...prev,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total,
+    }));
+
+    return data;
+  }
+
+  const addUser = async () => {
     try {
       await axiosInstance.post('/auth/sign-up', user);
       toast.success('Usuario creado con éxito');
@@ -93,8 +152,7 @@ export default function Users() {
       resetForm();
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error?.response?.status)
-        if(error?.response?.status === 400) {
+        if (error?.response?.status === 400) {
           const errors = error?.response?.data.errors;
           const errorApi = error?.response?.data.error;
 
@@ -131,6 +189,13 @@ export default function Users() {
     }
   }
 
+  const {mutateAsync: addUserMutation} = useMutation({
+    mutationFn: addUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: ['users']});
+    }
+  });
+
   if (showLoginMessage) {
     return (
       <div className={'flex flex-col min-h-screen'}>
@@ -148,14 +213,17 @@ export default function Users() {
     return null;
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   const goBack = () => {
-    router.back();
+    router.push('/admin/menu');
   };
 
   const handleSelectChange = () => {
     setIsSelectOpen(false);
   };
-
 
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
@@ -165,11 +233,14 @@ export default function Users() {
       <div className={'flex-grow flex flex-col items-center place-items-center px-4'}>
         <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
           <div className={'w-auto col-span-2'}>
-            <h1 className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración de
+            <h1
+              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración
+              de
               Usuarios</h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
+            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
+                        onClick={goBack}>
               <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
@@ -201,7 +272,7 @@ export default function Users() {
                 required={true}
                 minLength={3}
               />
-              <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+              <p className='absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs'>
                 Ingresa un nombre válido ejm: Juan Pérez.
               </p>
             </div>
@@ -209,7 +280,7 @@ export default function Users() {
 
           {/* Correo Electrónico */}
           <div>
-            <div className="content-start">
+            <div className='content-start'>
               <label
                 className={'text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'email'}
@@ -227,7 +298,7 @@ export default function Users() {
                 onChange={handleGetDataInput}
                 placeholder={'Ingresa un correo electrónico'}
               />
-              <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+              <p className='absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs'>
                 Ingresa un correo válido. Ejm: you@example.com
               </p>
             </div>
@@ -258,8 +329,8 @@ export default function Users() {
                   onBlur={() => setIsSelectOpen(false)}
                 >
                   <option value="">Selecciona un rol</option>
-                  <option value="1">Admin</option>
-                  <option value="2">Profesor</option>
+                  <option value='1'>Admin</option>
+                  <option value='2'>Profesor</option>
                 </select>
                 <div className={'absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'}>
                   {isSelectOpen ? (
@@ -282,8 +353,11 @@ export default function Users() {
         </form>
       </div>
       <div className={'flex justify-center'}>
-        <div className="w-2/3 scale-90">
-          <UserTable/>
+        <div className='w-2/3 scale-90'>
+          {!isLoading && <UserTable handlePageChange={handlePageChange}
+                                    handlePageSizeChange={handlePageSizeChange}
+                                    data={users}
+                                    pagination={pagination}/>}
         </div>
       </div>
       <Footer/>

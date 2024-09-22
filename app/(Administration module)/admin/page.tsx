@@ -9,12 +9,12 @@ import { useRouter } from 'next/navigation';
 import { config } from '@/config';
 import { useAuthStore } from '@/store/auth';
 import { setCookie, getCookie } from 'cookies-next';
-import { ChevronDown, ChevronUp } from "lucide-react";
-import {ThemeToggle} from "@/components/ThemeToggle";
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import {ThemeToggle} from '@/components/ThemeToggle';
 import { motion } from 'framer-motion';
 import { PasswordInput } from '@/components/PasswordInput';
-import {IconButton} from "@mui/material";
-import { Home } from "@mui/icons-material";
+import {IconButton} from '@mui/material';
+import { Home } from '@mui/icons-material';
 
 export default function LoginAdmin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -177,7 +177,7 @@ export default function LoginAdmin() {
                   onChange={handleGetDataInput}
                   required={true}
                 />
-                <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs bottom-[-17px]">
+                <p className='absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs bottom-[-17px]'>
                   Por favor ingresa un correo electrónico válido.
                 </p>
               </div>
@@ -212,7 +212,7 @@ export default function LoginAdmin() {
                       <ChevronDown className={'w-4 h-4 text-gray-600 dark:text-gray-400'}/>
                     )}
                   </div>
-                  <p className="absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs">
+                  <p className='absolute invisible peer-focus:peer-invalid:visible text-pink-600 text-xs'>
                     Selecciona un rol válido.
                   </p>
                 </div>
