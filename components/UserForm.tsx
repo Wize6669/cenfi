@@ -6,6 +6,8 @@ import {AxiosError} from 'axios';
 import {ErrorResponse} from '@/interfaces/ResponseAPI';
 import {useClipboardCopy} from '@/hooks/useClipboardCopy';
 import {FaRegCopy} from 'react-icons/fa6';
+import {generatePassword} from "@/utils/generatePassword";
+import {Pagination} from "@/interfaces/Pagination";
 
 interface PropsUserForm {
   id: string
@@ -20,9 +22,19 @@ export default function UserForm({id}: PropsUserForm) {
     role: '',
   });
   const copyToClipboard = useClipboardCopy();
-  const [text, setText] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: true,
+    previousPage: 0,
+    nextPage: 0,
+    total: 0,
+    pageSize: 10
+  });
 
   useEffect(() => {
     axiosInstance.get(`/users/${id}`).then((response) => {
@@ -60,7 +72,7 @@ export default function UserForm({id}: PropsUserForm) {
         role: '',
       });
     });
-  }, [id, user])
+  }, []);
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setUser({
@@ -86,17 +98,21 @@ export default function UserForm({id}: PropsUserForm) {
     });
   };
 
-  const handleChangeText = (event: ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
-  };
-
   const handleCopyClick = async () => {
-    await copyToClipboard(text);
+    await copyToClipboard(newPassword);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleChecked = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChecked = async (event: ChangeEvent<HTMLInputElement>) => {
+    if(!event.target.checked) {
+
+      return setIsChecked(false);
+    }
+
+    const newPassword  = generatePassword(8);
+    await handleChangePassword(newPassword);
+    setNewPassword(newPassword);
     setIsChecked(event.target.checked);
   }
 
@@ -110,7 +126,6 @@ export default function UserForm({id}: PropsUserForm) {
       resetForm();
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error?.response?.status)
         if (error?.response?.status === 400) {
           const errors = error?.response?.data.errors;
           const errorApi = error?.response?.data.error;
@@ -134,6 +149,19 @@ export default function UserForm({id}: PropsUserForm) {
       }
 
       resetForm();
+    }
+  };
+
+  const handleChangePassword = async (newPassword: string) => {
+    try {
+      await axiosInstance.put('/admin/reset-password', {
+        email: user.email,
+        newPassword
+      });
+
+      toast.success('Contraseña restablecida con éxito');
+    } catch (e) {
+      toast.error('No se pudo restablecer la contraseña');
     }
   }
 
@@ -230,8 +258,7 @@ export default function UserForm({id}: PropsUserForm) {
               <input
                 type={'text'}
                 name={'newPassword'}
-                value={'dede'}
-                onChange={handleChangeText}
+                value={newPassword}
                 readOnly={true}
               />
               <button

@@ -1,6 +1,6 @@
 'use client'
 
-import React, {MouseEvent, useEffect, useState} from 'react'
+import React, {MouseEvent, useState} from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,7 +11,7 @@ import {
   ColumnDef,
   SortingState,
 } from '@tanstack/react-table';
-import {ChevronDown, ChevronLeft, ChevronRight, Search} from 'lucide-react';
+import {Search} from 'lucide-react';
 import {axiosInstance} from '@/lib/axios';
 import {UserTableInterface} from '@/interfaces/User';
 import toast from 'react-hot-toast';
@@ -19,29 +19,21 @@ import {AxiosError} from 'axios';
 import './UserTable.css'
 import Modal from '@/components/Modal/Modal';
 import UserForm from "@/components/UserForm";
+import {GrFormPrevious} from "react-icons/gr";
+import {GrFormNext} from "react-icons/gr";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Pagination} from "@/interfaces/Pagination";
 
-interface Pagination {
-  currentPage: number
-  totalPages: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
-  total: number
-  pageSize: number
+interface PropsTable {
+  handlePageChange: (newPage: number) => void,
+  handlePageSizeChange: (newPageSize: number) => void,
+  data: UserTableInterface[],
+  pagination: Pagination,
 }
 
-export default function UserTable() {
+export default function UserTable({handlePageChange, handlePageSizeChange, data, pagination}: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [data, setData] = useState<UserTableInterface[]>([]);
-  const [pagination, setPagination] = useState<Pagination>({
-    currentPage: 1,
-    totalPages: 1,
-    hasPreviousPage: false,
-    hasNextPage: true,
-    total: 5,
-    pageSize: 5
-  });
-  const [isOpen, setIsOpen] = useState(false);
   const columnHelper = createColumnHelper<UserTableInterface>();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [userId, setUserId] = useState('');
@@ -141,39 +133,16 @@ export default function UserTable() {
     onSortingChange: setSorting,
     initialState: {
       pagination: {
-        pageSize: pagination.pageSize,
+        pageSize: 100,
       },
     },
   });
 
-  useEffect(() => {
-    axiosInstance
-      .get(`/users?page=${pagination.currentPage}&count=${pagination.pageSize}`)
-      .then(response => {
-        const {data, currentPage, totalPages, hasPreviousPage, hasNextPage, total} = response.data;
-        setPagination(prev => ({
-          ...prev,
-          currentPage,
-          totalPages,
-          hasPreviousPage,
-          hasNextPage,
-          total,
-        }));
-        setData(data);
-      })
-      .catch(error => {
-        if (error instanceof AxiosError) {
-          toast.error('No se pudo listar a los usuarios');
-        } else {
-          toast.error('Hubo un error inesperado');
-        }
-      });
-  }, [pagination.currentPage, pagination.pageSize]);
+  const queryClient = useQueryClient();
 
-  const handleDeleteBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+  const deleteUser = async (id: string) => {
     try {
       const response = await axiosInstance.delete(`/users/${id}`);
-
       if (response.status === 204) {
         toast.success('Usuario eliminado');
       }
@@ -184,11 +153,30 @@ export default function UserTable() {
         toast.error('Hubo un error inesperado');
       }
     }
+  }
+
+  const {mutateAsync: deleteUserMutation} = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: ['users']});
+    }
+  });
+
+  const handleDeleteBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+    await deleteUserMutation(id)
   };
 
   const handleEditBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
     setUserId(id);
     setIsOpenModal(prevState => !prevState);
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className='px-6 pb-6 bg-white rounded-lg shadow-lg'>
+        <div>No hay datos disponibles</div>
+      </div>
+    );
   }
 
   return (
@@ -198,32 +186,22 @@ export default function UserTable() {
         <div className='flex items-center space-x-2'>
           <span className='text-sm text-gray-700'>Filas por página:</span>
           <div className='relative'>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className='flex items-center justify-between w-20 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              aria-expanded={isOpen}
-            >
-              <span>{table.getState().pagination.pageSize}</span>
-              <ChevronDown className='w-4 h-4 ml-2'/>
-            </button>
-            {isOpen && (
-              <div className='absolute z-10 w-20 mt-1 bg-white border border-gray-300 rounded-md shadow-lg'>
-                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                  <button
-                    key={pageSize}
-                    onClick={() => {
-                      table.setPageSize(pageSize);
-                      setPagination({...pagination, pageSize});
-                      setIsOpen(false);
-                    }}
-                    className='block w-full px-4 py-2 text-sm text-left hover:bg-gray-100'
-                    aria-label={`Seleccionar ${pageSize} filas`}
-                  >
+            <div className='relative'>
+              <select
+                className={'flex items-center justify-between w-20 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'}
+                value={table.getState().pagination.pageSize}
+                onChange={e => {
+                  handlePageSizeChange(Number(e.target.value))
+                  table.setPageSize(Number(e.target.value))
+                }}
+              >
+                {[10, 20, 30, 40, 50].map(pageSize => (
+                  <option key={pageSize} value={pageSize}>
                     {pageSize}
-                  </button>
+                  </option>
                 ))}
-              </div>
-            )}
+              </select>
+            </div>
           </div>
         </div>
         <div className='relative'>
@@ -275,28 +253,43 @@ export default function UserTable() {
         <div className='flex-1 text-sm text-gray-700'>
           Total {pagination.total} registros
         </div>
-        <div className='flex items-center space-x-2'>
-          <form className='flex gap-2 items-center'>
-            <button
-              className='px-2 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50'
-              onClick={() => setPagination({...pagination, currentPage: pagination.currentPage - 1})}
-              disabled={pagination.hasPreviousPage}
-              aria-label='Página anterior'
-            >
-              <ChevronLeft size={16}/>
-            </button>
+        <div className='flex gap-5 mr-5'>
+          <button onClick={() => handlePageChange(1)}
+                  className="border-zinc-500 rounded-md border-2 px-5 relative group">
+            1
+            <span
+              className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100">
+                Primera página
+            </span>
+          </button>
+          <button onClick={() => handlePageChange(pagination.previousPage ?? 1)}
+                  className={`border-zinc-500 rounded-md border-2 px-5 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
+                  disabled={!pagination.hasPreviousPage}><GrFormPrevious/>
+            <span
+              className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100">
+                Anterior página
+            </span>
+          </button>
+          <span
+            className={'border-zinc-500 rounded-md border-2 px-5'}>{pagination.currentPage} / {pagination.totalPages}
+          </span>
+          <button onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
+                  className={`border-zinc-500 rounded-md border-2 px-5 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
+                  disabled={!pagination.hasNextPage}><GrFormNext/>
+            <span
+              className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100">
+                Siguiente página
+            </span>
+          </button>
 
-            <span>{pagination.currentPage}/{pagination.totalPages}</span>
-
-            <button
-              className='px-2 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50'
-              onClick={() => setPagination({...pagination, currentPage: pagination.currentPage + 1})}
-              disabled={pagination.hasNextPage}
-              aria-label='Página siguiente'
-            >
-              <ChevronRight size={16}/>
-            </button>
-          </form>
+          <button onClick={() => handlePageChange(pagination.totalPages)}
+                  className="border-zinc-500 rounded-md border-2 px-5 relative group">
+            {pagination.totalPages}
+            <span
+              className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100">
+                Ultima página
+            </span>
+          </button>
         </div>
       </div>
 

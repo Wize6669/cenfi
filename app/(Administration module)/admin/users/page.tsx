@@ -11,14 +11,18 @@ import {ArrowBack} from '@mui/icons-material';
 import UserTable from '@/components/UserTable/UserTable';
 import {PasswordInput} from '@/components/PasswordInput';
 import {UserNewUpdate} from '@/interfaces/User';
-import { axiosInstance } from '@/lib/axios';
-import { AxiosError } from 'axios';
-import { ErrorResponse } from '@/interfaces/ResponseAPI';
+import {axiosInstance} from '@/lib/axios';
+import {AxiosError} from 'axios';
+import {ErrorResponse} from '@/interfaces/ResponseAPI';
 import toast from 'react-hot-toast';
-
+import {Pagination} from '@/interfaces/Pagination';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
   const [user, setUser] = useState<UserNewUpdate>({
     name: '',
     lastName: '',
@@ -26,10 +30,23 @@ export default function Users() {
     password: '',
     roleId: null,
   });
-  const router = useRouter();
-  const [showLoginMessage, setShowLoginMessage] = useState(false);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: true,
+    previousPage: 0,
+    nextPage: 0,
+    total: 0,
+    pageSize: 10
+  });
+  const queryClient = useQueryClient();
+  const {data: users, isLoading, isError} = useQuery({
+    queryFn: () => fetchUser(),
+    queryKey: ['users', pagination.currentPage, pagination.pageSize],
+  });
   const formRef = useRef<HTMLFormElement | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
@@ -80,9 +97,52 @@ export default function Users() {
     });
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({...prev, currentPage: newPage}));
+      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
+      router.push(`/admin/users?${urlParams.toString()}`);
+    }
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination(prev => ({...prev, pageSize: newPageSize}));
+    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
+    router.push(`/admin/users?${urlParams.toString()}`);
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    await addUserMutation()
+  }
 
+  const fetchUser = async () => {
+    const response = await axiosInstance.get(`/users?page=${pagination.currentPage}&count=${pagination.pageSize}`);
+    const {
+      data,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total
+    } = response.data;
+    setPagination(prev => ({
+      ...prev,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total,
+    }));
+
+    return data;
+  }
+
+  const addUser = async () => {
     try {
       await axiosInstance.post('/auth/sign-up', user);
       toast.success('Usuario creado con éxito');
@@ -90,8 +150,7 @@ export default function Users() {
       resetForm();
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log(error?.response?.status)
-        if(error?.response?.status === 400) {
+        if (error?.response?.status === 400) {
           const errors = error?.response?.data.errors;
           const errorApi = error?.response?.data.error;
 
@@ -128,6 +187,13 @@ export default function Users() {
     }
   }
 
+  const {mutateAsync: addUserMutation} = useMutation({
+    mutationFn: addUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: ['users']});
+    }
+  });
+
   if (showLoginMessage) {
     return (
       <div className={'flex flex-col min-h-screen'}>
@@ -143,6 +209,10 @@ export default function Users() {
 
   if (!isLoggedIn) {
     return null;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -227,7 +297,10 @@ export default function Users() {
 
       <div className={'flex justify-center mb-5'}>
         <div className={'w-2/3'}>
-          <UserTable/>
+          {!isLoading && <UserTable handlePageChange={handlePageChange}
+                                    handlePageSizeChange={handlePageSizeChange}
+                                    data={users}
+                                    pagination={pagination}/>}
         </div>
       </div>
       <Footer/>
