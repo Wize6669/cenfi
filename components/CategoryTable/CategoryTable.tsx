@@ -12,12 +12,12 @@ import {
   SortingState,
 } from '@tanstack/react-table';
 import { axiosInstance } from '@/lib/axios';
-import { UserTableInterface } from '@/interfaces/User';
+import { CategoryTable } from '@/interfaces/Categories';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
-import './UserTable.css'
+import './CategoryTable.css'
 import Modal from '@/components/Modal/Modal';
-import UserForm from "@/components/UserForm";
+import CategoryForm from "@/components/CategoryForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "@/interfaces/Pagination";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react'
@@ -25,51 +25,25 @@ import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucid
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
   handlePageSizeChange: (newPageSize: number) => void,
-  data: UserTableInterface[],
+  data: CategoryTable[],
   pagination: Pagination,
 }
 
 export default function UserTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const columnHelper = createColumnHelper<UserTableInterface>();
+  const columnHelper = createColumnHelper<CategoryTable>();
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [userId, setUserId] = useState('');
+  const [categoryId, setCategoryId] = useState(0);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
-  const columns: ColumnDef<UserTableInterface, any>[] = [
+  const columns: ColumnDef<CategoryTable, any>[] = [
     columnHelper.accessor('name', {
-      id: 'fullName',
-      header: 'NOMBRE COMPLETO',
+      id: 'name',
+      header: 'NOMBRE',
       cell: info => (
         <div className='text-center'>
-          {info.row.original.name} {info.row.original.lastName}
-        </div>
-      ),
-    }),
-    columnHelper.accessor('email', {
-      id: 'email',
-      header: 'CORREO',
-      cell: info => (
-        <div className='text-center'>
-          {info.getValue()}
-        </div>
-      ),
-    }),
-    columnHelper.accessor('role', {
-      id: 'role',
-      header: 'ROL',
-      cell: info => (
-        <div className='flex justify-center'>
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-              info.getValue() === 'admin'
-                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-            }`}
-          >
-            {info.getValue() === 'admin' ? 'Administrador' : 'Profesor'}
-          </span>
+          {info.row.original.name}
         </div>
       ),
     }),
@@ -152,40 +126,40 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   const queryClient = useQueryClient();
 
-  const deleteUser = async (id: string) => {
-    const response = await axiosInstance.delete(`/users/delete/${id}`);
+  const deleteCategory = async (id: number) => {
+    const response = await axiosInstance.delete(`/category/delete-category/${id}`);
     if (response.status === 204) {
-      toast.success('Usuario eliminado');
+      toast.success('Categoría eliminada');
     }
     return response.data;
   }
 
-  const { mutateAsync: deleteUserMutation } = useMutation({
-    mutationFn: deleteUser,
+  const { mutateAsync: deleteCategoryMutation } = useMutation({
+    mutationFn: deleteCategory,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['users'] });
+      await queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error('No se pudo eliminar el usuario');
+        toast.error('No se pudo eliminar la categoría');
       } else {
         toast.error('Hubo un error inesperado');
       }
     }
   });
 
-  const handleDeleteBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteBtn = (id: number) => async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      await deleteUserMutation(id);
+      await deleteCategoryMutation(id);
     } catch (error) {
-      console.error('Error al eliminar usuario:', error);
+      console.error('Error al eliminar la categoría:', error);
     }
   };
 
-  const handleEditBtn = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
+  const handleEditBtn = (id: number) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setUserId(id);
+    setCategoryId(id);
     setIsOpenModal(prevState => !prevState);
   }
 
@@ -199,7 +173,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   return (
     <div className="px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Usuarios</h2>
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Categorías</h2>
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-2 w-full md:w-auto">
           <span className="text-sm text-gray-700 dark:text-gray-300">Filas por página:</span>
@@ -319,7 +293,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
       </div>
 
       <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
-        <UserForm id={userId}/>
+        <CategoryForm id={categoryId}/>
       </Modal>
     </div>
   )

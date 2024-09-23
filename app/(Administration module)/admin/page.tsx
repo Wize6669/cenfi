@@ -192,7 +192,7 @@ export default function LoginAdmin() {
                 <div className={'relative w-40'}>
                   <select
                     className={
-                      'peer border border-gray-300 dark:border-gray-600 rounded-md w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200 peer-invalid:border-pink-600'
+                      'peer border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200 peer-invalid:border-pink-600'
                     }
                     name={'roleId'}
                     onChange={handleGetDataSelect}
