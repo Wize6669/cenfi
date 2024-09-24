@@ -105,6 +105,9 @@ export default function ExamInterface() {
   }, [questions, selectedOptions, totalQuestions]);
 
   const saveExamData = useCallback(() => {
+    const totalAnswered = Object.values(selectedOptions).filter(option => option !== null).length
+    const percentageAnswered = (totalAnswered / totalQuestions) * 100
+
     const examData = {
       questions,
       userAnswers: selectedOptions,
@@ -112,11 +115,19 @@ export default function ExamInterface() {
       fullName: userSimulator.fullName,
       email: userSimulator.email,
       score: calculateScore(),
+      lastAnsweredQuestion: currentQuestion,
+      totalQuestions: totalQuestions,
+      totalAnswered: totalAnswered,
+      percentageAnswered: percentageAnswered
     }
     localStorage.setItem('examData', JSON.stringify(examData))
-    localStorage.setItem('reviewAvailable', 'true')
+
+    // Permitimos la revisión solo si se ha respondido más del 90% de las preguntas
+    const allowReview = percentageAnswered > 90
+    localStorage.setItem('reviewAvailable', allowReview.toString())
+
     router.replace('/simulator/start-simulator/exam/score')
-  }, [questions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email])
+  }, [questions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestion, totalQuestions])
 
   const { showExitFinishToast } = useExitFinishToast(handleExit, saveExamData)
   const { showFiveMinuteWarning } = useFiveMinuteWarning(userSimulator.fullName ?? 'Usuario')
@@ -184,7 +195,7 @@ export default function ExamInterface() {
 
   const handleExitOrFinish = () => {
     const action = currentQuestion === totalQuestions ? 'finalizar' : 'salir'
-    showExitFinishToast(action)
+      showExitFinishToast(action)
   }
 
   const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]

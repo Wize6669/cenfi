@@ -104,7 +104,7 @@ export default function UserForm({id}: PropsUserForm) {
   });
 
   return (
-    <div className={'flex flex-col h-1/3'}>
+    <div className={'w-full flex flex-col h-1/3'}>
       <h1 className={'font-bold text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Categoría</h1>
 
       <form className={'flex flex-col snap-y'} ref={formRef} onSubmit={handleSubmit}>
@@ -114,14 +114,14 @@ export default function UserForm({id}: PropsUserForm) {
               Categoría
             </label>
             <input
-              className={'border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'text'}
               name={'name'}
               onChange={handleGetDataInput}
               value={category.name}
               placeholder={'Ingresa el nomnbre de la categoría'}
               required={true}
-              style={{width: '380px', height: '35px'}}
+              style={{ height: '35px'}}
             />
           </div>
         <div className={'flex justify-center items-center'}>

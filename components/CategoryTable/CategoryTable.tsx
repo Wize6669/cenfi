@@ -21,6 +21,8 @@ import CategoryForm from "@/components/CategoryForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "@/interfaces/Pagination";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
 
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
@@ -29,18 +31,20 @@ interface PropsTable {
   pagination: Pagination,
 }
 
-export default function UserTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
+export default function CateTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<CategoryTable>();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [categoryId, setCategoryId] = useState(0);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
 
   const columns: ColumnDef<CategoryTable, any>[] = [
     columnHelper.accessor('name', {
       id: 'name',
-      header: 'NOMBRE',
+      header: 'CATEGORÍA',
       cell: info => (
         <div className='text-center'>
           {info.row.original.name}
@@ -150,11 +154,19 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   const handleDeleteBtn = (id: number) => async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    try {
-      await deleteCategoryMutation(id);
-    } catch (error) {
-      console.error('Error al eliminar la categoría:', error);
+    setCategoryToDelete(id)
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (categoryToDelete) {
+      try {
+        await deleteCategoryMutation(categoryToDelete);
+      } catch (error) {
+        console.error('Error al eliminar la categoría:', error);
+      }
     }
+    setIsConfirmOpen(false);
   };
 
   const handleEditBtn = (id: number) => (event: MouseEvent<HTMLButtonElement>) => {
@@ -235,7 +247,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
           ))}
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {table.getRowModel().rows.map((row, i) => (
+          {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -251,7 +263,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
       {/* Paginación */}
       <div className='mt-4 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0'>
         <div className='text-sm text-gray-700 dark:text-gray-300'>
-          Total {pagination.total} registros
+          <span className={'font-medium'}>Total: </span>{pagination.total} registros
         </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
@@ -295,6 +307,67 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
       <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
         <CategoryForm id={categoryId}/>
       </Modal>
+
+      <Transition appear show={isConfirmOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setIsConfirmOpen(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
+                  >
+                    Confirmar eliminación
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      ¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex justify-end space-x-3">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                      onClick={confirmDelete}
+                    >
+                      Eliminar
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={() => setIsConfirmOpen(false)}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   )
 }

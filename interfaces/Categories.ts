@@ -1,5 +1,5 @@
 export interface Categories {
-  id?: number;
+  id: number;
   name: string;
 }
 
@@ -12,3 +12,9 @@ export interface CategoryTable {
   name: string;
 }
 
+export interface PaginatedResponse {
+  data: Categories[];
+  currentPage: number;
+  totalPages: number;
+  total: number;
+}

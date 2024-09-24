@@ -2,11 +2,51 @@
 
 import React, { useState, useEffect } from 'react'
 import { ChevronDown, ChevronUp } from "lucide-react";
+import axios from 'axios';
+import { Categories, PaginatedResponse } from "@/interfaces/Categories";
+import {config} from "@/config";
 
 const DynamicInputs: React.FC = () => {
   const [count, setCount] = useState(1)
   const [inputs, setInputs] = useState<{ select: string; input: string }[]>([{ select: '', input: '' }])
   const [openSelect, setOpenSelect] = useState<number | null>(null)
+  const [categories, setCategories] = useState<Categories[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
+
+  useEffect(() => {
+    const fetchAllCategories = async () => {
+      try {
+        setIsLoading(true);
+        let allCategories: Categories[] = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        do {
+          const response = await axios.get<PaginatedResponse>(`${HOST_BACK_END}/api/v1/category`, {
+            params: {
+              page: currentPage,
+              count: 500
+            }
+          });
+
+          allCategories = [...allCategories, ...response.data.data];
+          currentPage++;
+          totalPages = response.data.totalPages;
+        } while (currentPage <= totalPages);
+
+        setCategories(allCategories);
+        setIsLoading(false);
+      } catch (err) {
+        setError('Error al cargar las categorías');
+        setIsLoading(false);
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchAllCategories();
+  }, [HOST_BACK_END]);
 
   useEffect(() => {
     setInputs((prevInputs) => {
@@ -37,6 +77,14 @@ const DynamicInputs: React.FC = () => {
     const newInputs = [...inputs]
     newInputs[index].input = value
     setInputs(newInputs)
+  }
+
+  if (isLoading) {
+    return <div>Cargando categorías...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -73,10 +121,12 @@ const DynamicInputs: React.FC = () => {
                 required={true}
                 className="appearance-none text-sm  w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
               >
-                <option value=" ">Seleccione una categoría</option>
-                <option value="opcion1">Razonamiento Matemático</option>
-                <option value="opcion2">Rozonamiento Lógico</option>
-                <option value="opcion3">Razonamiento Abstracto</option>
+                <option value="">Seleccione una categoría</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 {openSelect === index ? (

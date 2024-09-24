@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock } from 'lucide-react'
+import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info } from 'lucide-react'
 import Confetti from 'react-confetti'
 
 export default function ExamScore() {
@@ -17,12 +17,22 @@ export default function ExamScore() {
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [timeSpent, setTimeSpent] = useState<number>(0)
+  const [percentageAnswered, setPercentageAnswered] = useState<number>(0)
+  const [hasReviewed, setHasReviewed] = useState<boolean>(false)
   const router = useRouter()
 
   useEffect(() => {
     const examData = localStorage.getItem('examData')
+    const reviewedStatus = localStorage.getItem('hasReviewed')
+
     if (examData) {
-      const { questions, userAnswers, timeSpent } = JSON.parse(examData)
+      const {
+        questions,
+        userAnswers,
+        timeSpent,
+        percentageAnswered
+      } = JSON.parse(examData)
+
       const correct = questions.filter((q: any, index: number) =>
         q.correctAnswer === userAnswers[index + 1] && userAnswers[index + 1] !== null
       ).length
@@ -40,12 +50,17 @@ export default function ExamScore() {
       setIncorrectAnswers(incorrect)
       setUnanswered(notAnswered)
       setTimeSpent(timeSpent)
+      setPercentageAnswered(percentageAnswered)
 
       if (correct === total) {
         setShowConfetti(true)
       }
+
+      const canReview = percentageAnswered > 10 && !reviewedStatus
+      setReviewAvailable(canReview)
     }
-    setReviewAvailable(localStorage.getItem('reviewAvailable') === 'true')
+
+    setHasReviewed(reviewedStatus === 'true')
 
     const updateWindowSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight })
@@ -57,18 +72,22 @@ export default function ExamScore() {
   }, [])
 
   const handleReview = () => {
+    localStorage.setItem('hasReviewed', 'true')
+    setHasReviewed(true)
     router.push('/simulator/start-simulator/exam/review')
   }
 
   const handleNewAttempt = () => {
     localStorage.removeItem('examData')
     localStorage.removeItem('reviewAvailable')
+    localStorage.removeItem('hasReviewed')
     router.push('/simulator/')
   }
 
   const handleExit = () => {
     localStorage.removeItem('examData')
     localStorage.removeItem('reviewAvailable')
+    localStorage.removeItem('hasReviewed')
     router.push('/')
   }
 
@@ -106,7 +125,7 @@ export default function ExamScore() {
               alt="CENFI Logo"
               width={200}
               height={67}
-              className="h-24 w-auto"
+              className="h-24 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
             />
           </div>
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">Resultados del Examen</h2>
@@ -208,23 +227,30 @@ export default function ExamScore() {
           </div>
 
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-            {reviewAvailable && (
+            {reviewAvailable ? (
               <button
                 onClick={handleReview}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
               >
                 Revisar Intento
               </button>
-            )}
+            ) : percentageAnswered <= 10 && !hasReviewed ? (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-start space-x-3 flex-1">
+                <Info className="flex-shrink-0 h-5 w-5 text-yellow-500" />
+                <p className="text-sm">
+                  La revisión no está disponible porque no se respondió suficientes preguntas.
+                </p>
+              </div>
+            ) : null}
             <button
               onClick={handleNewAttempt}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Nuevo Intento
             </button>
             <button
               onClick={handleExit}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out flex-1 text-sm"
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Salir
             </button>

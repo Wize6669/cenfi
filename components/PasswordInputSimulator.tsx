@@ -1,7 +1,8 @@
 'use client'
 
 import React, {useState, ChangeEvent, useRef, useEffect } from 'react'
-import { Eye, EyeOff, RefreshCw, ClipboardCopy, Check } from 'lucide-react'
+import { Eye, EyeOff, RefreshCw, Check } from 'lucide-react'
+import { FaRegCopy } from 'react-icons/fa6';
 import { useClipboardCopy } from '@/hooks/useClipboardCopy'
 import { toast, Toaster } from 'react-hot-toast'
 
@@ -79,7 +80,7 @@ export default function PasswordInput({password, handleGetDataInput, label = "Co
             onClick={handleCopyPassword}
             className="text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 focus:outline-none peer-focus:text-blue-500"
           >
-            {isCopied ? <Check className="h-4 w-4 text-gray-400" /> : <ClipboardCopy className="h-4 w-4" />}
+            {isCopied ? <Check className="h-4 w-4 text-gray-400" /> : <FaRegCopy className="h-4 w-4" />}
           </button>
           <button
             type="button"

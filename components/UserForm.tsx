@@ -182,7 +182,7 @@ export default function UserForm({id}: PropsUserForm) {
   }
 
   return (
-    <div className={'flex flex-col h-1/3'}>
+    <div className={'w-full flex flex-col h-1/3'}>
       <h1 className={'font-bold text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Usuario</h1>
 
       <form className={'flex flex-col snap-y'} ref={formRef} onSubmit={handleSubmit}>
@@ -192,14 +192,14 @@ export default function UserForm({id}: PropsUserForm) {
               Nombre y Apellido
             </label>
             <input
-              className={'border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'text'}
               name={'fullName'}
               onChange={handleGetFullNameInput}
               value={user.name + ' ' + user.lastName}
               placeholder={'Ingresa tu nombre y apellido'}
               required={true}
-              style={{width: '380px', height: '35px'}}
+              style={{height: '35px'}}
             />
           </div>
 
@@ -208,14 +208,14 @@ export default function UserForm({id}: PropsUserForm) {
               Correo
             </label>
             <input
-              className={'border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'email'}
               name={'email'}
               required={true}
               onChange={handleGetDataInput}
               value={user.email}
               placeholder={'Ingresa tu correo electrónico'}
-              style={{width: '380px', height: '35px'}}
+              style={{height: '35px'}}
             />
           </div>
 
@@ -269,13 +269,13 @@ export default function UserForm({id}: PropsUserForm) {
               Contaseña temporal
             </label>
 
-            <div className={'flex items-center justify-between border-2 rounded-md shadow-sm border-[#E5E7EB] px-2'}>
+            <div className={'w-full flex items-center justify-between border rounded-md shadow-sm border-[#E5E7EB] px-2'}>
               <input
                 type={'text'}
                 name={'newPassword'}
                 value={newPassword}
                 readOnly={true}
-                style={{height: '30px'}}
+                style={{height: '35px'}}
               />
               <button
                 type='button'
