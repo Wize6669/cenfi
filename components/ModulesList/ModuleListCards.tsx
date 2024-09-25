@@ -24,6 +24,10 @@ export default function ModuleListCards() {
     router.push('/admin/simulator');
   }
 
+  const handleQuestionsModule = () => {
+    router.push('/admin/questions');
+  }
+
   const modules = [
     userAuth?.roleId === 1 ? {
       icon: <FaUser size={65} />,
@@ -33,7 +37,7 @@ export default function ModuleListCards() {
     {
       icon: <FaRegCircleQuestion size={65} />,
       title: "Gestión de Preguntas",
-      onClick: () => {}
+      onClick: handleQuestionsModule
     },
     {
       icon: <MdOutlineCategory size={65} />,

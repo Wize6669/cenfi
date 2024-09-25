@@ -1,5 +1,81 @@
 'use client'
 
+import React from 'react'
+
+interface RadioNavigationProps {
+  value: boolean | null
+  onChange: (value: boolean | null) => void
+  showError: boolean
+}
+
+interface CustomRadioProps {
+  label: string
+  value: boolean
+  checked: boolean
+  onChange: (value: boolean) => void
+}
+
+const CustomRadio: React.FC<CustomRadioProps> = ({ label, value, checked, onChange }) => (
+  <label className="flex items-center cursor-pointer">
+    <input
+      type="radio"
+      name="navigation"
+      value={value.toString()}
+      className="hidden"
+      checked={checked}
+      onChange={() => onChange(value)}
+    />
+    <div className={`w-5 h-5 rounded-full border ${checked ? 'border-blue-500 bg-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
+      {checked && <div className="w-2 h-2 rounded-full bg-white"></div>}
+    </div>
+    <span className={`ml-2 text-sm sm:text-base font-medium ${checked ? 'text-blue-600' : 'text-gray-700 dark:text-gray-400'}`}>
+      {label}
+    </span>
+  </label>
+)
+
+const RadioNavigation: React.FC<RadioNavigationProps> = ({ value, onChange, showError }) => {
+  return (
+    <div className={'flex flex-col space-y-1.5'}>
+      <label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium">
+        Navegación
+      </label>
+      <div className="flex flex-row items-center space-x-10 justify-center">
+        <CustomRadio
+          label="Libre"
+          value={true}
+          checked={value === true}
+          onChange={onChange}
+        />
+        <CustomRadio
+          label="Secuencial"
+          value={false}
+          checked={value === false}
+          onChange={onChange}
+        />
+      </div>
+      {value === true && (
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          Puedes moverte entre las preguntas en cualquier orden.
+        </div>
+      )}
+      {value === false && (
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+          Debes responder las preguntas en orden.
+        </div>
+      )}
+      {showError && value === null && (
+        <div className="text-xs text-red-600 dark:text-red-400 mt-1">
+          Por favor, seleccione un tipo de navegación.
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default RadioNavigation
+/*'use client'
+
 import React, { useState } from 'react'
 
 interface CustomRadioProps {
