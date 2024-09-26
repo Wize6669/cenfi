@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
 
-export default function Questions() {
+export default function Course() {
   const router = useRouter();
 
   const goBack = () => {
@@ -16,11 +16,11 @@ export default function Questions() {
   };
 
   const handleButtonClickNew = () => {
-    router.push('/admin/questions/new');
+    router.push('/admin/course/new');
   };
 
   const handleButtonClickEdit = () => {
-    router.push('/admin/questions/edit');
+    router.push('/admin/course/edit');
   };
 
   return (
@@ -52,7 +52,7 @@ export default function Questions() {
             type={'button'}
             onClick={handleButtonClickNew}
           >
-            Nueva Pregunta
+            Nuevo Curso
           </button>
         </div>
         <div className={'lg:w-[82%] flex justify-end items-center'}>
@@ -61,7 +61,7 @@ export default function Questions() {
             type={'button'}
             onClick={handleButtonClickEdit}
           >
-            Editar Pregunta
+            Editar Curso
           </button>
         </div>
 

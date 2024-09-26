@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {useAuthStore} from '@/store/auth';
 import Link from 'next/link';
-import { FiMenu, FiX, FiHome, FiUsers, FiHelpCircle, FiFolder, FiMonitor } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiUsers, FiHelpCircle, FiFolder, FiMonitor, FiBookOpen } from 'react-icons/fi';
 
 export default function ModuleListNavbar() {
   const userAuth = useAuthStore((state) => state.userAuth);
@@ -15,6 +15,7 @@ export default function ModuleListNavbar() {
     { href: '/admin/questions', text: 'Preguntas', icon: FiHelpCircle },
     { href: '/admin/categories', text: 'Categorías', icon: FiFolder },
     { href: '/admin/simulator', text: 'Simulador', icon: FiMonitor },
+    { href: '/admin/course', text: 'Curso', icon: FiBookOpen },
   ];
   return (
     <nav className="relative w-full">

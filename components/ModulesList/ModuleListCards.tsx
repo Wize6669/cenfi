@@ -6,6 +6,7 @@ import { MdOutlineCategory } from 'react-icons/md';
 import { IoIosSettings } from 'react-icons/io';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'next/navigation';
+import { Text } from 'lucide-react'
 import React from "react";
 
 export default function ModuleListCards() {
@@ -28,12 +29,23 @@ export default function ModuleListCards() {
     router.push('/admin/questions');
   }
 
+  const handleCourseModule = () => {
+    router.push('/admin/course');
+  }
+
   const modules = [
     userAuth?.roleId === 1 ? {
       icon: <FaUser size={65} />,
       title: "Gestión de Usuarios",
       onClick: handleUserModule
     } : null,
+
+    userAuth?.roleId === 1 ? {
+      icon: <Text size={65} />,
+      title: "Cursos",
+      onClick: handleCourseModule
+    } : null,
+
     {
       icon: <FaRegCircleQuestion size={65} />,
       title: "Gestión de Preguntas",
