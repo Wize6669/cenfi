@@ -13,6 +13,7 @@ const navItems = [
   { name: 'Sobre nosotros', href: '/about', icon: Users },
   { name: 'Administración', href: '/admin', icon: ShieldCheck },
   { name: 'Simuladores', href: '/simulator', icon: BookOpen },
+  { name: 'Cursos', href: '/course', icon: Users },
 ]
 
 export default function Navbar() {

@@ -80,22 +80,18 @@ export default function Course() {
     router.push('/admin/course/new');
   };
 
-  const handleButtonClickEdit = () => {
-    router.push('/admin/course/edit');
-  };
-
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination(prev => ({...prev, currentPage: newPage}));
       const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
-      router.push(`/admin/users?${urlParams.toString()}`);
+      router.push(`/admin/course?${urlParams.toString()}`);
     }
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setPagination(prev => ({...prev, pageSize: newPageSize}));
     const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
-    router.push(`/admin/users?${urlParams.toString()}`);
+    router.push(`/admin/course?${urlParams.toString()}`);
   };
 
   if (showLoginMessage) {
@@ -129,7 +125,7 @@ export default function Course() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Banco de Preguntas
+              Listado de Cursos Disponibles
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
@@ -148,13 +144,6 @@ export default function Course() {
               onClick={handleButtonClickNew}
             >
               Nuevo Curso
-            </button>
-            <button
-              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-              type={'button'}
-              onClick={handleButtonClickEdit}
-            >
-              Editar Curso
             </button>
           </div>
         </div>

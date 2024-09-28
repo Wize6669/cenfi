@@ -210,7 +210,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
 
   const handleEditBtn = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    router.push(`/course/update-course/${id}`);
+    router.push(`/admin/course/${id}`);
   }
 
   if (data.length === 0) {

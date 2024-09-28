@@ -1,3 +1,5 @@
+'use client'
+
 import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react';
 import { useForm, useFieldArray } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -16,12 +18,7 @@ import {
 import { axiosInstance } from "@/lib/axios"
 import toast from "react-hot-toast"
 import { AxiosError } from "axios"
-import { useRouter } from "next/navigation"
 import { ErrorResponse } from '@/interfaces/ResponseAPI';
-import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
-import Header from "@/components/Header";
-import { IconButton } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
 import Footer from "@/components/Footer";
 import { CourseUpdate } from "@/interfaces/Course";
 
@@ -65,7 +62,6 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
     name: "schedules",
   });
 
-  const router = useRouter();
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -147,9 +143,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
         startDate: startDate || null,
         endDate: endDate || null,
       };
-      await axiosInstance.put(`/course/update-course/${courseId}`, updatedCourse);
+      await axiosInstance.post(`/course/update-course/${courseId}`, updatedCourse);
       toast.success('Curso actualizado con éxito');
-      router.push('/courses');
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error?.response?.status === 400) {
@@ -176,41 +171,11 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
     mutationFn: updateCourse,
     onSuccess: async () => {
       await queryClient.invalidateQueries({queryKey: ['courses']});
-      router.push('/courses');
     }
   });
 
-  const goBack = () => {
-    router.back();
-  };
-
-
   return (
-    <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
-      <Header>
-        <ModuleListNavbar/>
-      </Header>
-      <div className={'flex-grow flex flex-col items-center place-items-center px-4'}>
-        <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
-          <div className={'w-auto col-span-2'}>
-            <h1
-              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Edición del Curso
-            </h1>
-          </div>
-          <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
-          </div>
-          <div className={'w-full row-start-2 content-center justify-items-center'}>
-            <div className={'border-t-2 container dark:border-gray-600'}/>
-          </div>
-        </div>
-
         <div className="container mx-auto pb-8 max-w-4xl">
-          <h1 className={'font-bold text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Curso</h1>
           <form ref={formRef} onSubmit={handleSubmitForm} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2 space-y-4">
@@ -412,9 +377,6 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 Curso</Button>
             </div>
           </form>
-        </div>
-      </div>
-      <Footer/>
     </div>
   )
 }

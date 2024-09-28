@@ -23,3 +23,9 @@ export interface CourseUpdate extends Pick<Course, 'name' | 'university' | 'sche
   startDate?: Date | null;
   endDate?: Date | null;
 }
+
+export interface PaginatedResponseCourse {
+  data: Course[];
+  currentPage: number;
+  totalPages: number;
+}
