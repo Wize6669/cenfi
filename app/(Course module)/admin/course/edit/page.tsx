@@ -7,7 +7,6 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
-import CourseForm from "@/components/(Course module)/CourseForm";
 
 export default function EditCourse() {
   const router = useRouter();
@@ -26,7 +25,7 @@ export default function EditCourse() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Edición del curso
+              Edición del Curso
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
@@ -42,7 +41,6 @@ export default function EditCourse() {
       </div>
       <div className={'flex justify-center'}>
       </div>
-      <CourseForm/>
       <Footer/>
     </div>
   )

@@ -54,7 +54,7 @@ export default function Header({children}: Readonly<{ children: React.ReactNode;
         />
       </div>
       {children && (
-        <div className={'lg:w-full md:w-3/12 sm:w-1/2 lg:order-2 md:order-1 flex justify-center items-center'}>
+        <div className={'lg:w-full md:w-3/12 sm:w-1/2 lg:order-2 md:order-1 flex justify-center items-center pr-14'}>
           {children}
         </div>
       )}

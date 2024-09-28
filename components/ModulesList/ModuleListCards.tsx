@@ -40,12 +40,6 @@ export default function ModuleListCards() {
       onClick: handleUserModule
     } : null,
 
-    userAuth?.roleId === 1 ? {
-      icon: <Text size={65} />,
-      title: "Cursos",
-      onClick: handleCourseModule
-    } : null,
-
     {
       icon: <FaRegCircleQuestion size={65} />,
       title: "Gestión de Preguntas",
@@ -60,7 +54,13 @@ export default function ModuleListCards() {
       icon: <IoIosSettings size={70} />,
       title: "Configuración del Simulador",
       onClick: handleSimulatorModule
-    }
+    },
+    userAuth?.roleId === 1 ? {
+      icon: <Text size={65} />,
+      title: "Cursos",
+      onClick: handleCourseModule
+    } : null,
+
   ].filter(Boolean);
 
   return (
@@ -74,7 +74,7 @@ export default function ModuleListCards() {
         <div className={`grid gap-6 ${
           modules.length === 3
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'
         } justify-items-center`}>
           {modules.map((module, index) => (
             module && (

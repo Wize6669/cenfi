@@ -4,13 +4,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
-import CourseForm from "@/components/(Course module)/CourseForm";
+import CourseEditForm from "@/components/(Course module)/CourseEditForm";
 
-export default function NewCourse() {
+export default function EditCourse() {
   const router = useRouter();
+  const { courseId } = useParams();
+
+  if (!courseId) {
+    return <p>Cargando...</p>;
+  }
 
   const goBack = () => {
     router.back();
@@ -26,7 +31,7 @@ export default function NewCourse() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Crear un Nuevo Curso
+              Edición del Curso
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
@@ -38,7 +43,7 @@ export default function NewCourse() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <CourseForm/>
+        <CourseEditForm courseId={courseId as string} />
       </div>
       <div className={'flex justify-center'}>
       </div>

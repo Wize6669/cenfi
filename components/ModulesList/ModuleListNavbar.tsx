@@ -15,7 +15,7 @@ export default function ModuleListNavbar() {
     { href: '/admin/questions', text: 'Preguntas', icon: FiHelpCircle },
     { href: '/admin/categories', text: 'Categorías', icon: FiFolder },
     { href: '/admin/simulator', text: 'Simulador', icon: FiMonitor },
-    { href: '/admin/course', text: 'Curso', icon: FiBookOpen },
+    { href: '/admin/course', text: 'Curso', icon: FiBookOpen, roleRequired: 1 },
   ];
   return (
     <nav className="relative w-full">
