@@ -81,7 +81,9 @@ export default function ModuleListCards() {
               <div
                 key={index}
                 className={`flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 transition-transform hover:scale-105 ${
-                  modules.length === 3 && index === 2 ? 'sm:col-span-2 lg:col-span-1' : ''
+                  (modules.length === 3 && index === 2) || (modules.length === 5 && index === 4)
+                    ? 'sm:col-span-2 lg:col-span-1'
+                    : ''
                 }`}
                 onClick={module.onClick}
               >

@@ -1,145 +1,147 @@
 'use client'
 
-import React, {useState, useEffect, useCallback} from 'react'
-import { Calendar, Clock, DollarSign, BookOpen, Award, PhoneCall } from 'lucide-react'
-import {config} from "@/config";
-import { Course, PaginatedResponseCourse } from "@/interfaces/Course"
-import axios from "axios";
+import React from 'react'
+import { Calendar, Clock, DollarSign, BookOpen, Award, PhoneCall, HandCoins } from 'lucide-react'
+import { format, parseISO } from 'date-fns'
+import { es } from 'date-fns/locale'
+import { motion } from 'framer-motion'
+import { Course } from "@/interfaces/Course"
 
+const CourseOffer: React.FC<{ course: Course; index: number }> = ({ course, index }) => {
 
-const CourseOffer: React.FC<{ course: Course }> = ({ course }) => {
+  if (!course) {
+    return <div>Error: Curso no disponible</div>
+  }
+
+  const formatStartDate = (date: string | Date | null) => {
+    if (!date) return 'Fecha no especificada';
+    let parsedDate = date instanceof Date ? date : parseISO(date);
+    return format(parsedDate, "d 'de' MMMM 'de' yyyy", { locale: es });
+  }
+
+  const formatEndDate = (date: string | Date | null) => {
+    if (!date) return 'Fecha no especificada';
+    let parsedDate = date instanceof Date ? date : parseISO(date);
+    return format(parsedDate, 'MMMM yyyy', { locale: es });
+  }
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto mb-8">
-      <div className="bg-blue-600 p-6 text-white">
-        <h2 className="text-3xl font-bold">{course.name}</h2>
-        <h3 className="text-xl mt-2">{course.university}</h3>
-        <p className="text-lg mt-1">{course.schedule}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto mb-8"
+    >
+      <div key={index} className="select-none bg-gradient-to-r from-blue-600 to-blue-400 p-8 text-white">
+        <h2 className="text-4xl font-bold mb-2">{course.name}</h2>
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <h3 className="text-2xl">{course.university}</h3>
+          <p className="text-lg bg-blue-700 px-4 py-2 rounded-full mt-4 md:mt-0">{course.schedule}</p>
+        </div>
       </div>
-      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-6 h-6 text-blue-500" />
-            <div>
-              <p className="font-semibold">Inicio: {course.startDate ? new Date(course.startDate).toLocaleDateString() : 'No especificado'}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Finaliza: {course.endDate ? new Date(course.endDate).toLocaleDateString() : 'No especificado'}</p>
+      <div className="select-none p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <div className="">
+            <div className="flex items-center space-x-3 mb-2">
+              <Calendar className="w-6 h-6 text-blue-500"/>
+              <h4 className="font-semibold text-blue-900 dark:text-gray-300">Cronograma</h4>
+            </div>
+            <p className="mb-2">
+              <span className="font-semibold text-blue-900 ml-2 px-3 py-0.5 bg-green-100 rounded-full">Inicio</span>
+              <span className="ml-2 text-base dark:text-gray-300">
+                {formatStartDate(course.startDate)}
+              </span>
+            </p>
+            <div className="grid grid-flow-col auto-cols-max items-center gap-2">
+              <span className="font-semibold ml-2 px-3 py-0.5 bg-red-100 text-red-800 rounded-full">Finaliza</span>
+              <div className="text-center">
+                <p className={'text-base dark:text-gray-300'}>Un día antes de la prueba</p>
+                <p
+                  className="text-base text-gray-600 dark:text-gray-400 font-semibold">({formatEndDate(course.endDate)})</p>
+              </div>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <DollarSign className="w-6 h-6 text-green-500" />
+            <DollarSign className="w-6 h-6 text-green-500"/>
             <div>
-              <p className="font-semibold">Costo total: ${course.cost}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{course.paymentOptions.join(', ')}</p>
+              <p className="font-semibold text-xl flex items-center text-blue-900 dark:text-gray-300">Costo total: <span
+                className={'text-4xl pl-2 text-black dark:text-blue-500'}> ${course.cost}</span></p>
             </div>
           </div>
-          <div className="space-y-2">
-            <h4 className="font-semibold flex items-center"><Clock className="w-5 h-5 mr-2 text-blue-500" /> Horarios disponibles</h4>
-            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 pl-5">
-              {course.schedules.map((schedule, index) => (
-                <li key={index}>{schedule}</li>
+          <div>
+            <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
+              <Award className="w-5 h-5 mr-2 text-blue-500"/>
+              Beneficios
+            </h4>
+            <ul className="space-y-1 pl-7">
+              {course.benefits.map((benefit, index) => (
+                <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {benefit}
+                </li>
               ))}
             </ul>
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h4 className="font-semibold flex items-center"><BookOpen className="w-5 h-5 mr-2 text-blue-500" /> Temario</h4>
-            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 pl-5">
-              {course.syllabus.map((item, index) => (
-                <li key={index}>{item}</li>
+        <div className="space-y-6">
+          <div>
+            <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
+              <Clock className="w-5 h-5 mr-2 text-blue-500"/>
+              Horarios disponibles
+            </h4>
+            <ul className="space-y-1 pl-7">
+              {course.schedules.map((schedule, index) => (
+                <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {schedule}
+                </li>
               ))}
             </ul>
           </div>
-          <div className="space-y-2">
-            <h4 className="font-semibold flex items-center"><Award className="w-5 h-5 mr-2 text-blue-500" /> Beneficios</h4>
-            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 pl-5">
-              {course.benefits.map((benefit, index) => (
-                <li key={index}>{benefit}</li>
+          <div>
+            <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
+              <HandCoins className="w-5 h-5 mr-2 text-blue-500"/>
+              Opciones de Pago
+            </h4>
+            <ul className="space-y-1 pl-7">
+              {course.paymentOptions.map((option, index) => (
+                <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
+              <BookOpen className="w-5 h-5 mr-2 text-blue-500"/>
+              Temario
+            </h4>
+            <ul className="space-y-1 pl-7">
+              {course.syllabus.map((item, index) => (
+                <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {item}
+                </li>
               ))}
             </ul>
           </div>
         </div>
       </div>
       <div className="bg-gray-100 dark:bg-gray-700 p-4 flex justify-between items-center">
-        <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">¡Inscríbete ya! Cupos limitados</p>
-        <a href={`tel:${course.phone}`} className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
-          <PhoneCall className="w-5 h-5 mr-2" />
+        <p className="select-none text-lg font-semibold text-blue-600 dark:text-blue-400">
+          ¡Inscríbete ya! Cupos limitados
+        </p>
+        <a href={`https://wa.me/593${course.phone.substring(1)}?text=Hola,%20quiero%20más%20información`}
+           target="_blank"
+           rel="noopener noreferrer"
+           className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+          <PhoneCall className="w-5 h-5 mr-2"/>
           {course.phone}
         </a>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-const CourseList: React.FC = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
-
-  const fetchCourses = useCallback(async (page: number) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get<PaginatedResponseCourse>(`${HOST_BACK_END}/api/v1/course`, {
-        params: {
-          page: page,
-          count: 50
-        }
-      });
-
-      if (page === 1) {
-        setCourses(response.data.data);
-      } else {
-        setCourses(prevCourses => [...prevCourses, ...response.data.data]);
-      }
-
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
-      setIsLoading(false);
-    } catch (err) {
-      setError('Error al cargar los cursos');
-      setIsLoading(false);
-      console.error('Error fetching courses:', err);
-    }
-  }, [HOST_BACK_END]);
-
-  useEffect(() => {
-    fetchCourses(1);
-  }, [fetchCourses]);
-
-  const loadMoreCourses = () => {
-    if (currentPage < totalPages) {
-      fetchCourses(currentPage + 1);
-    }
-  };
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Nuestros Cursos</h1>
-      {courses.map(course => (
-        <CourseOffer key={course.id} course={course} />
-      ))}
-      {isLoading && <div className="text-center">Cargando cursos...</div>}
-      {!isLoading && currentPage < totalPages && (
-        <div className="text-center mt-4">
-          <button
-            onClick={loadMoreCourses}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Cargar más cursos
-          </button>
-        </div>
-      )}
-      {!isLoading && currentPage === totalPages && (
-        <div className="text-center mt-4 text-gray-600">No hay más cursos para cargar.</div>
-      )}
-    </div>
-  );
-}
-
-export default CourseList;
+export default CourseOffer
