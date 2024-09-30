@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { LogOut } from 'lucide-react'
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface HeaderSimulatorProps {
   currentQuestion: number
@@ -10,9 +10,10 @@ interface HeaderSimulatorProps {
 }
 
 const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, totalQuestions, onExitOrFinish}) => {
+
   return (
-    <header className={'dark:bg-gray-900 bg-gray-100 p-4'}>
-      <div className="container mx-auto">
+    <header className={'select-none dark:bg-gray-900 bg-gray-100 p-4'}>
+      <div className="select-none container mx-auto">
         <div className="flex items-center justify-between sm:justify-center">
           <div className="flex items-center sm:justify-start">
             <Image className="sm:justify-start filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85} />

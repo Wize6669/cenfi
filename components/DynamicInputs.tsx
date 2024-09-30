@@ -28,7 +28,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
       let totalPages = 1;
 
       do {
-        const response = await axios.get<PaginatedResponse>(`${HOST_BACK_END}/api/v1/category`, {
+        const response = await axios.get<PaginatedResponse>(`${HOST_BACK_END}/api/v1/categories`, {
           params: {
             page: currentPage,
             count: 500

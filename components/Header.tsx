@@ -41,7 +41,7 @@ export default function Header({children}: Readonly<{ children: React.ReactNode;
   return (
     <div className={'container mx-auto py-2 flex justify-between items-center lg:px-0 md:px-4 sm:px-20'}>
       <div
-        className={`lg:w-1/2 md:w-auto order-1 md:order-2 flex ${
+        className={`lg:w-1/3 md:w-auto order-1 md:order-2 flex ${
           children ? 'justify-center md:justify-center lg:justify-start' : 'justify-start'
         }`}
       >

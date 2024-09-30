@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import { useAuthStore } from "@/store/auth";
 import { CategoryNewUpdate } from "@/interfaces/Categories";
 import { Pagination } from "@/interfaces/Pagination";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -76,7 +75,7 @@ export default function Categories() {
   }
 
   const fetchCategory = async () => {
-    const response = await axiosInstance.get(`/category?page=${pagination.currentPage}&count=${pagination.pageSize}`);
+    const response = await axiosInstance.get(`/categories?page=${pagination.currentPage}&count=${pagination.pageSize}`);
     const {
       data,
       currentPage,
@@ -103,7 +102,7 @@ export default function Categories() {
 
   const addCategories = async () => {
     try {
-      await axiosInstance.post('/category', { name: category.name });
+      await axiosInstance.post('/categories/', { name: category.name });
       toast.success("Categoría creada con éxito!");
       resetForm()
     } catch (error) {
@@ -212,8 +211,8 @@ export default function Categories() {
           </div>
         </form>
       </div>
-      <div className="flex justify-center">
-        <div className="w-2/3 scale-90 h-[450px] overflow-auto">
+      <div className="flex-grow flex justify-center">
+        <div className="w-full md:w-5/6 lg:w-2/3 scale-90 h-[450px] overflow-auto scrollbar-tables">
           {!isLoading && <CategoryTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}
                                     data={categories}

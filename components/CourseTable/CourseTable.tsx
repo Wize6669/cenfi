@@ -12,71 +12,84 @@ import {
   SortingState,
 } from '@tanstack/react-table';
 import { axiosInstance } from '@/lib/axios';
-import { UserTableInterface } from '@/interfaces/User';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
-import './UserTable.css'
-import Modal from '@/components/Modal/Modal';
-import UserForm from '@/components/UserForm';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Pagination } from '@/interfaces/Pagination';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import './CourseTable.css'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pagination } from "@/interfaces/Pagination";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
+import { CourseTableInteface } from "@/interfaces/Course";
+import { useRouter } from 'next/navigation';
 
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
   handlePageSizeChange: (newPageSize: number) => void,
-  data: UserTableInterface[],
+  data: CourseTableInteface[],
   pagination: Pagination,
 }
 
-export default function UserTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
+export default function CourseTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const columnHelper = createColumnHelper<UserTableInterface>();
-  const [isOpenModal, setIsOpenModal] = useState(false);
-  const [userId, setUserId] = useState('');
+  const columnHelper = createColumnHelper<CourseTableInteface>();
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+  const router = useRouter();
 
-  const columns: ColumnDef<UserTableInterface, any>[] = [
+  const columns: ColumnDef<CourseTableInteface, any>[] = [
     columnHelper.accessor('name', {
-      id: 'fullName',
-      header: 'NOMBRE COMPLETO',
+      id: 'name',
+      header: 'CURSO',
       cell: info => (
         <div className='text-center'>
-          {info.row.original.name} {info.row.original.lastName}
+          {info.row.original.name}
         </div>
       ),
     }),
-    columnHelper.accessor('email', {
-      id: 'email',
-      header: 'CORREO',
+    columnHelper.accessor('university', {
+      id: 'university',
+      header: 'UNIVERSIDAD',
       cell: info => (
         <div className='text-center'>
-          {info.getValue()}
+          {info.row.original.university}
         </div>
       ),
     }),
-    columnHelper.accessor('role', {
-      id: 'role',
-      header: 'ROL',
+    columnHelper.accessor('cost', {
+      id: 'cost',
+      header: 'COSTO',
       cell: info => (
         <div className='flex justify-center'>
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-              info.getValue() === 'admin'
-                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-            }`}
-          >
-            {info.getValue() === 'admin' ? 'Administrador' : 'Profesor'}
-          </span>
+            <span
+              className={'px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'}
+            >
+              {info.row.original.cost}
+            </span>
         </div>
       ),
     }),
+    columnHelper.accessor('startDate', {
+      id: 'startDate',
+      header: 'FECHA DE INICIO',
+      cell: info => (
+        <div className='text-center'>
+          {info.row.original.startDate ? new Date(info.row.original.startDate).toISOString().split('T')[0] : 'N/A'}
+        </div>
+      ),
+    }),
+    columnHelper.accessor('endDate', {
+      id: 'endDate',
+      header: 'FECHA DE FIN',
+      cell: info => (
+        <div className='text-center'>
+          {info.row.original.endDate ? new Date(info.row.original.endDate).toISOString().split('T')[0] : 'N/A'}
+        </div>
+      ),
+    }),
+
     columnHelper.accessor('id', {
       header: 'ACCIONES',
       cell: info => (
@@ -156,22 +169,22 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   const queryClient = useQueryClient();
 
-  const deleteUser = async (id: string) => {
-    const response = await axiosInstance.delete(`/users/${id}`);
+  const deleteCourse = async (id: string) => {
+    const response = await axiosInstance.delete(`/courses/${id}`);
     if (response.status === 204) {
-      toast.success('Usuario eliminado');
+      toast.success('Curso eliminado');
     }
     return response.data;
   }
 
-  const { mutateAsync: deleteUserMutation } = useMutation({
-    mutationFn: deleteUser,
+  const { mutateAsync: deleteCategoryMutation } = useMutation({
+    mutationFn: deleteCourse,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['users'] });
+      await queryClient.invalidateQueries({ queryKey: ['courses'] });
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error('No se pudo eliminar el usuario');
+        toast.error('No se pudo eliminar el curso');
       } else {
         toast.error('Hubo un error inesperado');
       }
@@ -180,16 +193,16 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   const handleDeleteBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setUserToDelete(id);
+    setCourseToDelete(id)
     setIsConfirmOpen(true);
   };
 
   const confirmDelete = async () => {
-    if (userToDelete) {
+    if (courseToDelete) {
       try {
-        await deleteUserMutation(userToDelete);
+        await deleteCategoryMutation(courseToDelete);
       } catch (error) {
-        console.error('Error al eliminar usuario:', error);
+        console.error('Error al eliminar el curso:', error);
       }
     }
     setIsConfirmOpen(false);
@@ -197,38 +210,37 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
 
   const handleEditBtn = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setUserId(id);
-    setIsOpenModal(prevState => !prevState);
+    router.push(`/admin/courses/${id}`);
   }
 
   if (data.length === 0) {
     return (
       <div className='px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
-        <div className='text-gray-600 dark:text-gray-300'>No hay datos disponibles</div>
+        <div className="text-gray-600 dark:text-gray-300">No hay datos disponibles</div>
       </div>
     );
   }
 
   return (
-    <div className='px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
-      <h2 className='text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2'>Usuarios</h2>
-      <div className='flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
-        <div className='flex items-center space-x-2 w-full md:w-auto'>
-          <span className='text-sm text-gray-700 dark:text-gray-300'>Filas por página:</span>
-          <div className='relative'>
+    <div className="px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Cursos Disponibles</h2>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
+        <div className="flex items-center space-x-2 w-full md:w-auto">
+          <span className="text-sm text-gray-700 dark:text-gray-300">Filas por página:</span>
+          <div className="relative">
             <button
               onClick={() => setIsSelectOpen(!isSelectOpen)}
-              className='flex items-center justify-between w-20 px-3 py-2 dark:text-gray-300 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'
+              className="flex items-center justify-between w-20 px-3 py-2 dark:text-gray-300 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               {table.getState().pagination.pageSize}
               {isSelectOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
             {isSelectOpen && (
-              <div className='absolute z-10 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg'>
+              <div className="absolute z-10 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
                 {[10, 20, 30, 40, 50].map(pageSize => (
                   <div
                     key={pageSize}
-                    className='px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer'
+                    className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
                     onClick={() => {
                       handlePageSizeChange(pageSize);
                       table.setPageSize(pageSize);
@@ -242,26 +254,26 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
             )}
           </div>
         </div>
-        <div className='relative w-full md:w-auto'>
+        <div className="relative w-full md:w-auto">
           <input
             value={globalFilter ?? ''}
             onChange={e => setGlobalFilter(e.target.value)}
-            className='w-full md:w-64 pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-300'
-            placeholder='Buscar...'
+            className="w-full md:w-64 pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:bg-gray-700 dark:text-gray-300"
+            placeholder="Buscar..."
           />
-          <Search className='absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400' size={18}/>
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18}/>
         </div>
       </div>
-      <div className='overflow-x-auto'>
-        <table id={'user-table'} className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
-          <thead className='bg-gray-50 dark:bg-gray-700'>
+      <div className="overflow-x-auto">
+        <table id={'user-table'} className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className='px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer'
+                  className="px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -272,11 +284,11 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
             </tr>
           ))}
           </thead>
-          <tbody className='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
-          {table.getRowModel().rows.map((row, i) => (
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300'>
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -289,59 +301,54 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
       {/* Paginación */}
       <div className='mt-4 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0'>
         <div className='text-sm text-gray-700 dark:text-gray-300'>
-          Total {pagination.total} registros
+          <span className={'font-medium'}>Total: </span>{pagination.total} registros
         </div>
         <div className='text-sm text-gray-700 dark:text-gray-300'>
           Mostrando {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
         </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
-            onClick={() => handlePageChange(1)}
-            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-            title='Primera página'
+              onClick={() => handlePageChange(1)}
+              className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              title="Primera página"
           >
-            <ChevronLeft size={16} className='inline'/>
-            <ChevronLeft size={16} className='inline'/>
+            <ChevronLeft size={16} className="inline"/>
+            <ChevronLeft size={16} className="inline"/>
           </button>
           <button
-            onClick={() => handlePageChange(pagination.previousPage ?? 1)}
-            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
-            disabled={!pagination.hasPreviousPage}
-            title='Página anterior'
+              onClick={() => handlePageChange(pagination.previousPage ?? 1)}
+              className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!pagination.hasPreviousPage}
+              title="Página anterior"
           >
             <ChevronLeft size={16}/>
           </button>
           <span
-            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
+              className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
             {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
-            onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
-            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
-            disabled={!pagination.hasNextPage}
-            title='Siguiente página'
+              onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
+              className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!pagination.hasNextPage}
+              title="Siguiente página"
           >
             <ChevronRight size={16}/>
           </button>
           <button
-            onClick={() => handlePageChange(pagination.totalPages)}
-            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
-            title='Última página'
+              onClick={() => handlePageChange(pagination.totalPages)}
+              className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              title="Última página"
           >
-            <ChevronRight size={16} className='inline'/>
-            <ChevronRight size={16} className='inline'/>
+            <ChevronRight size={16} className="inline"/>
+            <ChevronRight size={16} className="inline"/>
           </button>
         </div>
       </div>
-
-      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
-        <UserForm id={userId}/>
-      </Modal>
-
       <Transition appear show={isConfirmOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsConfirmOpen(false)}>
           <Transition.Child
-            as={Fragment}
+              as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -372,7 +379,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+                      ¿Estás seguro de que deseas eliminar este curso? Esta acción no se puede deshacer.
                     </p>
                   </div>
 

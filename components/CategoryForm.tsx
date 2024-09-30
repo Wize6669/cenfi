@@ -20,7 +20,7 @@ export default function UserForm({id}: PropsUserForm) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    axiosInstance.get(`/category/${id}`).then((response) => {
+    axiosInstance.get(`/categories/${id}`).then((response) => {
       const {name} = response.data;
       setCategory({...category, name})
 
@@ -69,7 +69,7 @@ export default function UserForm({id}: PropsUserForm) {
   const updateCategory = async () => {
     try {
       const {name} = category;
-      await axiosInstance.post(`/category/${id}`, {
+      await axiosInstance.post(`/categories/${id}`, {
         name
       });
 

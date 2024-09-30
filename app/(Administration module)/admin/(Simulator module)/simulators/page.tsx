@@ -5,14 +5,22 @@ import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import {IconButton } from '@mui/material'
+import { IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
 
-export default function EditQuestion() {
+export default function Simulator() {
   const router = useRouter();
 
   const goBack = () => {
-    router.back();
+    router.push('/admin/menu');
+  };
+
+  const handleButtonClickNew = () => {
+    router.push('/admin/simulators/new');
+  };
+
+  const handleButtonClickEdit = () => {
+    router.push('/admin/simulators/edit');
   };
 
   return (
@@ -25,17 +33,36 @@ export default function EditQuestion() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Edición de la Pregunta
+              Lista de Simuladores
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
+            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
+                        onClick={goBack}>
               <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
+        </div>
+        <div className={'lg:w-[82%] flex justify-end items-center'}>
+          <button
+            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+            type={'button'}
+            onClick={handleButtonClickNew}
+          >
+            Nuevo Simulador
+          </button>
+        </div>
+        <div className={'lg:w-[82%] flex justify-end items-center'}>
+          <button
+            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+            type={'button'}
+            onClick={handleButtonClickEdit}
+          >
+            Editar Simulador
+          </button>
         </div>
 
       </div>

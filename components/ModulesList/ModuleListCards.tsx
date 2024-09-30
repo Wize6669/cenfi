@@ -1,11 +1,10 @@
 'use client'
 
-import { FaUser } from 'react-icons/fa';
-import { FaRegCircleQuestion } from 'react-icons/fa6';
 import { MdOutlineCategory } from 'react-icons/md';
 import { IoIosSettings } from 'react-icons/io';
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'next/navigation';
+import { Text, UserCircle, CircleHelp } from 'lucide-react'
 import React from "react";
 
 export default function ModuleListCards() {
@@ -21,21 +20,26 @@ export default function ModuleListCards() {
   }
 
   const handleSimulatorModule = () => {
-    router.push('/admin/simulator');
+    router.push('/admin/simulators');
   }
 
   const handleQuestionsModule = () => {
     router.push('/admin/questions');
   }
 
+  const handleCourseModule = () => {
+    router.push('/admin/courses');
+  }
+
   const modules = [
     userAuth?.roleId === 1 ? {
-      icon: <FaUser size={65} />,
+      icon: <UserCircle size={65} />,
       title: "Gestión de Usuarios",
       onClick: handleUserModule
     } : null,
+
     {
-      icon: <FaRegCircleQuestion size={65} />,
+      icon: <CircleHelp size={65} />,
       title: "Gestión de Preguntas",
       onClick: handleQuestionsModule
     },
@@ -48,7 +52,13 @@ export default function ModuleListCards() {
       icon: <IoIosSettings size={70} />,
       title: "Configuración del Simulador",
       onClick: handleSimulatorModule
-    }
+    },
+    userAuth?.roleId === 1 ? {
+      icon: <Text size={65} />,
+      title: "Cursos",
+      onClick: handleCourseModule
+    } : null,
+
   ].filter(Boolean);
 
   return (
@@ -62,14 +72,16 @@ export default function ModuleListCards() {
         <div className={`grid gap-6 ${
           modules.length === 3
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5'
         } justify-items-center`}>
           {modules.map((module, index) => (
             module && (
               <div
                 key={index}
                 className={`flex flex-col gap-y-5 justify-center items-center bg-[#F1F9FB] dark:bg-gray-700 rounded-md w-[200px] h-[175px] cursor-pointer shadow-lg dark:shadow-blue-400 transition-transform hover:scale-105 ${
-                  modules.length === 3 && index === 2 ? 'sm:col-span-2 lg:col-span-1' : ''
+                  (modules.length === 3 && index === 2) || (modules.length === 5 && index === 4)
+                    ? 'sm:col-span-2 lg:col-span-1'
+                    : ''
                 }`}
                 onClick={module.onClick}
               >

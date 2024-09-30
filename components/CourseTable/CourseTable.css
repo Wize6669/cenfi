@@ -1,0 +1,7 @@
+#user-table tr:nth-child(even) {
+    background-color: #EFF6FF;
+}
+
+.dark #user-table tr:nth-child(even) {
+    background-color: #070d15;
+}

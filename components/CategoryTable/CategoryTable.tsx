@@ -141,7 +141,7 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
   const queryClient = useQueryClient();
 
   const deleteCategory = async (id: number) => {
-    const response = await axiosInstance.delete(`/category/${id}`);
+    const response = await axiosInstance.delete(`/categories/${id}`);
     if (response.status === 204) {
       toast.success('Categoría eliminada');
     }
@@ -275,14 +275,17 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
         <div className='text-sm text-gray-700 dark:text-gray-300'>
           Total {pagination.total} registros
         </div>
+        <div className='text-sm text-gray-700 dark:text-gray-300'>
+          Mostrando {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
+        </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
             onClick={() => handlePageChange(1)}
             className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
             title='Primera página'
           >
-            <ChevronLeft size={16} className='inline' />
-            <ChevronLeft size={16} className='inline' />
+            <ChevronLeft size={16} className='inline'/>
+            <ChevronLeft size={16} className='inline'/>
           </button>
           <button
             onClick={() => handlePageChange(pagination.previousPage ?? 1)}
@@ -290,9 +293,10 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
             disabled={!pagination.hasPreviousPage}
             title='Página anterior'
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={16}/>
           </button>
-          <span className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
+          <span
+            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
             {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
@@ -301,15 +305,15 @@ export default function UserTable({ handlePageChange, handlePageSizeChange, data
             disabled={!pagination.hasNextPage}
             title='Siguiente página'
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={16}/>
           </button>
           <button
             onClick={() => handlePageChange(pagination.totalPages)}
             className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200'
             title='Última página'
           >
-            <ChevronRight size={16} className='inline' />
-            <ChevronRight size={16} className='inline' />
+            <ChevronRight size={16} className='inline'/>
+            <ChevronRight size={16} className='inline'/>
           </button>
         </div>
       </div>

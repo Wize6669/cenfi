@@ -4,11 +4,12 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, Home, Phone, Users, BookOpen, ShieldCheck } from 'lucide-react'
+import { Menu, Home, Phone, Users, BookOpen, ShieldCheck, AppWindow } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 
 const navItems = [
   { name: 'Inicio', href: '/', icon: Home },
+  { name: 'Cursos', href: '/course', icon: AppWindow },
   { name: 'Contacto', href: '/contact', icon: Phone },
   { name: 'Sobre nosotros', href: '/about', icon: Users },
   { name: 'Administración', href: '/admin', icon: ShieldCheck },

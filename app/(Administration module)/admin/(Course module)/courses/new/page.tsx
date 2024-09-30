@@ -5,22 +5,15 @@ import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton } from '@mui/material'
+import {IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
+import CourseForm from "@/components/(Course module)/CourseForm";
 
-export default function Questions() {
+export default function NewCourse() {
   const router = useRouter();
 
   const goBack = () => {
-    router.push('/admin/menu');
-  };
-
-  const handleButtonClickNew = () => {
-    router.push('/admin/questions/new');
-  };
-
-  const handleButtonClickEdit = () => {
-    router.push('/admin/questions/edit');
+    router.back();
   };
 
   return (
@@ -33,12 +26,11 @@ export default function Questions() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Banco de Preguntas
+              Crear un Nuevo Curso
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
+            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
               <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
@@ -46,25 +38,7 @@ export default function Questions() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <div className={'lg:w-[82%] flex justify-end items-center'}>
-          <button
-            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-            type={'button'}
-            onClick={handleButtonClickNew}
-          >
-            Nueva Pregunta
-          </button>
-        </div>
-        <div className={'lg:w-[82%] flex justify-end items-center'}>
-          <button
-            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-            type={'button'}
-            onClick={handleButtonClickEdit}
-          >
-            Editar Pregunta
-          </button>
-        </div>
-
+        <CourseForm/>
       </div>
       <div className={'flex justify-center'}>
       </div>
