@@ -352,7 +352,7 @@ export default function Users() {
           </div>
         </form>
       </div>
-      <div className={'flex justify-center'}>
+      <div className={'flex-grow flex justify-center'}>
         <div className='w-2/3 scale-90'>
           {!isLoading && <UserTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}

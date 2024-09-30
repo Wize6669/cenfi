@@ -247,7 +247,7 @@ export default function Categories() {
           </div>
         </form>
       </div>
-      <div className="flex justify-center">
+      <div className="flex-grow flex justify-center">
         <div className="w-2/3 scale-90">
           {!isLoading && <CategoryTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}

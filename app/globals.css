@@ -252,3 +252,16 @@ input::placeholder {
     }
 }
 
+#table-border{
+    border-radius: 13px;
+    background: #ffffff;
+    box-shadow:  5px 5px 12px #cccccc,
+    -5px -5px 12px #ffffff;
+}
+
+.dark #table-border{
+    border-radius: 28px;
+    background: #779a9e;
+    box-shadow:  9px 9px 18px #ccd9db,
+    -9px -9px 18px #f4ffff;
+}

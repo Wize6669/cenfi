@@ -184,7 +184,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
   }
 
   return (
-    <div className="px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div id={'table-border'} className="px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Categorías</h2>
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-2 w-full md:w-auto">
@@ -265,14 +265,17 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
         <div className='text-sm text-gray-700 dark:text-gray-300'>
           <span className={'font-medium'}>Total: </span>{pagination.total} registros
         </div>
+        <div className='text-sm text-gray-700 dark:text-gray-300'>
+          Mostrando {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
+        </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
             onClick={() => handlePageChange(1)}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             title="Primera página"
           >
-            <ChevronLeft size={16} className="inline" />
-            <ChevronLeft size={16} className="inline" />
+            <ChevronLeft size={16} className="inline"/>
+            <ChevronLeft size={16} className="inline"/>
           </button>
           <button
             onClick={() => handlePageChange(pagination.previousPage ?? 1)}
@@ -280,9 +283,10 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
             disabled={!pagination.hasPreviousPage}
             title="Página anterior"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={16}/>
           </button>
-          <span className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
+          <span
+            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
             {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
@@ -291,15 +295,15 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
             disabled={!pagination.hasNextPage}
             title="Siguiente página"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={16}/>
           </button>
           <button
             onClick={() => handlePageChange(pagination.totalPages)}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             title="Última página"
           >
-            <ChevronRight size={16} className="inline" />
-            <ChevronRight size={16} className="inline" />
+            <ChevronRight size={16} className="inline"/>
+            <ChevronRight size={16} className="inline"/>
           </button>
         </div>
       </div>
