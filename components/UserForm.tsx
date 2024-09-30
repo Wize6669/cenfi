@@ -118,7 +118,7 @@ export default function UserForm({id}: PropsUserForm) {
   const updateUser = async () => {
     try {
       const {name, lastName, email, role} = user;
-      await axiosInstance.post(`/users/update/${id}`, {
+      await axiosInstance.post(`/users/${id}`, {
         name, lastName, email, roleId: role
       });
 

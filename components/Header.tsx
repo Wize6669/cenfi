@@ -17,7 +17,7 @@ export default function Header({children}: Readonly<{ children: React.ReactNode;
       setShowLoginMessage(true);
       const timer = setTimeout(() => {
         router.replace('/admin');
-      }, 2000);
+      }, 500);
 
       return () => clearTimeout(timer);
     }
