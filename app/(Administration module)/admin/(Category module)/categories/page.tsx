@@ -18,16 +18,9 @@ import { ErrorResponse } from "@/interfaces/ResponseAPI";
 import CategoryTable from "@/components/CategoryTable/CategoryTable";
 
 export default function Categories() {
-  const router = useRouter();
-  const userAuth = useAuthStore((state) => state.userAuth);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-
-  const [showLoginMessage, setShowLoginMessage] = useState(false);
-
   const [category, setCategories] = useState<CategoryNewUpdate>({
     name: '',
   });
-
   const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
@@ -38,24 +31,13 @@ export default function Categories() {
     total: 0,
     pageSize: 10
   })
-
   const queryClient = useQueryClient();
   const { data: categories, isLoading } = useQuery({
     queryFn: () => fetchCategory(),
     queryKey: ['categories', pagination.currentPage, pagination.pageSize],
   });
   const formRef = useRef<HTMLFormElement | null>(null);
-
-  useEffect(() => {
-    if (userAuth?.roleId !== 1 && userAuth?.roleId !== 2 || !isLoggedIn) {
-      setShowLoginMessage(true);
-      const timer = setTimeout(() => {
-        router.replace('/admin');
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [userAuth, router, isLoggedIn]);
+  const router = useRouter();
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setCategories({
@@ -121,7 +103,7 @@ export default function Categories() {
 
   const addCategories = async () => {
     try {
-      await axiosInstance.post('/category/create-category', { name: category.name });
+      await axiosInstance.post('/category', { name: category.name });
       toast.success("Categoría creada con éxito!");
       resetForm()
     } catch (error) {
@@ -163,23 +145,6 @@ export default function Categories() {
       await queryClient.invalidateQueries({ queryKey: ['categories'] })
     }
   });
-
-  if (showLoginMessage) {
-    return (
-      <div className={'flex flex-col min-h-screen'}>
-        <div className={'flex-grow flex flex-col justify-center items-center'}>
-          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5'}>
-            <p className={'text-center font-bold text-3xl mb-3'}>⚠️ Inicia sesión ⚠️</p>
-            <p className={'text-base'}>Redirigiendo a la página de Log In <b>...</b></p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -248,7 +213,7 @@ export default function Categories() {
         </form>
       </div>
       <div className="flex justify-center">
-        <div className="w-2/3 scale-90">
+        <div className="w-2/3 scale-90 h-[450px] overflow-auto">
           {!isLoading && <CategoryTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}
                                     data={categories}

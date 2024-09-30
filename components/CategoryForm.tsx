@@ -69,7 +69,7 @@ export default function UserForm({id}: PropsUserForm) {
   const updateCategory = async () => {
     try {
       const {name} = category;
-      await axiosInstance.post(`/category/update-category/${id}`, {
+      await axiosInstance.post(`/category/${id}`, {
         name
       });
 

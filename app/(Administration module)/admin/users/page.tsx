@@ -42,6 +42,7 @@ export default function Users() {
     pageSize: 10
   });
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+
   const queryClient = useQueryClient();
   const {data: users, isLoading, isError} = useQuery({
     queryFn: () => fetchUser(),
@@ -353,7 +354,7 @@ export default function Users() {
         </form>
       </div>
       <div className={'flex justify-center'}>
-        <div className='w-2/3 scale-90'>
+        <div className="w-2/3 scale-90 h-[450px] overflow-auto">
           {!isLoading && <UserTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}
                                     data={users}
