@@ -33,7 +33,8 @@ export default function CourseForm() {
       paymentOptions: [''],
       syllabus: [''],
       benefits: [''],
-      schedules: [''],
+      inPersonSchedules: [''],
+      virtualSchedules: [''],
     }
   });
 
@@ -52,9 +53,14 @@ export default function CourseForm() {
     name: "benefits",
   });
 
-  const { fields: scheduleFields, append: appendSchedule, remove: removeSchedule } = useFieldArray({
+  const { fields: inPersonScheduleFields, append: appendInPersonSchedule, remove: removeInPersonSchedule } = useFieldArray({
     control,
-    name: "schedules",
+    name: "inPersonSchedules",
+  });
+
+  const { fields: virtualScheduleFields, append: appendVirtualSchedule, remove: removeVirtualSchedule } = useFieldArray({
+    control,
+    name: "virtualSchedules",
   });
 
   const router = useRouter();
@@ -76,7 +82,8 @@ export default function CourseForm() {
     paymentOptions: [''],
     syllabus: [''],
     benefits: [''],
-    schedules: [''],
+    inPersonSchedules: [''],
+    virtualSchedules: [''],
   })
 
   const resetForm = () => {
@@ -95,7 +102,8 @@ export default function CourseForm() {
       paymentOptions: [''],
       syllabus: [''],
       benefits: [''],
-      schedules: ['']
+      inPersonSchedules: [''],
+      virtualSchedules: [''],
     });
   };
 
@@ -293,7 +301,8 @@ export default function CourseForm() {
                   className="dark:bg-gray-700 dark:text-white"
                   placeholder="Ingrese una opción de pago"
                 />
-                <Button type="button" variant="ghost" size="sm" onClick={() => removePayment(index)}><X className="h-4 w-4"/></Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => removePayment(index)}><X
+                  className="h-4 w-4"/></Button>
               </div>
             ))}
             <Button type="button" variant="outline" size="sm" onClick={() => appendPayment('')}
@@ -341,19 +350,38 @@ export default function CourseForm() {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios específicos</Label>
-            {scheduleFields.map((field, index) => (
+            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios presenciales</Label>
+            {inPersonScheduleFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
-                  {...register(`schedules.${index}` as const, {required: "Este campo es requerido"})}
+                  {...register(`inPersonSchedules.${index}` as const, {required: "Este campo es requerido"})}
                   className="dark:bg-gray-700 dark:text-white"
-                  placeholder="Ingrese un horario específico"
+                  placeholder="Ingrese un horario presencial específico"
                 />
-                <Button type="button" variant="ghost" size="sm" onClick={() => removeSchedule(index)}><X
+                <Button type="button" variant="ghost" size="sm" onClick={() => removeInPersonSchedule(index)}><X
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendSchedule('')}
+            <Button type="button" variant="outline" size="sm" onClick={() => appendInPersonSchedule('')}
+                    className="mt-2">
+              <PlusCircle className="h-4 w-4 mr-2"/>
+              Agregar horario
+            </Button>
+          </div>
+          <div>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios virtuales</Label>
+            {virtualScheduleFields.map((field, index) => (
+              <div key={field.id} className="flex items-center mt-2">
+                <Input
+                  {...register(`virtualSchedules.${index}` as const, {required: "Este campo es requerido"})}
+                  className="dark:bg-gray-700 dark:text-white"
+                  placeholder="Ingrese un horario virtual específico"
+                />
+                <Button type="button" variant="ghost" size="sm" onClick={() => removeVirtualSchedule(index)}><X
+                  className="h-4 w-4"/></Button>
+              </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" onClick={() => appendVirtualSchedule('')}
                     className="mt-2">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar horario
@@ -361,7 +389,9 @@ export default function CourseForm() {
           </div>
         </div>
         <div className="flex justify-center">
-          <Button type="submit" className="bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">Guardar Curso</Button>
+          <Button type="submit"
+                  className="bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">Guardar
+            Curso</Button>
         </div>
       </form>
     </div>

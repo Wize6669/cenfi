@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Calendar, Clock, DollarSign, BookOpen, Award, PhoneCall, HandCoins } from 'lucide-react'
+import { CalendarDays, DollarSign, BookOpen, Award, PhoneCall, HandCoins, MonitorCheck, UserPen } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { motion } from 'framer-motion'
@@ -43,7 +43,7 @@ const CourseOffer: React.FC<{ course: Course; index: number }> = ({ course, inde
         <div className="space-y-6">
           <div className="">
             <div className="flex items-center space-x-3 mb-2">
-              <Calendar className="w-6 h-6 text-blue-500"/>
+              <CalendarDays className="w-6 h-6 text-blue-500"/>
               <h4 className="font-semibold text-blue-900 dark:text-gray-300">Cronograma</h4>
             </div>
             <p className="mb-2">
@@ -86,14 +86,28 @@ const CourseOffer: React.FC<{ course: Course; index: number }> = ({ course, inde
         <div className="space-y-6">
           <div>
             <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
-              <Clock className="w-5 h-5 mr-2 text-blue-500"/>
-              Horarios disponibles
+              <UserPen className="w-5 h-5 mr-2 text-blue-500"/>
+              Horarios Presenciales
             </h4>
             <ul className="space-y-1 pl-7">
-              {course.schedules.map((schedule, index) => (
+              {course.inPersonSchedules.map((inPersonSchedule, index) => (
                 <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  {schedule}
+                  {inPersonSchedule}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold flex items-center mb-2 text-blue-900 dark:text-gray-300">
+              <MonitorCheck className="w-5 h-5 mr-2 text-blue-500"/>
+              Horarios Virtuales
+            </h4>
+            <ul className="space-y-1 pl-7">
+              {course.virtualSchedules.map((virtualSchedule, index) => (
+                <li key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {virtualSchedule}
                 </li>
               ))}
             </ul>

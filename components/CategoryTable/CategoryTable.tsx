@@ -31,7 +31,7 @@ interface PropsTable {
   pagination: Pagination,
 }
 
-export default function UserTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
+export default function CateTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isOpenModal, setIsOpenModal] = useState(false);

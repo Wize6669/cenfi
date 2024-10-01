@@ -47,7 +47,7 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
           document.body.removeChild(tempSpan)
           return width
         }))
-        setSelectWidth(`${maxWidth + 40}px`) // Añadimos un poco de padding
+        setSelectWidth(`${maxWidth + 40}px`)
       }
     }
 
@@ -88,7 +88,7 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
             style={{ width: '100%' }}
           >
             <span className="truncate">
-              {sortOption === 'default' ? 'Sin ordenar' :
+              {sortOption === 'default' ? 'Todos' :
                 sortOption === 'asc' ? 'Precio: menor a mayor' :
                   'Precio: mayor a menor'}
             </span>
