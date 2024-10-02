@@ -1,6 +1,6 @@
 'use client'
 
-import { Editor } from '@tiptap/react'
+import { type Editor } from '@tiptap/react'
 import React, { useRef } from 'react'
 import { generateBlobUrls } from '@/utils/images'
 import {
@@ -20,6 +20,7 @@ import {
   RotateCcw,
   RotateCw,
   Highlighter,
+  Type
 } from 'lucide-react'
 
 interface MenuBarProps {
@@ -65,7 +66,7 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('bold') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Bold className="w-5 h-5" />
+          <Bold className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -74,7 +75,7 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Italic className="w-5 h-5" />
+          <Italic className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -83,74 +84,82 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('strike') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Strikethrough className="w-5 h-5" />
+          <Strikethrough className="w-5 h-5"/>
         </button>
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive({textAlign: 'left'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignLeft className="w-5 h-5" />
+          <AlignLeft className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive({textAlign: 'center'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignCenter className="w-5 h-5" />
+          <AlignCenter className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive({textAlign: 'right'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignRight className="w-5 h-5" />
+          <AlignRight className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive({textAlign: 'justify'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignJustify className="w-5 h-5" />
+          <AlignJustify className="w-5 h-5"/>
         </button>
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive('heading', {level: 1}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Heading1 className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 dark:bg-gray-600' : ''
-          }`}
-        >
-          <Heading2 className="w-5 h-5" />
+          <Heading1 className="w-5 h-5"/>
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', { level: 3 }) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            editor.isActive('heading', {level: 2}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Heading3 className="w-5 h-5" />
+          <Heading2 className="w-5 h-5"/>
         </button>
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({level: 3}).run()}
+          className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            editor.isActive('heading', {level: 3}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+          }`}
+        >
+          <Heading3 className="w-5 h-5"/>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setParagraph().run()}
+          className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            editor.isActive('paragraph') ? 'bg-gray-200 dark:bg-gray-600' : ''
+          }`}
+        >
+          <Type className="w-5 h-5"/>
+        </button>
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
             editor.isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <List className="w-5 h-5" />
+          <List className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -158,9 +167,9 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <ListOrdered className="w-5 h-5" />
+          <ListOrdered className="w-5 h-5"/>
         </button>
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={handleImageUpload}
           className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -174,29 +183,29 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
           style={{display: 'none'}}
           onChange={handleFileChange}
         />
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
           className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-5 h-5"/>
         </button>
         <button
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().chain().focus().redo().run()}
           className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <RotateCw className="w-5 h-5" />
+          <RotateCw className="w-5 h-5"/>
         </button>
-        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600" />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
             editor.isActive('highlight') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Highlighter className="w-5 h-5" />
+          <Highlighter className="w-5 h-5"/>
         </button>
       </div>
     </div>
