@@ -64,7 +64,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
     columnHelper.accessor('id', {
       header: 'ACCIONES',
       cell: info => (
-        <div className='flex justify-center space-x-8 sticky right-0'>
+        <div className='flex justify-center space-x-6'>
           <div className='relative group'>
             <button
               className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
@@ -209,7 +209,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
               {isSelectOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
             {isSelectOpen && (
-              <div className='absolute z-10 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg'>
+              <div className='absolute z-20 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg'>
                 {[10, 20, 30, 40, 50].map(pageSize => (
                   <div
                     key={pageSize}

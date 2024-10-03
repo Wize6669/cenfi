@@ -350,7 +350,7 @@ export default function Users() {
         </form>
       </div>
       <div className={'flex-grow flex justify-center'}>
-        <div className="w-full md:w-5/6 lg:w-2/3 scale-90 h-[450px] overflow-auto">
+        <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
           {!isLoading && <UserTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}
                                     data={users}

@@ -149,7 +149,7 @@ export default function Course() {
         </div>
       </div>
       <div className={'flex-grow flex justify-center'}>
-        <div className={'w-full md:w-5/6 lg:w-2/3 scale-90 h-[450px]  overflow-auto scrollbar-custom'}>
+        <div className={'w-full md:w-5/6 lg:w-2/3 scale-90'}>
           {!isLoading && <CourseTable handlePageChange={handlePageChange}
                                       handlePageSizeChange={handlePageSizeChange}
                                       data={courses} pagination={pagination}/>}
