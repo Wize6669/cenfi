@@ -122,23 +122,22 @@ export default function LoginAdmin() {
       transition={{ duration: 0.8 }}
       className={'flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200'}>
       <div className={'flex-grow flex flex-col justify-center items-center relative'}>
-        <div className={'absolute top-1 left-5 lg:p-4 md:p-4 sm:p-0 row-start-2 justify-items-center content-center'}>
+        <div className={'absolute top-1 left-5 lg:p-4 md:p-4 sm:p-0 row-start-2 justify-items-center content-center pt-3'}>
           <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600 h-10 w-10 dark:border-none dark:bg-gray-800'} sx={{border: '1px solid #dedede'}}
                       onClick={goHome}>
             <Home className={'text-gray-400 dark:text-blue-500'}/>
           </IconButton>
         </div>
-        <div className={'absolute top-1 right-5 lg:p-4 md:p-4 sm:p-0'}>
+        <div className={'absolute top-1 right-5 lg:p-4 md:p-4 sm:p-0 pt-3'}>
           <ThemeToggle/>
         </div>
         <div className={'flex flex-col lg:flex-row justify-center items-center w-full px-4 md:px-10'}>
           {/* Columna de formulario */}
-          <div className={'w-full lg:w-1/2 flex flex-col justify-center items-center'}>
+          <div className={'w-full lg:w-1/2 flex flex-col justify-center items-center sm:px-2 lg:px-0 px-2'}>
             <div className={'mb-10'}>
               <Image
                 className={
-                  'filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
-                }
+                  'sm:pt-14 lg:pt-0 pt-14 filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)] w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-72 lg:h-72'}
                 src={'/images/image-1.png'}
                 alt={'Logo de CENFI'}
                 width={250}
@@ -150,24 +149,24 @@ export default function LoginAdmin() {
 
             <form onSubmit={handleSubmit} className={'w-full max-w-sm'}>
               <div className={'flex flex-col justify-start mb-8 text-center'}>
-                <h1 className={'text-3xl font-medium text-gray-900 dark:text-gray-200'}>
+                <h1 className={'text-xl sm:text-base md:text-3xl font-medium text-gray-900 dark:text-gray-200'}>
                   ¡Bienvenido de nuevo!
                 </h1>
-                <p className={'text-md font-medium text-gray-700 dark:text-gray-400'}>
+                <p className={'text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-400'}>
                   Ingresa tus credenciales para iniciar sesión
                 </p>
               </div>
 
               <div className={'relative flex flex-col mb-3'}>
                 <label
-                  className={'text-md font-medium text-gray-900 dark:text-gray-200'}
+                  className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-200'}
                   htmlFor={'email'}
                 >
                   Correo electrónico
                 </label>
                 <input
                   className={
-                    'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                    'text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
                     '          peer-valid:border-green-500 peer-invalid:border-pink-600'
                   }
                   type={'email'}
@@ -184,7 +183,7 @@ export default function LoginAdmin() {
               <PasswordInput password={user.password} handleGetDataInput={handleGetDataInput}/>
               <div className={'flex flex-col my-3 dark:border-gray-800'}>
                 <label
-                  className={'text-md font-medium text-gray-900 dark:text-gray-200'}
+                  className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-200'}
                   htmlFor={'roleId'}
                 >
                   Rol
@@ -192,7 +191,7 @@ export default function LoginAdmin() {
                 <div className={'relative w-40'}>
                   <select
                     className={
-                      'peer border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200 peer-invalid:border-pink-600'
+                      'sm:text-base md:text-base h-[35px] peer border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200 peer-invalid:border-pink-600'
                     }
                     name={'roleId'}
                     onChange={handleGetDataSelect}
@@ -234,7 +233,7 @@ export default function LoginAdmin() {
               <button
                 type={'submit'}
                 className={
-                  `text-white text-sm font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 dark:border-none
+                  `flex items-center justify-center text-sm sm:text-base md:text-base text-white h-[35px] font-bold w-full border rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 dark:border-none
               ${isLoading ? 'bg-[#627BCF] opacity-50 cursor-progress' : 'bg-[#627BCF]'}`
                 }
                 disabled={isLoading}

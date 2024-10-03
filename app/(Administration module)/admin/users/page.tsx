@@ -222,10 +222,6 @@ export default function Users() {
     router.push('/admin/menu');
   };
 
-  const handleSelectChange = () => {
-    setIsSelectOpen(false);
-  };
-
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
       <Header>
@@ -249,14 +245,14 @@ export default function Users() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <form className={'mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}
+        <form className={'container mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5 sm:px-6 lg:px-0 px-6'}
               ref={formRef} onSubmit={handleSubmit}
         >
           {/* Nombre y Apellido */}
           <div>
             <div className={'content-start'}>
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'fullName'}
               >
                 Nombre y Apellido
@@ -264,7 +260,7 @@ export default function Users() {
             </div>
             <div>
               <input
-                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                className={'text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
                   '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'text'}
                 name={'fullName'}
@@ -283,7 +279,7 @@ export default function Users() {
           <div>
             <div className='content-start'>
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'email'}
               >
                 Correo Electrónico
@@ -291,7 +287,7 @@ export default function Users() {
             </div>
             <div>
               <input
-                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                className={'text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
                   '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'email'}
                 name={'email'}
@@ -314,14 +310,14 @@ export default function Users() {
           <div>
             <div className={'content-start lg:w-2/4 md:w-3/4 sm:w-full'}>
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'roleId'}
               >
                 Rol
               </label>
               <div className={'relative'}>
                 <select
-                  className={'border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
+                  className={'sm:text-base md:text-base border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
                   name={'roleId'}
                   onChange={handleGetDataSelect}
                   required={true}
@@ -345,7 +341,7 @@ export default function Users() {
           </div>
           <div className={'col-span-full flex justify-center items-center'}>
             <button
-              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+              className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
               type={'submit'}
             >
               Registrar

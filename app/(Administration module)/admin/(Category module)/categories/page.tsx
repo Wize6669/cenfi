@@ -158,7 +158,7 @@ export default function Categories() {
       <Header>
         <ModuleListNavbar />
       </Header>
-      <div className={'flex-grow flex flex-col justify-stretch items-center'}>
+      <div className={'flex-grow flex flex-col justify-stretch items-center px-4'}>
         <div className="w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center">
           <div className="w-auto col-span-2">
             <h1 className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración de
@@ -173,14 +173,14 @@ export default function Categories() {
             <div className="border-t-2 container dark:border-gray-600" />
           </div>
         </div>
-        <form className={"grid gap-x-10 gap-y-5 lg:w-3/12 md:w-4/5 mt-2"}
+        <form className={"container grid gap-x-10 gap-y-5 lg:w-3/12 md:w-4/5 mt-2 sm:px-6 lg:px-0 px-6"}
               ref={formRef}
               onSubmit={handleSubmit}
         >
           <div className={'gap-x-0'}>
             <div className="content-end">
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'name'}
               >
                 Categoría
@@ -188,7 +188,7 @@ export default function Categories() {
             </div>
             <div>
               <input
-                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20 peer-valid:border-green-500 peer-invalid:border-pink-600'}
+                className={'text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20 peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'text'}
                 name={'name'}
                 onChange={handleGetDataInput}
@@ -203,7 +203,7 @@ export default function Categories() {
           </div>
           <div className={'col-span-full flex justify-center items-center'}>
             <button
-              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'}
+              className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'}
               type={'submit'}
             >
               Registrar
@@ -212,7 +212,7 @@ export default function Categories() {
         </form>
       </div>
       <div className="flex-grow flex justify-center">
-        <div className="w-full md:w-5/6 lg:w-2/3 scale-90 h-[450px] overflow-auto scrollbar-tables">
+        <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
           {!isLoading && <CategoryTable handlePageChange={handlePageChange}
                                     handlePageSizeChange={handlePageSizeChange}
                                     data={categories}

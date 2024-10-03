@@ -84,7 +84,7 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
           <button
             ref={selectRef}
             onClick={() => setIsSelectOpen(!isSelectOpen)}
-            className="w-full sm:w-auto py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center"
+            className="w-full sm:w-auto bg-white py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center"
             style={{ width: '100%' }}
           >
             <span className="truncate">

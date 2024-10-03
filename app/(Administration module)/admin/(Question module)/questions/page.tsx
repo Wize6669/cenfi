@@ -4,11 +4,9 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
-import BulletList from '@tiptap/extension-bullet-list'
-import OrderedList from '@tiptap/extension-ordered-list'
-import ListItem from '@tiptap/extension-list-item'
-import Heading from '@tiptap/extension-heading'
 import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
+import { FontSize } from '@/hooks/FontSize';
+import TextStyle from '@tiptap/extension-text-style';
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Header from "@/components/Header"
@@ -21,6 +19,7 @@ import { useRouter } from "next/navigation"
 import {Categories, PaginatedResponse} from "@/interfaces/Categories";
 import axios from "axios";
 import {config} from "@/config";
+import {cn} from "@/lib/utils";
 
 interface Category {
   id: number;
@@ -43,17 +42,14 @@ export default function Questions() {
   const [isOpenAnswer, setIsOpenAnswer] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const useCreateEditor = () => useEditor({
+  const useCreateEditor = (placeholder: string) => useEditor({
     extensions: [
       StarterKit,
-      BulletList,
-      OrderedList,
-      ListItem,
-      Heading.configure({
-        levels: [1, 2, 3],
-      }),
+      TextStyle,
+      FontSize,
       Placeholder.configure({
-        placeholder: 'Escribe aquí...',
+        placeholder: placeholder,
+        emptyEditorClass: 'tiptap-placeholder',
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -66,17 +62,25 @@ export default function Questions() {
     content: '<p></p>',
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[100px] w-full',
+        class: cn(
+          'prose max-w-none',
+          '[&_ol]:list-decimal [&_ul]:list-disc',
+          '[&_ol]:pl-5 [&_ul]:pl-5',
+          '[&_li]:ml-0',
+          'prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[100px] w-full',
+          'overflow-y-auto max-h-[500px]'
+        ),
       },
     },
+    immediatelyRender: false
   });
 
-  const questionEditor = useCreateEditor();
-  const option1Editor = useCreateEditor();
-  const option2Editor = useCreateEditor();
-  const option3Editor = useCreateEditor();
-  const option4Editor = useCreateEditor();
-  const justificationEditor = useCreateEditor();
+  const questionEditor = useCreateEditor('Ingresa tu pregunta aquí...');
+  const option1Editor = useCreateEditor('Ingresa la opción 1 aquí...');
+  const option2Editor = useCreateEditor('Ingresa la opción 1 aquí...');
+  const option3Editor = useCreateEditor('Ingresa la opción 1 aquí...');
+  const option4Editor = useCreateEditor('Ingresa la opción 1 aquí...');
+  const justificationEditor = useCreateEditor('Ingresa la justificación aquí...');
   const [error, setError] = useState<string | null>(null)
   const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
 
@@ -166,10 +170,10 @@ export default function Questions() {
           </div>
         </div>
         <div className="container pb-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4">
-              <div className="bg-white dark:bg-gray-900 p-4">
-                <label htmlFor="category" className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2">
+                <label htmlFor="category" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Categoría
                 </label>
                 <div className="relative">
@@ -180,7 +184,7 @@ export default function Questions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
-                    className="appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Seleccione una categoría</option>
                     {categories.map(category => (
@@ -194,8 +198,8 @@ export default function Questions() {
                   </div>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-900 p-4">
-                <label htmlFor="answer" className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2">
+                <label htmlFor="answer" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Respuesta
                 </label>
                 <div className="relative">
@@ -206,7 +210,7 @@ export default function Questions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenAnswer(true)}
                     onBlur={() => setIsOpenAnswer(false)}
-                    className="appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Opción correcta</option>
                     <option value="option1">Opción 1</option>
@@ -224,7 +228,7 @@ export default function Questions() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 px-4">
-              <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pregunta
               </label>
               <QuestionRichEditor editor={questionEditor}/>
@@ -234,7 +238,7 @@ export default function Questions() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[option1Editor, option2Editor, option3Editor, option4Editor].map((editor, index) => (
                 <div key={index} className="bg-white dark:bg-gray-900 px-4">
-                  <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Opción {index + 1}
                   </label>
                   <QuestionRichEditor editor={editor}/>
@@ -244,7 +248,7 @@ export default function Questions() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 px-4">
-              <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Justificación
               </label>
               <QuestionRichEditor editor={justificationEditor}/>
@@ -254,9 +258,9 @@ export default function Questions() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200"
+                className="text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200"
               >
-                Guardar Simulador
+                Guardar Pregunta
               </button>
             </div>
           </form>

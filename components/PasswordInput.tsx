@@ -13,7 +13,7 @@ const PasswordInput = ({password, handleGetDataInput}: PasswordInputProps) => {
     <div>
       <div className={'content-end'}>
         <label
-          className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+          className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
           htmlFor={'password'}
         >
           Contraseña
@@ -21,7 +21,7 @@ const PasswordInput = ({password, handleGetDataInput}: PasswordInputProps) => {
       </div>
       <div className="relative">
         <input
-          className="peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20
+          className="text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20
           peer-valid:border-green-500 peer-invalid:border-pink-600"
           type={showPassword ? 'text' : 'password'}
           name={'password'}

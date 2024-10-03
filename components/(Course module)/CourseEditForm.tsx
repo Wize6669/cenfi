@@ -125,12 +125,12 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
   });
 
   return (
-    <div className="container mx-auto pb-8 max-w-4xl">
+    <div className="container mx-auto pb-8 max-w-4xl sm:px-6 lg:px-0 px-6 sm:pt-2 lg:pt-0 pt-2">
       <form ref={formRef} onSubmit={onSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 space-y-4">
             <div>
-              <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nombre del curso</Label>
+              <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Nombre del curso</Label>
               <Controller
                 name="name"
                 defaultValue={''}
@@ -145,7 +145,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="university" className="text-gray-700 dark:text-gray-300">Universidad</Label>
+              <Label htmlFor="university" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Universidad</Label>
               <Controller
                 name="university"
                 defaultValue={''}
@@ -160,7 +160,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="schedule" className="text-gray-700 dark:text-gray-300">Régimen</Label>
+              <Label htmlFor="schedule" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Régimen</Label>
               <Controller
                 name="schedule"
                 defaultValue={''}
@@ -176,7 +176,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             </div>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300">Fecha de inicio</Label>
+            <Label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Fecha de inicio</Label>
             <Controller
               name="startDate"
               control={control}
@@ -207,7 +207,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             />
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300">Fecha de finalización</Label>
+            <Label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Fecha de finalización</Label>
             <Controller
               name="endDate"
               control={control}
@@ -238,7 +238,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             />
           </div>
           <div>
-            <Label htmlFor="cost" className="text-gray-700 dark:text-gray-300">Costo</Label>
+            <Label htmlFor="cost" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Costo</Label>
             <Controller
               name="cost"
               defaultValue={0}
@@ -254,7 +254,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             />
           </div>
           <div>
-            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300">Teléfono</Label>
+            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Teléfono</Label>
             <Controller
               name="phone"
               defaultValue={''}
@@ -269,7 +269,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             />
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Opciones de pago</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Opciones de pago</Label>
             {paymentFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Controller
@@ -293,7 +293,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Temario</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Temario</Label>
             {syllabusFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Controller
@@ -317,7 +317,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Beneficios</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Beneficios</Label>
             {benefitFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Controller
@@ -341,7 +341,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios presenciales</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Horarios presenciales</Label>
             {inPersonScheduleFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Controller
@@ -365,7 +365,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios virtuales</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Horarios virtuales</Label>
             {virtualScheduleFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Controller
@@ -390,7 +390,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
           </div>
         </div>
         <div className="flex justify-center">
-          <Button type="submit" className="bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">
+          <Button type="submit" className="text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">
             Actualizar Curso
           </Button>
         </div>

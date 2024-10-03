@@ -97,7 +97,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
   return (
     <div className="space-y-4">
       <div className={'lg:w-[452px] sm:w-1/2'}>
-        <label htmlFor="count" className="block text-base font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor="count" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300">
           Número de Secciones
         </label>
         <input
@@ -109,13 +109,13 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
           max="15"
           required={true}
           placeholder="Ingrese el número de secciones"
-          className="w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="text-sm sm:text-base md:text-base w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
       {inputsRef.current.map((item, index) => (
         <div key={index} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-10">
-          <div className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2 lg:pl-44">
-            <label htmlFor={`category-${index}`} className="block text-base font-medium text-gray-700 dark:text-gray-300">
+          <div className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2 lg:pl-44 sm:pb-2 lg:pb-0 pb-2">
+            <label htmlFor={`category-${index}`} className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300">
               Categorías
             </label>
             <div className="relative">
@@ -126,7 +126,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
                 onFocus={() => setOpenSelect(index)}
                 onBlur={() => setOpenSelect(null)}
                 required={true}
-                className="appearance-none text-sm  w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
+                className="text-sm sm:text-base md:text-base appearance-none w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
               >
                 <option value="">Seleccione una categoría</option>
                 {categories.map((category) => (
@@ -145,7 +145,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
             </div>
           </div>
           <div className="w-full sm:w-1/2 lg:pr-20">
-            <label htmlFor={`questions-${index}`} className="block text-base font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor={`questions-${index}`} className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300">
               Número de preguntas
             </label>
             <input
@@ -153,7 +153,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
               id={`questions-${index}`}
               value={item.input}
               onChange={(e) => handleInputChange(index, e.target.value)}
-              className="w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="text-sm sm:text-base md:text-base w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Ingresa el número de preguntas por categoría"
               required={true}
             />

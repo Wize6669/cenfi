@@ -58,7 +58,7 @@ export default function PasswordInput({password, handleGetDataInput, label = "Co
 
   return (
     <div>
-      <label htmlFor="password" className="block text-base font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="password" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300">
         {label}
       </label>
       <div className="relative">
@@ -68,7 +68,7 @@ export default function PasswordInput({password, handleGetDataInput, label = "Co
           name="password"
           value={password}
           onChange={handleGetDataInput}
-          className="peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-28
+          className="text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-28
           peer-valid:border-green-500 peer-invalid:border-pink-600"
           placeholder="Ingrese la contraseña del simulador"
           required={true}

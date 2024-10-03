@@ -183,16 +183,16 @@ export default function UserForm({id}: PropsUserForm) {
 
   return (
     <div className={'w-full flex flex-col h-1/3'}>
-      <h1 className={'font-bold text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Usuario</h1>
+      <h1 className={'font-bold text-xl sm:text-base md:text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Usuario</h1>
 
       <form className={'flex flex-col snap-y'} ref={formRef} onSubmit={handleSubmit}>
         <div>
           <div className={'flex flex-col mb-3'}>
-            <label className={'text-base font-medium dark:text-gray-200'} htmlFor={'fullName'}>
+            <label className={'text-sm sm:text-base md:text-base font-medium dark:text-gray-200 mb-1'} htmlFor={'fullName'}>
               Nombre y Apellido
             </label>
             <input
-              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full text-sm sm:text-base md:text-base border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'text'}
               name={'fullName'}
               onChange={handleGetFullNameInput}
@@ -204,11 +204,11 @@ export default function UserForm({id}: PropsUserForm) {
           </div>
 
           <div className={'flex flex-col mb-3'}>
-            <label className={'text-base font-medium dark:text-gray-200'} htmlFor={'email'}>
+            <label className={'text-sm sm:text-base md:text-base font-medium dark:text-gray-200 mb-1'} htmlFor={'email'}>
               Correo
             </label>
             <input
-              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full text-sm sm:text-base md:text-base border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'email'}
               name={'email'}
               required={true}
@@ -220,12 +220,12 @@ export default function UserForm({id}: PropsUserForm) {
           </div>
 
           <div className={'flex flex-col mb-3 w-1/2'}>
-            <label className={'text-sm font-medium dark:text-gray-200'} htmlFor={'roleId'}>
+            <label className={'text-sm font-medium dark:text-gray-200 mb-1'} htmlFor={'roleId'}>
               Rol
             </label>
             <div className={'relative'}>
               <select
-                className={'border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
+                className={'sm:text-base md:text-base border border-gray-300 dark:border-gray-600 rounded-md shadow-sm w-full py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 dark:text-gray-200 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all ease-in-out duration-200'}
                 name={'roleId'}
                 onChange={handleGetDataSelect}
                 onFocus={() => setIsSelectOpen(true)}
@@ -253,29 +253,30 @@ export default function UserForm({id}: PropsUserForm) {
         <hr/>
 
         <div>
-          <div className={'flex justify-start items-center gap-x-2 mt-2'}>
+          <div className={'text-sm sm:text-base md:text-base flex justify-start items-center gap-x-2 mt-2 mb-2'}>
             <input id={'resetPassword'}
                    name={'resetPassword'}
                    type={'checkbox'}
                    onChange={handleChecked}
             />
-            <label className={'text-base font-medium dark:text-gray-200'} htmlFor={'resetPassword'}>
+            <label className={'text-sm sm:text-base md:text-base font-medium dark:text-gray-200'} htmlFor={'resetPassword'}>
               Restablecer contraseña
             </label>
           </div>
 
           {isChecked && <>
-            <label className={'text-base font-medium'} htmlFor={'newPassword'}>
+            <label className={'text-sm sm:text-base md:text-base font-medium'} htmlFor={'newPassword'}>
               Contaseña temporal
             </label>
 
-            <div className={'w-full flex items-center justify-between border rounded-md shadow-sm border-[#E5E7EB] px-2'}>
+            <div className={'w-full dark:border-none text-sm sm:text-base md:text-base dark:bg-gray-700 flex items-center justify-between border rounded-md shadow-sm border-[#E5E7EB] px-2'}>
               <input
                 type={'text'}
                 name={'newPassword'}
                 value={newPassword}
                 readOnly={true}
                 style={{height: '35px'}}
+                className={'bg-white dark:bg-gray-700 text-sm sm:text-base md:text-base dark:text-gray-300 text-gray-900'}
               />
               <button
                 type='button'
@@ -288,7 +289,7 @@ export default function UserForm({id}: PropsUserForm) {
         </div>
 
         <div className={'flex justify-center items-center'}>
-          <button className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-4'}
+          <button className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-4'}
                   type={'submit'}>
             Actualizar
           </button>

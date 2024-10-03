@@ -80,7 +80,7 @@ export default function NewSimulator() {
           <div>
             <div className={'content-start'}>
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'fullName'}
               >
                 Título
@@ -88,7 +88,7 @@ export default function NewSimulator() {
             </div>
             <div>
               <input
-                className={'peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
+                className={'text-sm sm:text-base md:text-base peer w-full h-[35px] p-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20\n' +
                   '          peer-valid:border-green-500 peer-invalid:border-pink-600'}
                 type={'text'}
                 name={'fullName'}
@@ -107,7 +107,7 @@ export default function NewSimulator() {
           <div>
             <div className="content-start">
               <label
-                className={'text-base font-medium text-gray-900 dark:text-gray-300'}
+                className={'text-sm sm:text-base md:text-base font-medium text-gray-900 dark:text-gray-300'}
                 htmlFor={'number'}
               >
                 Duración
@@ -115,7 +115,7 @@ export default function NewSimulator() {
             </div>
             <div>
               <input
-                className={'w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'}
+                className={'text-sm sm:text-base md:text-base w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'}
                 type={'number'}
                 name={'duration'}
                 min={'1'}
@@ -188,7 +188,7 @@ export default function NewSimulator() {
           </div>
           <div className={'col-span-full flex justify-center items-center mb-3'}>
             <button
-              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+              className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
               type={'submit'}
             >
               Crear Simulador

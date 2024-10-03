@@ -21,7 +21,7 @@ import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/auth";
 
 export default function CourseForm() {
-  const { register, control, handleSubmit, formState: { errors } } = useForm<CourseCreate>({
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<CourseCreate>({
     defaultValues: {
       name: '',
       university: '',
@@ -71,41 +71,6 @@ export default function CourseForm() {
 
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
-  const [course, setCourse] = useState<CourseCreate>({
-    name: '',
-    university: '',
-    schedule: '',
-    startDate: null,
-    endDate: null,
-    cost: 0,
-    phone: '',
-    paymentOptions: [''],
-    syllabus: [''],
-    benefits: [''],
-    inPersonSchedules: [''],
-    virtualSchedules: [''],
-  })
-
-  const resetForm = () => {
-    if (formRef.current) {
-      formRef.current.reset();
-    }
-
-    setCourse({
-      name: '',
-      university: '',
-      schedule: '',
-      startDate: null,
-      endDate: null,
-      cost: 0,
-      phone: '',
-      paymentOptions: [''],
-      syllabus: [''],
-      benefits: [''],
-      inPersonSchedules: [''],
-      virtualSchedules: [''],
-    });
-  };
 
   const queryClient = useQueryClient();
 
@@ -127,7 +92,7 @@ export default function CourseForm() {
     try {
       await axiosInstance.post('/courses/', data);
       toast.success("Curso creado con éxito!");
-      resetForm()
+      formRef.current?.reset()
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error?.response?.status === 400) {
@@ -184,18 +149,18 @@ export default function CourseForm() {
       endDate: endDate || null,
     };
     await addCourseMutation(formattedData);
-    resetForm();
+    reset();
     setStartDate(undefined);
     setEndDate(undefined);
   };
 
   return (
-    <div className="container mx-auto pb-8 max-w-4xl">
+    <div className="container mx-auto pb-8 max-w-4xl sm:px-6 lg:px-0 px-6 sm:pt-2 lg:pt-0 pt-2">
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 space-y-4">
             <div>
-              <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nombre del curso</Label>
+              <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Nombre del curso</Label>
               <Input id="name" {...register("name", {required: "Este campo es requerido"})}
                      className="mt-1 dark:bg-gray-700 dark:text-white"
                      placeholder="Ingrese un nombre para el curso"
@@ -203,7 +168,7 @@ export default function CourseForm() {
               {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
             </div>
             <div>
-              <Label htmlFor="university" className="text-gray-700 dark:text-gray-300">Universidad</Label>
+              <Label htmlFor="university" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Universidad</Label>
               <Input id="university" {...register("university", {required: "Este campo es requerido"})}
                      className="mt-1 dark:bg-gray-700 dark:text-white"
                      placeholder="Ingrese el nombre de la university"
@@ -211,7 +176,7 @@ export default function CourseForm() {
               {errors.university && <p className="text-red-500 mt-1">{errors.university.message}</p>}
             </div>
             <div>
-              <Label htmlFor="schedule" className="text-gray-700 dark:text-gray-300">Régimen</Label>
+              <Label htmlFor="schedule" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Régimen</Label>
               <Input id="schedule" {...register("schedule", {required: "Este campo es requerido"})}
                      className="mt-1 dark:bg-gray-700 dark:text-white"
                      placeholder="Ingrese el régimen del curso. Ejm: Régimen Sierra"
@@ -220,7 +185,7 @@ export default function CourseForm() {
             </div>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300">Fecha de inicio</Label>
+            <Label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Fecha de inicio</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -248,7 +213,7 @@ export default function CourseForm() {
             </Popover>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300">Fecha de finalización</Label>
+            <Label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Fecha de finalización</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -276,7 +241,7 @@ export default function CourseForm() {
             </Popover>
           </div>
           <div>
-            <Label htmlFor="cost" className="text-gray-700 dark:text-gray-300">Costo</Label>
+            <Label htmlFor="cost" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Costo</Label>
             <Input id="cost" type="number" {...register("cost", {required: "Este campo es requerido"})}
                    className="mt-1 dark:bg-gray-700 dark:text-white"
                    min="1"
@@ -285,7 +250,7 @@ export default function CourseForm() {
             {errors.cost && <p className="text-red-500 mt-1">{errors.cost.message}</p>}
           </div>
           <div>
-            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300">Teléfono</Label>
+            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base">Teléfono</Label>
             <Input id="phone" {...register("phone", {required: "Este campo es requerido"})}
                    className="mt-1 dark:bg-gray-700 dark:text-white"
                    placeholder="Ingrese un número de teléfono para el curso"
@@ -293,7 +258,7 @@ export default function CourseForm() {
             {errors.phone && <p className="text-red-500 mt-1">{errors.phone.message}</p>}
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Opciones de pago</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Opciones de pago</Label>
             {paymentFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
@@ -312,7 +277,7 @@ export default function CourseForm() {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Temario</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Temario</Label>
             {syllabusFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
@@ -331,7 +296,7 @@ export default function CourseForm() {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Beneficios</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Beneficios</Label>
             {benefitFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
@@ -350,7 +315,7 @@ export default function CourseForm() {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios presenciales</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Horarios presenciales</Label>
             {inPersonScheduleFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
@@ -369,7 +334,7 @@ export default function CourseForm() {
             </Button>
           </div>
           <div>
-            <Label className="text-gray-700 dark:text-gray-300 mr-2">Horarios virtuales</Label>
+            <Label className="text-gray-700 dark:text-gray-300 mr-2 text-sm sm:text-base md:text-base">Horarios virtuales</Label>
             {virtualScheduleFields.map((field, index) => (
               <div key={field.id} className="flex items-center mt-2">
                 <Input
@@ -390,7 +355,7 @@ export default function CourseForm() {
         </div>
         <div className="flex justify-center">
           <Button type="submit"
-                  className="bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">Guardar
+                  className="text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200">Guardar
             Curso</Button>
         </div>
       </form>

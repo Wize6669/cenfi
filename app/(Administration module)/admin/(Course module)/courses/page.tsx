@@ -139,7 +139,7 @@ export default function Course() {
           </div>
           <div className={'col-span-full flex flex-grow justify-center items-center'}>
             <button
-              className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+              className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
               type={'button'}
               onClick={handleButtonClickNew}
             >

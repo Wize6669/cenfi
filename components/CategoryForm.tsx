@@ -105,16 +105,16 @@ export default function UserForm({id}: PropsUserForm) {
 
   return (
     <div className={'w-full flex flex-col h-1/3'}>
-      <h1 className={'font-bold text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Categoría</h1>
+      <h1 className={'font-bold text-xl sm:text-base md:text-2xl mt-4 mb-3 flex justify-center dark:text-gray-200'}>Editar Categoría</h1>
 
       <form className={'flex flex-col snap-y'} ref={formRef} onSubmit={handleSubmit}>
         <div>
           <div className={'flex flex-col mb-3'}>
-            <label className={'text-base font-medium dark:text-gray-200'} htmlFor={'name'}>
+            <label className={'text-sm sm:text-base md:text-base font-medium dark:text-gray-200 mb-1'} htmlFor={'name'}>
               Categoría
             </label>
             <input
-              className={'w-full border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
+              className={'w-full text-sm sm:text-base md:text-base border rounded-md p-2 shadow-sm dark:bg-gray-700 dark:border-none dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400'}
               type={'text'}
               name={'name'}
               onChange={handleGetDataInput}
@@ -125,7 +125,7 @@ export default function UserForm({id}: PropsUserForm) {
             />
           </div>
         <div className={'flex justify-center items-center'}>
-          <button className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-4'}
+          <button className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-4'}
                   type={'submit'}>
             Actualizar
           </button>

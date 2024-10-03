@@ -64,7 +64,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
     columnHelper.accessor('id', {
       header: 'ACCIONES',
       cell: info => (
-        <div className='flex justify-center space-x-6'>
+        <div className='flex justify-center space-x-8 sticky right-0'>
           <div className='relative group'>
             <button
               className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
@@ -85,7 +85,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
                 />
               </svg>
             </button>
-            <span className='absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
+            <span className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
               Editar
             </span>
           </div>
@@ -110,7 +110,8 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
                 />
               </svg>
             </button>
-            <span className='absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 transition-all duration-300 bg-red-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
+            <span
+              className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-red-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
               Eliminar
             </span>
           </div>
@@ -194,7 +195,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
   }
 
   return (
-    <div className='px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
+    <div className='border_table px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
       <h2 className='text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2'>Categorías</h2>
       <div className='flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0'>
         <div className='flex items-center space-x-2 w-full md:w-auto'>
@@ -236,9 +237,9 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           <Search className='absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400' size={18}/>
         </div>
       </div>
-      <div className='overflow-x-auto'>
+      <div className='max-h-[250px] overflow-x-auto'>
         <table id={'user-table'} className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
-          <thead className='bg-gray-50 dark:bg-gray-700'>
+          <thead className='bg-gray-50 dark:bg-gray-700 sticky top-0 z-10'>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (

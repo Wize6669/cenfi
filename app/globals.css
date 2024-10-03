@@ -11,6 +11,13 @@ input::placeholder {
     color: #999;
 }
 
+@media (max-width: 768px) {
+    /* Para dispositivos sm y md (768px o menos) */
+    input::placeholder {
+        font-size: 12px;
+    }
+}
+
 .text-with-underline {
     position: relative;
     transition: color 0.3s ease-in-out;
@@ -294,10 +301,31 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 /*Borde tabla*/
-.border_table{
+.border_table {
     border-radius: 21px;
     background: #ffffff;
-    box-shadow:  10px 10px 20px #c4c4c4,
-    -10px -10px 20px #ffffff;
+    box-shadow: 10px 10px 20px #c4c4c4, -10px -10px 20px #ffffff;
+}
+
+.dark .border_table {
+    background: #333333;
+    box-shadow: 10px 10px 20px #222222, -10px -10px 20px #0d2d43;
+}
+
+
+/* Placeholder editor*/
+@layer components {
+    .tiptap-placeholder::before {
+        @apply text-gray-400 float-left h-0 pointer-events-none;
+        content: attr(data-placeholder);
+        font-size: 14px; /* Tamaño de fuente por defecto */
+    }
+
+    @media (max-width: 768px) {
+        /* Para pantallas sm y md (máximo ancho 768px) */
+        .tiptap-placeholder::before {
+            font-size: 12px;
+        }
+    }
 }
 

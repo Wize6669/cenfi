@@ -48,7 +48,7 @@ export default function Simulator() {
         </div>
         <div className={'lg:w-[82%] flex justify-end items-center'}>
           <button
-            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+            className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
             type={'button'}
             onClick={handleButtonClickNew}
           >
@@ -57,7 +57,7 @@ export default function Simulator() {
         </div>
         <div className={'lg:w-[82%] flex justify-end items-center'}>
           <button
-            className={'bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+            className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
             type={'button'}
             onClick={handleButtonClickEdit}
           >
