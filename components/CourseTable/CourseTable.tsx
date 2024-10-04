@@ -44,19 +44,21 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
       id: 'name',
       header: 'CURSO',
       cell: info => (
-        <div className='text-center'>
+        <div className='text-center truncate max-w-[250px]' title={info.row.original.name}>
           {info.row.original.name}
         </div>
       ),
+      size: 250,
     }),
     columnHelper.accessor('university', {
       id: 'university',
       header: 'UNIVERSIDAD',
       cell: info => (
-        <div className='text-center'>
+        <div className='text-center truncate max-w-[250px]'>
           {info.row.original.university}
         </div>
       ),
+      size: 100,
     }),
     columnHelper.accessor('cost', {
       id: 'cost',
@@ -70,6 +72,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
             </span>
         </div>
       ),
+      size: 70,
     }),
     columnHelper.accessor('startDate', {
       id: 'startDate',
@@ -79,6 +82,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
           {info.row.original.startDate ? new Date(info.row.original.startDate).toISOString().split('T')[0] : 'N/A'}
         </div>
       ),
+      size: 70,
     }),
     columnHelper.accessor('endDate', {
       id: 'endDate',
@@ -88,6 +92,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
           {info.row.original.endDate ? new Date(info.row.original.endDate).toISOString().split('T')[0] : 'N/A'}
         </div>
       ),
+      size: 70,
     }),
 
     columnHelper.accessor('id', {
@@ -147,6 +152,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
           </div>
         </div>
       ),
+      size: 150,
     }),
   ]
 
@@ -276,6 +282,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
                   className="px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer"
+                  style={{ width: header.getSize() }}
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -290,7 +297,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300" style={{ width: cell.column.getSize() }}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -308,39 +315,42 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
         <div className='text-sm text-gray-700 dark:text-gray-300'>
           Mostrando {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
         </div>
+        <div className='text-sm text-gray-700 dark:text-gray-300'>
+          Mostrando {Math.max(1, (pagination.currentPage - 1) * pagination.pageSize + 1)} a {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
+        </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
-              onClick={() => handlePageChange(1)}
-              className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-              title="Primera página"
+            onClick={() => handlePageChange(1)}
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            title="Primera página"
           >
             <ChevronLeft size={16} className="inline"/>
             <ChevronLeft size={16} className="inline"/>
           </button>
           <button
-              onClick={() => handlePageChange(pagination.previousPage ?? 1)}
-              className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
-              disabled={!pagination.hasPreviousPage}
-              title="Página anterior"
+            onClick={() => handlePageChange(pagination.previousPage ?? 1)}
+            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={!pagination.hasPreviousPage}
+            title="Página anterior"
           >
             <ChevronLeft size={16}/>
           </button>
           <span
-              className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
+            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
             {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
-              onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
-              className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
-              disabled={!pagination.hasNextPage}
-              title="Siguiente página"
+            onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
+            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={!pagination.hasNextPage}
+            title="Siguiente página"
           >
             <ChevronRight size={16}/>
           </button>
           <button
-              onClick={() => handlePageChange(pagination.totalPages)}
-              className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-              title="Última página"
+            onClick={() => handlePageChange(pagination.totalPages)}
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            title="Última página"
           >
             <ChevronRight size={16} className="inline"/>
             <ChevronRight size={16} className="inline"/>
@@ -350,7 +360,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
       <Transition appear show={isConfirmOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsConfirmOpen(false)}>
           <Transition.Child
-              as={Fragment}
+            as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"

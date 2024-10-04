@@ -17,7 +17,10 @@ import {
   RotateCcw,
   RotateCw,
   Highlighter,
-  ChevronDown
+  ChevronDown,
+  Heading1,
+  Heading2,
+  Heading3,
 } from 'lucide-react'
 
 interface MenuBarProps {
@@ -69,7 +72,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('bold') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Bold className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <Bold
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('bold') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -78,7 +82,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Italic className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <Italic
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('italic') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -87,7 +92,36 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('strike') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Strikethrough className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <Strikethrough
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('strike') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+        </button>
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
+          className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            editor.isActive('heading', {level: 1}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+          }`}
+        >
+          <Heading1
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 1}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
+          className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            editor.isActive('heading', {level: 2}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+          }`}
+        >
+          <Heading2
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 2}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({level: 3}).run()}
+          className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
+            editor.isActive('heading', {level: 3}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+          }`}
+        >
+          <Heading3
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 3}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
@@ -96,7 +130,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive({textAlign: 'left'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignLeft className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <AlignLeft
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'left'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
@@ -104,7 +139,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive({textAlign: 'center'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignCenter className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <AlignCenter
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'center'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
@@ -112,7 +148,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive({textAlign: 'right'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <AlignRight
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'right'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
@@ -120,7 +157,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive({textAlign: 'justify'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignJustify className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <AlignJustify
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'justify'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <div className="relative inline-block text-left">
@@ -150,7 +188,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <List className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"/>
+          <List
+            className={`w-4 h-4 sm:w-5 sm:h-5 ${editor.isActive('bulletList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -158,14 +197,17 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <ListOrdered className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"/>
+          <ListOrdered
+            className={`w-4 h-4 sm:w-5 sm:h-5 ${editor.isActive('orderedList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={handleImageUpload}
           className="p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <Image className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"/>
+          <Image
+            className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"
+          />
         </button>
         <input
           type='file'
@@ -196,7 +238,8 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             editor.isActive('highlight') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Highlighter className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
+          <Highlighter
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('highlight') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
       </div>
     </div>

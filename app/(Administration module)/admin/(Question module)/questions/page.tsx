@@ -220,7 +220,7 @@ export default function Questions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
-                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Seleccione una categoría</option>
                     {categories.map(category => (
@@ -244,7 +244,7 @@ export default function Questions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenAnswer(true)}
                     onBlur={() => setIsOpenAnswer(false)}
-                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Opción correcta</option>
                     {Array.from({ length: optionsCount }, (_, i) => (
