@@ -1,13 +1,17 @@
 'use client'
 
 import React, { useState } from 'react';
-import {useAuthStore} from '@/store/auth';
+import { useAuthStore } from '@/store/auth';
 import Link from 'next/link';
 import { FiMenu, FiX, FiHome, FiUsers, FiHelpCircle, FiFolder, FiMonitor, FiBookOpen } from 'react-icons/fi';
+import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export default function ModuleListNavbar() {
   const userAuth = useAuthStore((state) => state.userAuth);
   const [isOpen, setIsOpen] = useState(false);
+
+  const pathname = usePathname();
 
   const navItems = [
     { href: '/admin/menu', text: 'Menú', icon: FiHome },
@@ -17,13 +21,18 @@ export default function ModuleListNavbar() {
     { href: '/admin/simulators', text: 'Simulador', icon: FiMonitor },
     { href: '/admin/courses', text: 'Curso', icon: FiBookOpen, roleRequired: 1 },
   ];
+
+  const isActive = (href: string) => {
+    return pathname.startsWith(href);
+  };
+
   return (
-    <nav className="relative w-full">
+    <nav className={'relative w-full'}>
       {/* Hamburger menu for mobile and tablet */}
-      <div className="lg:hidden flex justify-start">
+      <div className={'lg:hidden flex justify-start'}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-gray-900 dark:text-gray-200"
+          className={'p-2 text-gray-900 dark:text-gray-200'}
           aria-label="Toggle menu"
         >
           {isOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
@@ -40,20 +49,31 @@ export default function ModuleListNavbar() {
             <Link
               key={index}
               href={item.href}
-              className="flex items-center p-2 text-gray-900 dark:text-gray-200 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              className={`
+                relative flex items-center p-2 rounded transition-colors duration-200
+                ${isActive(item.href)
+                ? 'text-blue-600 dark:text-blue-300'
+                : 'text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}
+                text-sm lg:text-base
+              `}
               onClick={() => setIsOpen(false)}
             >
-              <item.icon className="w-5 h-5 mr-2"/>
+              <item.icon className={`w-5 h-5 mr-2 ${isActive(item.href) ? 'text-blue-600 dark:text-blue-300' : ''}`}/>
               <span className="lg:inline">{item.text}</span>
+              {isActive(item.href) && (
+                <motion.div
+                  className={'absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-300'}
+                  layoutId={'underline'}
+                  initial={false}
+                />
+              )}
             </Link>
           )
         ))}
       </div>
     </nav>
   );
-
 }
-
 
 /*
 

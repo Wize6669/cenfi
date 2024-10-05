@@ -145,10 +145,6 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
                 />
               </svg>
             </button>
-            <span
-              className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-red-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
-              Eliminar
-            </span>
           </div>
         </div>
       ),

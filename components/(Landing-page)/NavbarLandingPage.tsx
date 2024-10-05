@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, Home, Phone, Users, BookOpen, ShieldCheck, AppWindow } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
   { name: 'Inicio', href: '/', icon: Home },
@@ -18,6 +19,12 @@ const navItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('/')
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setActiveTab(pathname)
+  }, [pathname])
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md">
@@ -46,10 +53,20 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="group relative flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-700/50 px-3 py-2 rounded-md text-sm font-medium"
+                className={`group relative flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 px-3 py-2 rounded-md text-sm font-medium ${
+                  activeTab === item.href ? 'text-blue-600 dark:text-blue-300' : ''
+                }`}
               >
-                <item.icon className="w-5 h-5 text-blue-700 dark:text-blue-400 mr-2" />
+                <item.icon className={`w-5 h-5 mr-2 ${
+                  activeTab === item.href ? 'text-blue-600 dark:text-blue-300' : 'text-blue-700 dark:text-blue-400'
+                }`} />
                 <span className="hidden lg:inline">{item.name}</span>
+                {activeTab === item.href && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-300"
+                    layoutId="underline"
+                  />
+                )}
               </Link>
             ))}
             <ThemeToggle />
@@ -57,7 +74,7 @@ export default function Navbar() {
 
           <div className="md:hidden flex items-center">
             <ThemeToggle />
-            <button onClick={() => setIsOpen(!isOpen)} className="ml-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-white">
+            <button onClick={() => setIsOpen(!isOpen)} className="ml-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-300">
               <Menu className="h-6 w-6" />
             </button>
           </div>
@@ -73,8 +90,16 @@ export default function Navbar() {
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 shadow-lg">
               {navItems.map((item) => (
-                <Link key={item.name} href={item.href} className="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium">
-                  <item.icon className="w-5 h-5 mr-3" />
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 px-3 py-2 rounded-md text-base font-medium ${
+                    activeTab === item.href ? 'text-blue-600 dark:text-blue-300 bg-gray-200 dark:bg-gray-700' : ''
+                  }`}
+                >
+                  <item.icon className={`w-5 h-5 mr-3 ${
+                    activeTab === item.href ? 'text-blue-600 dark:text-blue-300' : ''
+                  }`} />
                   {item.name}
                 </Link>
               ))}

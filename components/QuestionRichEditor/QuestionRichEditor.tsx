@@ -1,7 +1,7 @@
 'use client'
 
 import { type Editor } from '@tiptap/react'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { generateBlobUrls } from '@/utils/images'
 import {
   Bold,
@@ -20,16 +20,19 @@ import {
   ChevronDown,
   Heading1,
   Heading2,
-  Heading3,
+  Heading3
 } from 'lucide-react'
 
 interface MenuBarProps {
   editor: Editor | null
 }
 
+type IsActiveProps = string | { [key: string]: any }
+
 export default function QuestionRichEditor({ editor }: MenuBarProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [fontSize, setFontSize] = useState('16px');
+  const [editorState, setEditorState] = useState<{ [key: string]: boolean }>({});
 
   const handleImageUpload = () => {
     fileInputRef.current?.click()
@@ -58,6 +61,49 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
     editor?.chain().focus().setFontSize(size).run();
   };
 
+  const isActive = useCallback((props: IsActiveProps) => {
+    if (!editor) return false;
+
+    if (typeof props === 'string') {
+      return editorState[props] || false;
+    }
+
+    if (typeof props === 'object') {
+      return Object.entries(props).every(([key, value]) => editorState[`${key}_${value}`] || false);
+    }
+
+    return false;
+  }, [editor, editorState]);
+
+  useEffect(() => {
+    if (editor) {
+      const updateState = () => {
+        setEditorState({
+          bold: editor.isActive('bold'),
+          italic: editor.isActive('italic'),
+          strike: editor.isActive('strike'),
+          heading_1: editor.isActive('heading', { level: 1 }),
+          heading_2: editor.isActive('heading', { level: 2 }),
+          heading_3: editor.isActive('heading', { level: 3 }),
+          textAlign_left: editor.isActive({ textAlign: 'left' }),
+          textAlign_center: editor.isActive({ textAlign: 'center' }),
+          textAlign_right: editor.isActive({ textAlign: 'right' }),
+          textAlign_justify: editor.isActive({ textAlign: 'justify' }),
+          bulletList: editor.isActive('bulletList'),
+          orderedList: editor.isActive('orderedList'),
+          highlight: editor.isActive('highlight'),
+        });
+      };
+
+      editor.on('update', updateState);
+      updateState(); // Initial state update
+
+      return () => {
+        editor.off('update', updateState);
+      };
+    }
+  }, [editor]);
+
   if (!editor) {
     return null
   }
@@ -69,99 +115,89 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('bold') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('bold') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Bold
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('bold') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Bold className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('bold') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('italic') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Italic
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('italic') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Italic className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('italic') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
           disabled={!editor.can().chain().focus().toggleStrike().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('strike') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('strike') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Strikethrough
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('strike') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Strikethrough className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('strike') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', {level: 1}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('heading_1') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Heading1
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 1}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Heading1 className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('heading_1') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', {level: 2}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('heading_2') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Heading2
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 2}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Heading2 className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('heading_2') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
-          onClick={() => editor.chain().focus().toggleHeading({level: 3}).run()}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('heading', {level: 3}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('heading_3') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Heading3
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('heading', {level: 3}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Heading3 className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('heading_3') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({textAlign: 'left'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('textAlign_left') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignLeft
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'left'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <AlignLeft className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('textAlign_left') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({textAlign: 'center'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('textAlign_center') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignCenter
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'center'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <AlignCenter className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('textAlign_center') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({textAlign: 'right'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('textAlign_right') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignRight
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'right'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <AlignRight className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('textAlign_right') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive({textAlign: 'justify'}) ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('textAlign_justify') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <AlignJustify
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive({textAlign: 'justify'}) ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <AlignJustify className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('textAlign_justify') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
-        <div className="relative inline-block text-left">
+        <div className="inline-block text-left group relative">
           <select
             value={fontSize}
             onChange={(e) => handleFontSize(e.target.value)}
@@ -176,8 +212,7 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
             <option value="24px">24 px</option>
             <option value="28px">28 px</option>
           </select>
-          <div
-            className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
             <ChevronDown className="w-3 h-3 text-gray-700 dark:text-blue-400"/>
           </div>
         </div>
@@ -185,29 +220,25 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <List
-            className={`w-4 h-4 sm:w-5 sm:h-5 ${editor.isActive('bulletList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <List className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive('bulletList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <ListOrdered
-            className={`w-4 h-4 sm:w-5 sm:h-5 ${editor.isActive('orderedList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <ListOrdered className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive('orderedList') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <button
           onClick={handleImageUpload}
           className="p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <Image
-            className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"
-          />
+          <Image className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-blue-400"/>
         </button>
         <input
           type='file'
@@ -235,11 +266,10 @@ export default function QuestionRichEditor({ editor }: MenuBarProps) {
         <button
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            editor.isActive('highlight') ? 'bg-gray-200 dark:bg-gray-600' : ''
+            isActive('highlight') ? 'bg-gray-200 dark:bg-gray-600' : ''
           }`}
         >
-          <Highlighter
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${editor.isActive('highlight') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
+          <Highlighter className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('highlight') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
         </button>
       </div>
     </div>
