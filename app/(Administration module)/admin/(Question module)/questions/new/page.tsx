@@ -9,12 +9,13 @@ import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
-import Gapcursor from '@tiptap/extension-gapcursor'
+import Image from '@tiptap/extension-image'
+import ResizableImage from 'tiptap-extension-resize-image'
+import Color from '@tiptap/extension-color'
 import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
 import { FontSize } from '@/hooks/FontSize'
 import TextStyle from '@tiptap/extension-text-style'
 import Placeholder from '@tiptap/extension-placeholder'
-import Image from '@tiptap/extension-image'
 import Header from "@/components/Header"
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar"
 import { IconButton } from "@mui/material"
@@ -67,6 +68,7 @@ export default function CreateQuestions() {
         StarterKit,
         TextStyle,
         FontSize,
+        Color,
         MathExtension.configure({
           evaluation: false,
           katexOptions:
@@ -80,16 +82,14 @@ export default function CreateQuestions() {
           types: ['heading', 'paragraph'],
         }),
         Highlight,
-        Image.configure({
-          inline: false,
-        }),
         Table.configure({
           resizable: true,
         }),
         TableRow,
         TableHeader,
         TableCell,
-        Gapcursor,
+        ResizableImage,
+        Image
       ],
       content: '<p></p>',
       editorProps: {

@@ -62,9 +62,15 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.20.5
         version: 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tiptap-extend/columns':
+        specifier: ^2.1.6
+        version: 2.1.6(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(prosemirror-model@1.23.0)(prosemirror-state@1.4.3)
       '@tiptap/core':
         specifier: ^2.8.0
         version: 2.8.0(@tiptap/pm@2.8.0)
+      '@tiptap/extension-color':
+        specifier: ^2.8.0
+        version: 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0)))
       '@tiptap/extension-gapcursor':
         specifier: ^2.8.0
         version: 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/pm@2.8.0)
@@ -140,6 +146,9 @@ importers:
       react:
         specifier: ^18.3.1
         version: 18.3.1
+      react-colorful:
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-confetti:
         specifier: ^6.1.0
         version: 6.1.0(react@18.3.1)
@@ -170,6 +179,9 @@ importers:
       tiptap-extension-font-size:
         specifier: ^1.2.0
         version: 1.2.0(@tiptap/pm@2.8.0)
+      tiptap-extension-resize-image:
+        specifier: ^1.1.9
+        version: 1.1.9(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/extension-image@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0)))(@tiptap/pm@2.8.0)
       tiptap-math-extension:
         specifier: ^0.0.1
         version: 0.0.1(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/pm@2.8.0)
@@ -1122,6 +1134,13 @@ packages:
   '@tanstack/virtual-core@3.10.8':
     resolution: {integrity: sha512-PBu00mtt95jbKFi6Llk9aik8bnR3tR/oQP1o3TSi+iG//+Q2RTIzCEgKkHG8BB86kxMNW6O8wku+Lmi+QFR6jA==}
 
+  '@tiptap-extend/columns@2.1.6':
+    resolution: {integrity: sha512-Wfox+cC3I2Qf4xwaTib+uamHnyrDPWCFIax4ipIn0z/MOtwUFTq4xEq06FlyO0catD8ES9MCXpAOendJV8f0/Q==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      prosemirror-model: ^1.0.0
+      prosemirror-state: ^1.0.0
+
   '@tiptap/core@2.8.0':
     resolution: {integrity: sha512-xsqDI4BNzYRWRtBq7+/38ThhqEr7uG9Njip1x+9/wgR3vWPBFnBkYJTz6jSxS35NRE6BSnERm4/B/vrLuY1Hdw==}
     peerDependencies:
@@ -1160,6 +1179,12 @@ packages:
     resolution: {integrity: sha512-VSFn3sFF6qPpOGkXFhik8oYRH5iByVJpFEFd/duIEftmS0MdPzkbSItOpN3mc9xsJ5dCX80LYaResSj5hr5zkA==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
+
+  '@tiptap/extension-color@2.8.0':
+    resolution: {integrity: sha512-b0ZIDaZKTDVdTb0PMgtOiPzgCkYhvDldjzdWyPLsjWup5x9/zPasH5X/2SfMuwtjt+cKj6YBPveJjF7w5ApK7w==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+      '@tiptap/extension-text-style': ^2.7.0
 
   '@tiptap/extension-document@2.8.0':
     resolution: {integrity: sha512-mp7Isx1sVc/ifeW4uW/PexGQ9exN3NRUOebSpnLfqXeWYk4y1RS1PA/3+IHkOPVetbnapgPjFx/DswlCP3XLjA==}
@@ -2826,6 +2851,12 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  react-colorful@5.6.1:
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   react-confetti@6.1.0:
     resolution: {integrity: sha512-7Ypx4vz0+g8ECVxr88W9zhcQpbeujJAVqL14ZnXJ3I23mOI9/oBVTQ3dkJhUmB0D6XOtCZEM6N0Gm9PMngkORw==}
     engines: {node: '>=10.18'}
@@ -3176,6 +3207,13 @@ packages:
   tiptap-extension-font-size@1.2.0:
     resolution: {integrity: sha512-akVve/bIAhAf4ze6XR4sh0qV7o7XgAoPkDGumTj4SFNtjhcH61wD97ibxWQAXchJPNAV6DdzRJiuUtEgzspjyA==}
     engines: {node: '>=10'}
+
+  tiptap-extension-resize-image@1.1.9:
+    resolution: {integrity: sha512-CyApEvMgxCmHx8DxormIbGD6lZ+7fFeq49OOPPquNIWCRigkqgyFQ3KFJeSN446JlwjyuCMVIYdkKY/m5IBu6A==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/extension-image': ^2.0.0
+      '@tiptap/pm': ^2.0.0
 
   tiptap-math-extension@0.0.1:
     resolution: {integrity: sha512-N7+CMVziugMqv9cp1JOIEkVLNPW4gusP1U2I0eqcJg3vpr7te4xj1mTgpftbOADHTglLafsG5xB06MpJP3wUBw==}
@@ -4361,6 +4399,13 @@ snapshots:
 
   '@tanstack/virtual-core@3.10.8': {}
 
+  '@tiptap-extend/columns@2.1.6(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(prosemirror-model@1.23.0)(prosemirror-state@1.4.3)':
+    dependencies:
+      '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
+      prosemirror-model: 1.23.0
+      prosemirror-state: 1.4.3
+      tslib: 2.7.0
+
   '@tiptap/core@2.8.0(@tiptap/pm@2.8.0)':
     dependencies:
       '@tiptap/pm': 2.8.0
@@ -4393,6 +4438,11 @@ snapshots:
   '@tiptap/extension-code@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))':
     dependencies:
       '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
+
+  '@tiptap/extension-color@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/extension-text-style@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0)))':
+    dependencies:
+      '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
+      '@tiptap/extension-text-style': 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
 
   '@tiptap/extension-document@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))':
     dependencies:
@@ -5193,7 +5243,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.0(eslint@8.57.1)
       eslint-plugin-react: 7.37.1(eslint@8.57.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.1)
@@ -5224,7 +5274,7 @@ snapshots:
       is-bun-module: 1.2.1
       is-glob: 4.0.3
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-node
@@ -5242,7 +5292,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -6296,6 +6346,11 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
+  react-colorful@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-confetti@6.1.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -6711,6 +6766,12 @@ snapshots:
       '@tiptap/extension-text-style': 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
     transitivePeerDependencies:
       - '@tiptap/pm'
+
+  tiptap-extension-resize-image@1.1.9(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/extension-image@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0)))(@tiptap/pm@2.8.0):
+    dependencies:
+      '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
+      '@tiptap/extension-image': 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
+      '@tiptap/pm': 2.8.0
 
   tiptap-math-extension@0.0.1(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))(@tiptap/pm@2.8.0):
     dependencies:
