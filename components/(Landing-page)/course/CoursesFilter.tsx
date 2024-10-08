@@ -58,7 +58,7 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
 
   return (
     <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-      <p className="text-base sm:text-lg md:text-xl font-bold text-blue-900 dark:text-blue-500 mb-4 md:mb-0 text-left">
+      <p className="text-sm md:text-base lg:text-lg font-bold text-blue-900 dark:text-blue-500 mb-4 md:mb-0 text-left">
         Cursos disponibles: {totalCourses}
       </p>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
@@ -68,30 +68,30 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
             placeholder="Buscar por universidad..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full md:w-64 pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base"
+            className="w-full h-[35px] md:text-sm lg:text-base md:w-64 pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 text-sm sm:text-base"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18}/>
+          <Search className="absolute left-3 top-1/2 transform -translate-y-2.5 text-blue-500 dark:text-blue-400" size={18}/>
           {searchTerm && (
             <button
               onClick={clearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 transform -translate-y-2.5 dark:text-blue-400 text-blue-500 hover:text-red-600 dark:hover:text-red-400"
             >
               <X size={18} />
             </button>
           )}
         </div>
-        <div className="relative" style={{ width: selectWidth }}>
+        <div className="relative" style={{ width: selectWidth}}>
           <button
             ref={selectRef}
             onClick={() => setIsSelectOpen(!isSelectOpen)}
-            className="w-full bg-white py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center text-sm sm:text-base"
+            className="w-full h-[35px] text-sm md:text-sm lg:text-base text-gray-700 bg-white py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center"
           >
             <span className="truncate">
               {sortOption === 'default' ? 'Todos' :
                 sortOption === 'asc' ? 'Precio: menor a mayor' :
                   'Precio: mayor a menor'}
             </span>
-            {isSelectOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            {isSelectOpen ? <ChevronUp className={'text-blue-500 dark:text-blue-400'} size={18} /> : <ChevronDown className={'text-blue-500 dark:text-blue-400'} size={18} />}
           </button>
           <AnimatePresence>
             {isSelectOpen && (
@@ -109,7 +109,7 @@ export default function CoursesFilter({ onSearchChange, onSortChange, totalCours
                 ].map((option) => (
                   <button
                     key={option.value}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm sm:text-base"
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm md:text-sm lg:text-base"
                     onClick={() => handleSortChange(option.value)}
                   >
                     {option.label}

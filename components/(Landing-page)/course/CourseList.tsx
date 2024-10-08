@@ -7,6 +7,7 @@ import axios from "axios"
 import CourseOffer from './CourseOffer'
 import CoursesFilter from './CoursesFilter'
 import { Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion';
 
 const CourseList: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([])
@@ -87,8 +88,14 @@ const CourseList: React.FC = () => {
   }
 
   return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-blue-800 dark:text-blue-500">Nuestros Cursos</h1>
+      <div className="container mx-auto px-4 md:py-8 py-4">
+        <motion.h1
+          className="pb-0 md:pb-2 text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-4 text-blue-800 dark:text-blue-500"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >Nuestros Cursos
+        </motion.h1>
         <CoursesFilter
             onSearchChange={handleSearchChange}
             onSortChange={handleSortChange}
@@ -105,7 +112,7 @@ const CourseList: React.FC = () => {
               ))}
             </div>
         ) : (
-            <div className="text-center text-gray-500">No hay cursos disponibles que coincidan con los criterios de búsqueda</div>
+            <div className="text-sm md:text-sm lg:text-base text-center text-gray-500">No hay cursos disponibles que coincidan con los criterios de búsqueda</div>
         )}
         {!isLoading && currentPage < totalPages && filteredCourses.length > 0 && (
             <div className="text-center mt-8">

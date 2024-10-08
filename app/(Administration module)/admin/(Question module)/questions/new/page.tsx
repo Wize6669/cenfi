@@ -4,6 +4,12 @@ import { EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
+import MathExtension from "@aarkue/tiptap-math-extension"
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import Gapcursor from '@tiptap/extension-gapcursor'
 import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
 import { FontSize } from '@/hooks/FontSize'
 import TextStyle from '@tiptap/extension-text-style'
@@ -20,6 +26,7 @@ import { Categories, PaginatedResponse } from "@/interfaces/Categories"
 import axios from "axios"
 import { config } from "@/config"
 import { cn } from "@/lib/utils"
+import "katex/dist/katex.min.css"
 
 interface Category {
   id: number;
@@ -60,6 +67,11 @@ export default function CreateQuestions() {
         StarterKit,
         TextStyle,
         FontSize,
+        MathExtension.configure({
+          evaluation: false,
+          katexOptions:
+            { macros: { "\\B": "\\mathbb{B}" } },
+          delimiters: "dollar" }),
         Placeholder.configure({
           placeholder: placeholder,
           emptyEditorClass: 'tiptap-placeholder',
@@ -71,6 +83,13 @@ export default function CreateQuestions() {
         Image.configure({
           inline: false,
         }),
+        Table.configure({
+          resizable: true,
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        Gapcursor,
       ],
       content: '<p></p>',
       editorProps: {
@@ -80,7 +99,7 @@ export default function CreateQuestions() {
             '[&_ol]:list-decimal [&_ul]:list-disc',
             '[&_ol]:pl-5 [&_ul]:pl-5',
             '[&_li]:ml-0',
-            'prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[100px] w-full',
+            'prose-sm md:prose-md lg:prose-lg dark:prose-invert mx-auto focus:outline-none min-h-[20px] w-full',
             'overflow-y-auto max-h-[500px]'
           ),
         },
@@ -160,14 +179,15 @@ export default function CreateQuestions() {
     e.preventDefault();
     const formDataWithEditorContent = {
       ...formData,
-      question: questionEditorState?.getHTML() ?? '',
+      question: questionEditorState?.getJSON() ?? '',
       options: optionEditorsState.map((editor, index) => ({
-        [`option${index + 1}`]: editor?.getHTML() ?? ''
+        [`option${index + 1}`]: editor?.getJSON() ?? ''
       })),
-      justification: justificationEditorState?.getHTML() ?? '',
+      justification: justificationEditorState?.getJSON() ?? '',
     };
     console.log('Form Data:', formDataWithEditorContent);
-    // Aquí iría la lógica para enviar los datos al servidor
+
+
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -316,7 +336,7 @@ export default function CreateQuestions() {
             )}
 
             <div
-              className={`grid grid-cols-1 lg:grid-cols-2 gap-4 px-4 ${optionsCount % 2 !== 0 ? 'md:last:col-span-2' : ''}`}>
+              className={`grid grid-cols-1 gap-4 px-4 ${optionsCount % 2 !== 0 ? 'md:last:col-span-2' : ''}`}>
               {optionEditorsState.map((editor, index) => (
                 editor && (
                   <div key={index} className={`bg-white dark:bg-gray-900 relative ${formData.answer === `option${index + 1}` ? 'border-2 border-green-500 rounded-lg' : ''}`}>
@@ -336,7 +356,7 @@ export default function CreateQuestions() {
                         <button
                           type="button"
                           onClick={() => handleRemoveOption(index)}
-                          className="group absolute top-8 right-3 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base md:top-2 md:right-2"
+                          className="group absolute top-9 right-3 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
                         >
                           <Close className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6"/>
                           <span

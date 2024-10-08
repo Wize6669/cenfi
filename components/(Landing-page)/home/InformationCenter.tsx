@@ -27,10 +27,10 @@ export default function InformationCenter() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section className="py-16 md:py-5 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900">
+    <section className="py-10 md:py-6 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-60">
         <motion.h2
-          className="text-3xl font-bold text-center mb-12 text-indigo-800 dark:text-blue-300"
+          className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-6 md:mb-8 text-indigo-800 dark:text-blue-300"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -50,13 +50,13 @@ export default function InformationCenter() {
             >
               <Card className="h-full bg-white dark:border-none dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-indigo-700 dark:to-blue-700 p-6">
-                  <CardTitle className="flex items-center text-white text-xl justify-center">
-                    <card.icon className="w-8 h-8 mr-3" />
+                  <CardTitle className="flex items-center text-white text-base sm:text-base md:text-lg lg:text-xl justify-center dark:text-gray-300">
+                    <card.icon className="w-6 h-6 md:w-8 md:h-8 mr-3" />
                     {card.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <p className="text-gray-600 dark:text-gray-300">{card.description}</p>
+                  <p className="text-sm md:text-base lg:text-base text-gray-600 dark:text-gray-300">{card.description}</p>
                   <motion.div
                     className="w-full h-1 bg-indigo-500 dark:bg-indigo-400 mt-4 rounded-full"
                     initial={{ width: 0 }}

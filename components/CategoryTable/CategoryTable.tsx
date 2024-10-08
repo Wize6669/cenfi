@@ -62,6 +62,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
       ),
     }),
     columnHelper.accessor('id', {
+      id: 'actions',
       header: 'ACCIONES',
       cell: info => (
         <div className='flex justify-center space-x-6'>
@@ -259,7 +260,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           </thead>
           <tbody className='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.original.id}>
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id} className='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

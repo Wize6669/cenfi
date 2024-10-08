@@ -34,18 +34,18 @@ const OurFacilities = () => {
   };
 
   return (
-    <section className={'bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-16'}>
-      <div className={'max-w-full container mx-auto lg:px-48 md:px-4'}>
+    <section className={'bg-gradient-to-b px-4 from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 py-8 md:py-10'}>
+      <div className={'max-w-full container mx-auto lg:px-48 md:px-0'}>
         <motion.h2
-          className={'text-4xl font-bold text-blue-800 mb-8 text-right dark:text-blue-300 px-4'}
+          className={'text-lg sm:text-xl md:text-xl lg:text-2xl font-bold text-blue-800 mb-8 text-right dark:text-blue-300'}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           Nuestras Instalaciones
         </motion.h2>
-        <div className={'flex flex-col md:flex-row gap-8'}>
-          <Card className={'w-full md:w-1/2 dark:bg-gray-800 dark:border-gray-700'}>
+        <div className={'flex flex-col md:flex-row gap-4'}>
+          <Card className={'w-full md:w-1/2 bg-blue-100 dark:bg-gray-900 dark:border-gray-800'}>
             <CardContent className={'p-4'}>
               <div className={'relative h-[30vh] md:h-[40vh]'}>
                 <AnimatePresence mode={'wait'}>
@@ -79,7 +79,7 @@ const OurFacilities = () => {
             </CardContent>
           </Card>
           <div className={'w-full md:w-1/2 flex flex-col justify-center'}>
-            <p className={'text-lg text-gray-700 mb-6 leading-relaxed dark:text-gray-300 mx-4'}>
+            <p className={'text-sm md:text-base lg:text-lg text-gray-700 mb-6 leading-relaxed dark:text-gray-300 mx-4'}>
               Nuestras modernas instalaciones están diseñadas para proporcionar el mejor ambiente de aprendizaje. Contamos con aulas equipadas con la última tecnología, ofreciendo comodidad y eficiencia a nuestros estudiantes.
             </p>
             <ul className={'space-y-4 mx-4'}>
@@ -92,9 +92,9 @@ const OurFacilities = () => {
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className={'bg-blue-100 p-2 rounded-full mr-4 dark:bg-blue-700'}>
-                    <feature.icon className={'w-6 h-6 text-blue-600 dark:text-blue-300'} />
+                    <feature.icon className={'w-4 h-4 lg:w-6 lg:h-6 text-blue-600 dark:text-blue-300'} />
                   </div>
-                  <span className={'text-gray-700 font-medium dark:text-gray-300'}>{feature.text}</span>
+                  <span className={'text-gray-700 font-medium dark:text-gray-300 text-sm md:text-sm lg:text-base'}>{feature.text}</span>
                 </motion.li>
               ))}
             </ul>

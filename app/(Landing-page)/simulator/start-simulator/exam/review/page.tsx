@@ -68,8 +68,8 @@ export default function ExamReview() {
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
       <h2
-        className="text-base sm:text-lg md:text-xl font-semibold mb-2 text-center flex items-center justify-center dark:text-white text-gray-800">
-        <BookCheck className="mr-2"/>
+        className="text-base md:text-lg lg:text-xl font-semibold mb-2 text-center flex items-center justify-center dark:text-white text-gray-800">
+        <BookCheck className="w-5 h-5 lg:w-6 lg:h-6 text-blue-700 dark:text-blue-400 mr-2"/>
         Revisión del Examen
       </h2>
       <p className="text-sm text-center mb-2 dark:text-gray-400">
@@ -151,7 +151,7 @@ export default function ExamReview() {
                   className="absolute top-2 right-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
                   onClick={() => setSideMenuOpen(false)}
                 >
-                  <X className="h-5 w-5"/>
+                  <X className="h-4 w-4 text-blue-700 dark:text-blue-400 hover:bg-red-500"/>
                 </button>
               )}
               <QuestionGrid/>
@@ -164,16 +164,16 @@ export default function ExamReview() {
                 className={'p-1 dark:bg-gray-700 dark:text-white bg-gray-100 text-gray-800 rounded border dark:border-none'}
                 onClick={() => setSideMenuOpen(true)}
               >
-                <Menu className="h-6 w-6"/>
+                <Menu className="h-6 w-6 text-blue-700 dark:text-blue-400"/>
               </button>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <Clock className="h-5 w-5 mr-1"/>
-                  <span className="text-sm">{formatTime(examData.timeSpent)}</span>
+                  <Clock className="w-4 h-4 lg:h-5 lg:w-5 text-blue-700 dark:text-blue-400 mr-1"/>
+                  <span className="text-sm font-normal">{formatTime(examData.timeSpent)}</span>
                 </div>
                 <div className="flex items-center">
-                  <Award className="h-5 w-5 mr-1"/>
-                  <span className="text-sm">{examData.score.toFixed(2)}/100</span>
+                  <Award className="w-4 h-4 lg:h-5 lg:w-5 text-blue-700 dark:text-blue-400 mr-1"/>
+                  <span className="text-sm font-normal">{examData.score.toFixed(2)}/100</span>
                 </div>
               </div>
             </div>
@@ -181,22 +181,22 @@ export default function ExamReview() {
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4'}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <h3
-                  className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
+                  className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
                   {currentQuestionData.section}
                 </h3>
                 <div className="order-2 sm:order-1">
                   <h2
-                    className="text-lg sm:text-base md:text-xl font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                    className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
                 </div>
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
-              <p className="mb-6 text-sm sm:text-base md:text-lg dark:text-gray-400">{currentQuestionData.content}</p>
+              <p className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.content}</p>
               {currentQuestionData.images && currentQuestionData.images.length > 0 && (
                 <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center">
-                    <ImageIcon className="mr-2"/>
+                  <h3 className="text-sm font-light mb-2 flex items-center">
+                    <ImageIcon className="w-4 h-4 lg:w-5 lg:h-5 mr-2"/>
                     Imágenes de la pregunta
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -227,13 +227,13 @@ export default function ExamReview() {
                   }`}>
                     <div className="flex items-center">
                       <span
-                        className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                      <span className="text-sm sm:text-base">{option.text}</span>
+                        className="text-sm md:text-base lg:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
+                      <span className="text-sm md:text-base lg:text-base font-light">{option.text}</span>
                       {option.text === currentQuestionData.correctAnswer && (
-                        <CheckCircle className="ml-2 text-green-500"/>
+                        <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 ml-2 text-green-500"/>
                       )}
                       {option.text === userAnswer && option.text !== currentQuestionData.correctAnswer && (
-                        <XCircle className="ml-2 text-red-500"/>
+                        <XCircle className="w-4 h-4 lg:h-5 lg:w-5 ml-2 text-red-500"/>
                       )}
                     </div>
                     {option.images && option.images.length > 0 && (
@@ -256,15 +256,15 @@ export default function ExamReview() {
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <h4 className="text-lg font-semibold mb-4 dark:text-gray-300">Respuesta Correcta</h4>
+              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Respuesta Correcta</h4>
               <p
-                className="mb-4 text-sm sm:text-base md:text-lg dark:text-gray-400">{currentQuestionData.correctAnswer}</p>
-              <h4 className="text-lg font-semibold mb-4 dark:text-gray-300">Tu Respuesta</h4>
-              <p className="mb-4 text-sm sm:text-base md:text-lg dark:text-gray-400">
+                className="mb-4 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.correctAnswer}</p>
+              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Tu Respuesta</h4>
+              <p className="mb-4 text-sm md:text-base lg:text-base dark:text-gray-400">
                 {userAnswer || 'No respondida'}
               </p>
-              <h4 className="text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
-              <p className="text-sm sm:text-base md:text-lg dark:text-gray-400">
+              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
+              <p className="text-sm md:text-base lg:text-base dark:text-gray-400">
                 {currentQuestionData.justification || 'Pregunta sin justificación'}
               </p>
             </div>

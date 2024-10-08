@@ -33,10 +33,10 @@ export default function TestInformation() {
   const [selectedTab, setSelectedTab] = useState<string>("estructura")
 
   return (
-    <section className={'py-16 bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900'}>
+    <section className={'py-8 md:py-10 bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900'}>
       <div className={'max-w-full mx-auto px-4 sm:px-6 lg:px-60 flex flex-col'}>
         <motion.h2
-          className={'text-3xl font-bold text-center mb-12 text-blue-800 dark:text-blue-300'}
+          className={'text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-6 md:mb-8 text-blue-800 dark:text-blue-300'}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -49,7 +49,7 @@ export default function TestInformation() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className={'data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-200 text-center p-2 rounded-md transition-colors duration-200 dark:data-[state=active]:bg-blue-600'}
+                className={'text-sm sm:text-base md:text-sm lg:text-base data-[state=active]:bg-blue-500 data-[state=active]:text-white dark:text-gray-200 text-center p-2 rounded-md transition-colors duration-200 dark:data-[state=active]:bg-blue-600'}
               >
                 {tab.title}
               </TabsTrigger>
@@ -67,18 +67,18 @@ export default function TestInformation() {
                 <TabsContent key={tab.value} value={tab.value}>
                   <Card className={'shadow-lg mb-8 sm:mb-0 dark:border-none dark:bg-gray-800'}>
                     <CardHeader>
-                      <div className={'flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4'}>
+                      <div className={'flex flex-row items-center sm:items-center space-y-0 space-x-3 sm:space-x-4'}>
                         <div className={'bg-blue-100 p-3 rounded-full dark:bg-blue-900'}>
-                          <tab.icon className={'w-6 h-6 text-blue-600 dark:text-blue-300'} />
+                          <tab.icon className={'w-4 h-4 md:w-6 md:h-6 text-blue-600 dark:text-blue-300'} />
                         </div>
                         <div>
-                          <CardTitle className={'text-lg sm:text-xl dark:text-blue-200'}>{tab.title}</CardTitle>
-                          <CardDescription className={'dark:text-blue-300'}>{tab.description}</CardDescription>
+                          <CardTitle className={'text-base md:text-lg lg:text-xl text-blue-800 font-semibold dark:text-blue-200'}>{tab.title}</CardTitle>
+                          <CardDescription className={'text-sm md:text-base lg:text-base dark:text-blue-300'}>{tab.description}</CardDescription>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className={'text-gray-700 dark:text-gray-400'}>{tab.content}</p>
+                      <p className={'text-sm md:text-base lg:text-base text-gray-700 dark:text-gray-400'}>{tab.content}</p>
                     </CardContent>
                   </Card>
                 </TabsContent>

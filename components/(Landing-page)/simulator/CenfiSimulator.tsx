@@ -34,20 +34,20 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas, 
       className={'bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-600 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col h-full'}
     >
       <div className={'p-6 flex flex-col flex-grow'}>
-        <h2 className={'text-xl font-bold text-gray-800 dark:text-blue-300 mb-4 flex-grow'}>
+        <h2 className={'text-lg md:text-base lg:text-xl font-bold text-blue-800 dark:text-blue-300 mb-4 flex-grow'}>
           {nombre}
         </h2>
         <div className={'flex justify-between items-center mt-auto'}>
           <div className={'space-y-2'}>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
               <Clock className={'w-4 h-4 mr-2 text-cyan-950 dark:text-gray-200'} />
-              <span className={'text-sm'}>
+              <span className={'text-xs md:text-sm lg:text-sm'}>
                 {duracion} min
               </span>
             </div>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
               <HelpCircle className={'w-4 h-4 mr-2 text-amber-600'} />
-              <span className={'text-sm'}>
+              <span className={'text-xs md:text-sm lg:text-sm'}>
                 {preguntas} preguntas
               </span>
             </div>
@@ -57,7 +57,7 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas, 
               ) : (
                 <ArrowRight className={'w-4 h-4 mr-2 text-blue-600'} />
               )}
-              <span className={'text-sm'}>
+              <span className={'text-xs md:text-sm lg:text-sm'}>
                 Navegación {navegacionLibre ? 'libre' : 'secuencial'}
               </span>
             </div>
@@ -65,7 +65,7 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas, 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300'}
+            className={'text-sm md:text-sm lg:text-base bg-blue-500 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded-lg flex items-center transition-colors duration-300'}
             onClick={openModal}
           >
             Iniciar
@@ -125,9 +125,16 @@ export default function CenfiSimulator() {
   }, []);
 
   return (
-    <div className={'container mx-auto px-4 py-8'}>
+    <div className={'container mx-auto px-4 md:py-8 py-4'}>
+      <motion.h1
+        className="pb-0 md:pb-2 text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-4 text-blue-800 dark:text-blue-500"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >Simuladores CENFI
+      </motion.h1>
       <div className={'mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between'}>
-        <p className={'text-xl font-bold text-blue-900 dark:text-blue-500 mb-4 sm:mb-0'}>
+        <p className={'text-sm md:text-base lg:text-lg font-bold text-blue-900 dark:text-blue-500 mb-4 sm:mb-0'}>
           Simuladores disponibles: {filteredSimuladores.length}
         </p>
         <div className={'flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto'}>
@@ -137,43 +144,47 @@ export default function CenfiSimulator() {
               placeholder="Buscar simulador..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={'w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white'}
+              className={'w-full h-[35px] md:text-sm lg:text-base dark:text-gray-200 md:w-64 pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 text-sm sm:text-base'}
             />
-            <Search className={'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'} size={18}/>
+            <Search className={'absolute left-3 top-1/2 transform -translate-y-2.5 text-blue-500 dark:text-blue-400'}
+                    size={18}/>
             {searchTerm && (
               <button
                 onClick={clearSearch}
-                className={'absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'}
+                className={'absolute right-3 top-1/2 transform -translate-y-2.5 text-gray-400 hover:text-gray-600'}
               >
-                <X size={18} />
+                <X
+                  className={'right-0 top-1/2 transform -translate-y-0 dark:text-blue-400 text-blue-500 hover:text-red-600 dark:hover:text-red-400'}
+                  size={18}/>
               </button>
             )}
           </div>
-          <div className={'relative'} style={{ width: selectWidth }}>
+          <div className={'relative'} style={{width: selectWidth}}>
             <button
               ref={selectRef}
               onClick={() => setIsSelectOpen(!isSelectOpen)}
-              className={'w-full sm:w-auto py-2 px-4 bg-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center'}
-              style={{ width: '100%' }}
+              className={'w-full h-[35px] text-sm md:text-sm lg:text-base sm:w-auto py-2 px-4 bg-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white flex justify-between items-center'}
+              style={{width: '100%'}}
             >
               <span className="truncate">
                 {navegacionFilter === 'todos' ? 'Todos' : navegacionFilter === 'libre' ? 'Navegación Libre' : 'Navegación Secuencial'}
               </span>
-              {isSelectOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              {isSelectOpen ? <ChevronUp className={'text-blue-500 dark:text-blue-400'} size={18}/> :
+                <ChevronDown className={'text-blue-500 dark:text-blue-400'} size={18}/>}
             </button>
             <AnimatePresence>
               {isSelectOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
+                  initial={{opacity: 0, y: -10}}
+                  animate={{opacity: 1, y: 0}}
+                  exit={{opacity: 0, y: -10}}
+                  transition={{duration: 0.2}}
                   className={'absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg'}
                 >
                   {['todos', 'libre', 'secuencial'].map((option) => (
                     <button
                       key={option}
-                      className={'w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600'}
+                      className={'w-full h-[35px] text-sm md:text-sm lg:text-base text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600'}
                       onClick={() => {
                         setNavegacionFilter(option);
                         setIsSelectOpen(false);

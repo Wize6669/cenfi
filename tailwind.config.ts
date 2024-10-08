@@ -15,6 +15,7 @@ const config: Config = {
   		},
   		colors: {
   			'button-color': '#6A7EBF',
+        'button-video-color': '#008FFF',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

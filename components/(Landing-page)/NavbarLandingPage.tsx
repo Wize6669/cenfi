@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, Home, Phone, Users, BookOpen, ShieldCheck, AppWindow } from 'lucide-react'
+import { Menu, Home, Phone, Users, BookOpen, ShieldCheck, AppWindow, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { usePathname } from 'next/navigation'
 
@@ -57,7 +57,7 @@ export default function Navbar() {
                   activeTab === item.href ? 'text-blue-600 dark:text-blue-300' : ''
                 }`}
               >
-                <item.icon className={`w-5 h-5 mr-2 ${
+                <item.icon className={`w-5 h-5 mr-0 lg:mr-2 ${
                   activeTab === item.href ? 'text-blue-600 dark:text-blue-300' : 'text-blue-700 dark:text-blue-400'
                 }`} />
                 <span className="hidden lg:inline">{item.name}</span>
@@ -75,7 +75,11 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <ThemeToggle />
             <button onClick={() => setIsOpen(!isOpen)} className="ml-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-300">
-              <Menu className="h-6 w-6" />
+              {isOpen ? (
+                <X className="h-6 w-6 text-blue-700 dark:text-blue-400" />
+              ) : (
+                <Menu className="h-6 w-6 text-blue-700 dark:text-blue-400" />
+              )}
             </button>
           </div>
         </div>
@@ -93,7 +97,7 @@ export default function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 px-3 py-2 rounded-md text-base font-medium ${
+                  className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-300 px-3 py-2 rounded-md text-sm font-medium ${
                     activeTab === item.href ? 'text-blue-600 dark:text-blue-300 bg-gray-200 dark:bg-gray-700' : ''
                   }`}
                 >

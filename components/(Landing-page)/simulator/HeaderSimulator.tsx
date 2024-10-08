@@ -16,26 +16,39 @@ const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, total
       <div className="select-none container mx-auto">
         <div className="flex items-center justify-between sm:justify-center">
           <div className="flex items-center sm:justify-start">
-            <Image className="sm:justify-start filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]" src="/images/image-1.png" alt="CENFI Logo" width={90} height={85} />
+            <Image
+              className="w-16 h-12 lg:w-24 lg:h-16 sm:justify-start filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
+              src="/images/image-1.png"
+              alt="CENFI Logo"
+              width={90}
+              height={85}
+            />
           </div>
-          <div className="flex-grow ml-4 hidden sm:block">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex justify-center dark:text-gray-400 text-blue-900">
+          <div className="flex-grow hidden sm:block">
+            <h1
+              className="text-base md:text-2xl lg:text-3xl font-bold flex justify-center dark:text-gray-400 text-blue-900">
               Simuladores Preuniversitario CENFI
             </h1>
-            <h2 className="text-sm sm:text-base md:text-lg lg:text-2xl font-medium flex justify-center mt-3 dark:text-gray-400">
+            <h2 className="text-sm md:text-lg lg:text-2xl font-medium flex justify-center mt-3 dark:text-gray-400">
               Simulador Universidad Nacional de Loja
             </h2>
           </div>
+          <div className="flex-grow lg:hidden md:hidden">
+            <h1
+              className="text-base md:text-2xl lg:text-3xl font-bold flex justify-center dark:text-gray-400 text-blue-900">
+              SIMULADOR CENFI
+            </h1>
+          </div>
           <div className="sm:flex-grow-0 sm:justify-end">
-            <ThemeToggle />
+            <ThemeToggle/>
           </div>
         </div>
         <div className="mt-4 flex justify-between items-center">
           <button
-            className="flex items-center text-red-500 hover:text-red-700 mr-8"
+            className="flex items-center text-red-500 hover:text-red-700 mr-4"
             onClick={onExitOrFinish}
           >
-            <LogOut className="mr-2" />
+            <LogOut className="w-5 h-5 lg:w-6 lg:h-6 mr-1"/>
             <span className="text-sm sm:text-base">
               {currentQuestion === totalQuestions ? 'Finalizar' : 'Salir'}
             </span>

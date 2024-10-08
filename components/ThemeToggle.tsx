@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Sun, Moon, Laptop } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/hooks/useTheme'
@@ -10,9 +10,9 @@ export function ThemeToggle() {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, switchTheme } = useTheme()
 
-  useState(() => {
+  useEffect(() => {
     setMounted(true)
-  },)
+  }, [])
 
   if (!mounted) {
     return null
@@ -51,7 +51,7 @@ export function ThemeToggle() {
                     setIsOpen(false)
                   }}
                   className={`${
-                    theme === option.value || (option.value === 'system' && theme === 'system') ? 'bg-gray-100 dark:bg-gray-700' : ''
+                    theme === option.value ? 'bg-gray-100 dark:bg-gray-700' : ''
                   } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
                   role="menuitem"
                 >
@@ -59,7 +59,6 @@ export function ThemeToggle() {
                   {option.label}
                 </button>
               ))}
-
             </div>
           </motion.div>
         )}

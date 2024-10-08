@@ -206,9 +206,9 @@ export default function ExamInterface() {
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
-      <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-5 mt-2 text-center flex items-center justify-center dark:text-white text-gray-800">
-        <Clock className="mr-2" />
-        Tiempo restante: {formatTime(timeRemaining)}
+      <h2 className="text-base md:text-lg lg:text-lg font-semibold mb-5 mt-2 text-center flex items-center justify-center dark:text-white text-gray-800">
+        <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-700 dark:text-blue-400 mr-2" />
+        Tiempo restante: <span className={'font-normal pl-2'}> {formatTime(timeRemaining)}</span>
       </h2>
       <div className="grid grid-cols-9 md:grid-cols-12 lg:grid-cols-9 gap-1">
         {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((num) => (
@@ -235,7 +235,7 @@ export default function ExamInterface() {
 
   return (
     <div
-      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
+      className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background"
       />
@@ -264,7 +264,7 @@ export default function ExamInterface() {
                   className="absolute top-2 right-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
                   onClick={() => setSideMenuOpen(false)}
                 >
-                  <X className="h-5 w-5"/>
+                  <X className="h-4 w-4 text-blue-700 dark:text-blue-400 hover:bg-red-500"/>
                 </button>
               )}
               <QuestionGrid/>
@@ -277,33 +277,33 @@ export default function ExamInterface() {
                 className={'p-1 dark:bg-gray-700 dark:text-white bg-gray-100 text-gray-800 rounded border dark:border-none'}
                 onClick={() => setSideMenuOpen(true)}
               >
-                <Menu className="h-6 w-6"/>
+                <Menu className="h-6 w-6 text-blue-700 dark:text-blue-400"/>
               </button>
               <div className="lg:hidden flex items-center dark:bg-gray-800 bg-gray-50 p-2 rounded-lg">
-                <Clock className="mr-2 h-5 w-5"/>
-                <span className="text-sm font-medium">{formatTime(timeRemaining)}</span>
+                <Clock className="mr-2 w-4 h-4 lg:h-5 lg:w-5 text-blue-700 dark:text-blue-400"/>
+                <span className="text-sm font-normal">{formatTime(timeRemaining)}</span>
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <h3
-                  className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
+                  className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
                   {currentQuestionData.section}
                 </h3>
                 <div className="order-2 sm:order-1">
                   <h2
-                    className="text-lg sm:text-base md:text-xl font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                    className="pb-1 text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
                   <p
-                    className={`text-sm sm:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
+                    className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
                     {answeredQuestions.has(currentQuestion) ? 'Pregunta contestada' : 'Sin responder aún'}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2">
+              <div className="flex flex-row items-center justify-between mt-2">
                 {isFreeNavigation && (
                   <label
-                    className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} mb-2 sm:mb-0`}>
+                    className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
                     <input
                       type="checkbox"
                       checked={markedQuestions.has(currentQuestion)}
@@ -312,7 +312,7 @@ export default function ExamInterface() {
                     />
                     <Flag
                       className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
-                    <span className="text-sm sm:text-base">Marcar pregunta</span>
+                    <span className="text-sm md:text-base lg:text-base">Marcar pregunta</span>
                   </label>
                 )}
                 {selectedOptions[currentQuestion] && (
@@ -321,18 +321,18 @@ export default function ExamInterface() {
                     className="flex items-center text-red-500 hover:text-red-700"
                   >
                     <Trash2 className="mr-2 h-4 w-4"/>
-                    <span className="text-sm sm:text-base">Borrar selección</span>
+                    <span className="text-sm md:text-base lg:text-base">Borrar selección</span>
                   </button>
                 )}
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <p className="mb-6 text-sm sm:text-base md:text-lg dark:text-gray-400">{currentQuestionData.content}</p>
+              <p className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.content}</p>
               {showImages && (
                 <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center">
-                    <ImageIcon className="mr-2" />
+                  <h3 className="text-sm font-light mb-2 flex items-center">
+                    <ImageIcon className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
                     Imágenes de la pregunta
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -365,8 +365,8 @@ export default function ExamInterface() {
                         onChange={() => handleAnswerSelect(option.text)}
                         className="h-5 w-5 mr-2 rounded-full border text-blue-600 dark:text-blue-400 transition-colors duration-300"
                       />
-                      <span className="text-sm sm:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                      <span className="text-sm sm:text-base">{option.text}</span>
+                      <span className="text-sm md:text-base lg:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
+                      <span className="text-sm md:text-base lg:text-base font-light">{option.text}</span>
                     </div>
                     {option.images && option.images.length > 0 && (
                       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">

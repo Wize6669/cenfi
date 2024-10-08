@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info } from 'lucide-react'
+import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info, ChartArea } from 'lucide-react'
 import Confetti from 'react-confetti'
 
 export default function ExamScore() {
@@ -94,11 +94,13 @@ export default function ExamScore() {
   const percentage = score !== null ? (score / totalQuestions) * 100 : 0
 
   const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const remainingSeconds = seconds % 60
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+    const minutes = Math.floor(seconds / 60)
+    if (minutes % 60 === 0 && minutes >= 60) {
+      return `${minutes} min`
+    }
+    return `${minutes} min`
   }
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -113,10 +115,11 @@ export default function ExamScore() {
       <header className="select-none bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
           <button onClick={handleExit}>
-            <Image src="/images/image-1.png" alt="CENFI Logo" width={90} height={85} />
+            <Image src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
           </button>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
-          <ThemeToggle />
+          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
+          <h1 className="text-base font-bold text-gray-800 dark:text-blue-300 lg:hidden md:hidden">SIMULADORES CENFI</h1>
+          <ThemeToggle/>
         </div>
       </header>
       <main className="select-none flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
@@ -130,24 +133,24 @@ export default function ExamScore() {
               className="h-24 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
             />
           </div>
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">Resultados del Examen</h2>
+          <h2 className="text-base md:text-lg lg:text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">Resultados del Simulador</h2>
 
           <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-3 rounded-lg shadow-inner">
             <div className="flex items-center justify-center space-x-3">
-              <Clock className="w-6 h-6 text-blue-500 dark:text-blue-300" />
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Tiempo empleado</h3>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatTime(timeSpent)}</p>
+              <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500 dark:text-blue-300" />
+              <div className={'flex flex-row space-x-3'}>
+                <h3 className="text-sm md:text-base lg:text-lg font-semibold text-gray-800 dark:text-gray-200">Tiempo empleado:</h3>
+                <p className="text-sm md:text-base lg:text-xl font-bold text-blue-600 dark:text-blue-400">{formatTime(timeSpent)}</p>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-base font-semibold text-gray-700 dark:text-gray-300">Progreso</span>
-              <span className="text-base font-bold text-blue-600 dark:text-blue-400">{percentage.toFixed(0)}%</span>
+              <span className="text-sm md:text-base lg:text-base font-semibold text-gray-700 dark:text-gray-300">Progreso</span>
+              <span className="text-sm md:text-base lg:text-base font-bold text-blue-600 dark:text-blue-400">{percentage.toFixed(0)}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2 lg:h-3 dark:bg-gray-700">
               <div
                 className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${percentage}%` }}
@@ -157,7 +160,7 @@ export default function ExamScore() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+              <h3 className="text-base md:text-base lg:text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
                 <BarChart2 className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
                 Estadísticas
               </h3>
@@ -190,8 +193,8 @@ export default function ExamScore() {
               </div>
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
-                <BarChart2 className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
+              <h3 className="text-base md:text-base lg:text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+                <ChartArea className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
                 Gráfico
               </h3>
               <div className="flex items-end h-36 space-x-2">
@@ -232,7 +235,7 @@ export default function ExamScore() {
             {reviewAvailable ? (
               <button
                 onClick={handleReview}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+                className="text-sm md:text-base lg:text-base bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
               >
                 Revisar Intento
               </button>
@@ -246,13 +249,13 @@ export default function ExamScore() {
             ) : null}
             <button
               onClick={handleNewAttempt}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+              className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Nuevo Intento
             </button>
             <button
               onClick={handleExit}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+              className="text-sm md:text-base lg:text-base bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Salir
             </button>

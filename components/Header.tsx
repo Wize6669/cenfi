@@ -9,6 +9,7 @@ import UserDropdown from "@/components/DropDownProle/UserDropdown";
 
 export default function Header({children}: Readonly<{ children: React.ReactNode; }>) {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const userRole = useAuthStore((state) => state.userAuth?.roleId);
   const router = useRouter();
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
@@ -38,10 +39,14 @@ export default function Header({children}: Readonly<{ children: React.ReactNode;
     return null;
   }
 
+  const containerClasses = `md:w-auto order-1 md:order-2 flex ${
+    userRole === 1 ? 'lg:w-1/3' : 'lg:w-1/2'
+  }`;
+
   return (
     <div className={'container mx-auto py-2 flex justify-between items-center lg:px-0 md:px-4 sm:px-20'}>
       <div
-        className={`lg:w-1/3 md:w-auto order-1 md:order-2 flex ${
+        className={`${containerClasses} ${
           children ? 'justify-center md:justify-center lg:justify-start' : 'justify-start'
         }`}
       >

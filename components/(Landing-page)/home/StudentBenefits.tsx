@@ -21,10 +21,10 @@ const benefits: Benefit[] = [
 
 const StudentBenefits: React.FC = () => {
   return (
-    <section className={'py-16 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-gray-800 dark:to-gray-900'}>
+    <section className={'py-8 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-gray-800 dark:to-gray-900'}>
       <div className={'max-w-full mx-auto px-4 sm:px-6 lg:px-60'}>
         <motion.h2
-          className={'text-3xl font-bold text-center mb-12 text-white dark:text-blue-300'}
+          className={'text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-center mb-6 md:mb-10 text-white dark:text-blue-300'}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -45,10 +45,10 @@ const StudentBenefits: React.FC = () => {
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.5 }}
               >
-                <benefit.icon className={'w-6 h-6 text-blue-500 dark:text-blue-400'} />
+                <benefit.icon className={'w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:6 text-blue-500 dark:text-blue-400'} />
               </motion.div>
-              <span className={'text-lg font-medium text-white dark:text-gray-300'}>{benefit.title}</span>
-              <CheckCircle className={'w-5 h-5 text-green-300 ml-auto'} />
+              <span className={'text-sm md:text-base lg:text-lg font-medium text-white dark:text-gray-300'}>{benefit.title}</span>
+              <CheckCircle className={'w-4 h-4 md:w-5 md:h-5 text-green-300 ml-auto'} />
             </motion.div>
           ))}
         </div>
