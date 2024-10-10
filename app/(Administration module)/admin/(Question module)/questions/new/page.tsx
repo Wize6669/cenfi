@@ -9,8 +9,8 @@ import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
-import Image from '@tiptap/extension-image'
-import ResizableImage from 'tiptap-extension-resize-image'
+import Link from '@tiptap/extension-link'
+import { ImageResize } from '@/hooks/ImageResize'
 import Color from '@tiptap/extension-color'
 import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
 import { FontSize } from '@/hooks/FontSize'
@@ -81,15 +81,25 @@ export default function CreateQuestions() {
         TextAlign.configure({
           types: ['heading', 'paragraph'],
         }),
-        Highlight,
+        Highlight.configure({
+          multicolor: true,
+        }),
         Table.configure({
           resizable: true,
         }),
         TableRow,
         TableHeader,
         TableCell,
-        ResizableImage,
-        Image
+        ImageResize,
+        Link.configure({
+          openOnClick: true,
+          autolink: true,
+          defaultProtocol: 'https',
+          HTMLAttributes: {
+            rel: 'noopener noreferrer',
+            target: '_blank',
+          },
+        }),
       ],
       content: '<p></p>',
       editorProps: {
@@ -99,7 +109,7 @@ export default function CreateQuestions() {
             '[&_ol]:list-decimal [&_ul]:list-disc',
             '[&_ol]:pl-5 [&_ul]:pl-5',
             '[&_li]:ml-0',
-            'prose-sm md:prose-md lg:prose-lg dark:prose-invert mx-auto focus:outline-none min-h-[20px] w-full',
+            'prose-sm md:prose-md lg:prose-lg dark:prose-invert mx-auto focus:outline-none min-h-[20px] w-full px-1 py-3',
             'overflow-y-auto max-h-[500px]'
           ),
         },
@@ -276,7 +286,7 @@ export default function CreateQuestions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
-                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Seleccione una categoría</option>
                     {categories.map(category => (
@@ -300,7 +310,7 @@ export default function CreateQuestions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenAnswer(true)}
                     onBlur={() => setIsOpenAnswer(false)}
-                    className="appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
                     <option value="">Opción correcta</option>
                     {Array.from({ length: optionsCount }, (_, i) => (
@@ -356,7 +366,7 @@ export default function CreateQuestions() {
                         <button
                           type="button"
                           onClick={() => handleRemoveOption(index)}
-                          className="group absolute top-9 right-3 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
+                          className="group absolute top-9 right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
                         >
                           <Close className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6"/>
                           <span

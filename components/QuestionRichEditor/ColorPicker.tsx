@@ -31,7 +31,7 @@ const ColorPicker = ({ editor }: EditorProps) => {
         onBlur={() => setIsColorPickerOpen(false)}
       />
       <div
-        className="w-6 sm:w-8 h-1 rounded"
+        className="w-4 sm:w-8 h-1 rounded"
         style={{ backgroundColor: textColor }}
         title="Color seleccionado"
       ></div>

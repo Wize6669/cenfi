@@ -348,6 +348,28 @@ html.dark ::-webkit-scrollbar-thumb:hover {
             font-size: 0.85rem;
         }
     }
+
+    a {
+        color: blueviolet;
+        cursor: pointer;
+
+        &:hover {
+            color: #0a64b1;
+        }
+    }
+    code {
+        background-color: #dfecfd;
+        border-radius: 0.4rem;
+        color: black;
+        font-size: 0.85rem;
+        padding: 0.25em 0.3em;
+    }
+    mark {
+        background-color: #FAF594;
+        border-radius: 0.4rem;
+        box-decoration-break: clone;
+        padding: 0.1rem 0.3rem;
+    }
 }
 
 /* Estilos por defecto (para pantallas grandes) */
@@ -453,4 +475,3 @@ html.dark ::-webkit-scrollbar-thumb:hover {
     background-color: #60a5fa;
 }
 /*-----------------------------------------------------------------------*/
-

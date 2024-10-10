@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {TbAlpha, TbBeta, TbMathFunction, TbSquareRoot} from 'react-icons/tb';
+import React, { useEffect, useRef, useState } from 'react';
+import { TbAlpha, TbBeta, TbMathFunction, TbSquareRoot } from 'react-icons/tb';
 import {
   PiGreaterThan,
   PiGreaterThanOrEqual,
@@ -47,6 +47,8 @@ export default function MathButton ({ editor }: EditorProps) {
     { symbol: '\\left( a\\vec{i} + b\\vec{j} \\right)', icon: 'V', text: 'Función matemática' },
   ]
 
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const insertMath = (symbol: string) => {
     if (editor) {
       editor.chain().focus().insertContent(`$${symbol}$`).run()
@@ -54,8 +56,21 @@ export default function MathButton ({ editor }: EditorProps) {
     }
   }
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={'p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700'}

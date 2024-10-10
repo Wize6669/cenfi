@@ -15,7 +15,6 @@ import {
   Image,
   RotateCcw,
   RotateCw,
-  Highlighter,
   ChevronDown,
   Heading1,
   Heading2,
@@ -26,6 +25,9 @@ import MathButton from './MathButton'
 import TableButton from './TableButton'
 import { EditorProps } from '@/interfaces/Questions'
 import ColorPicker from "@/components/QuestionRichEditor/ColorPicker";
+import InsertLinkButton from "@/components/QuestionRichEditor/InsertLinkButton";
+import CodeMenu from "@/components/QuestionRichEditor/CodeMenu";
+import HighlightMenu from "@/components/QuestionRichEditor/HighlightMenu";
 
 type IsActiveProps = string | { [key: string]: any }
 
@@ -33,6 +35,7 @@ export default function QuestionRichEditor({editor}: EditorProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [fontSize, setFontSize] = useState('16px');
   const [editorState, setEditorState] = useState<{ [key: string]: boolean }>({});
+
 
   const handleImageUpload = () => {
     fileInputRef.current?.click()
@@ -75,6 +78,7 @@ export default function QuestionRichEditor({editor}: EditorProps) {
     return false;
   }, [editor, editorState]);
 
+
   useEffect(() => {
     if (editor) {
       const updateState = () => {
@@ -93,13 +97,13 @@ export default function QuestionRichEditor({editor}: EditorProps) {
           bulletList: editor.isActive('bulletList'),
           orderedList: editor.isActive('orderedList'),
           highlight: editor.isActive('highlight'),
+          link: editor.isActive('link'),
         });
       };
 
       editor.on('update', updateState);
       updateState();
 
-      // Ctrl C y Ctrl V
       const handlePaste = (event: ClipboardEvent) => {
         const items = event.clipboardData?.items;
         if (items) {
@@ -121,11 +125,34 @@ export default function QuestionRichEditor({editor}: EditorProps) {
         }
       };
 
+      const handleDrop = (event: DragEvent) => {
+        event.preventDefault();
+        const items = event.dataTransfer?.items;
+        if (items) {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].kind === 'file' && items[i].type.indexOf('image') !== -1) {
+              const file = items[i].getAsFile();
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const src = e.target?.result as string;
+                  editor.chain().focus().setImage({ src }).run();
+                };
+                reader.readAsDataURL(file);
+              }
+              break;
+            }
+          }
+        }
+      };
+
       editor.view.dom.addEventListener('paste', handlePaste);
+      editor.view.dom.addEventListener('drop', handleDrop);
 
       return () => {
         editor.off('update', updateState);
         editor.view.dom.removeEventListener('paste', handlePaste);
+        editor.view.dom.removeEventListener('drop', handleDrop);
       };
     }
   }, [editor]);
@@ -270,7 +297,7 @@ export default function QuestionRichEditor({editor}: EditorProps) {
             value={fontSize}
             title={'Tamaño de fuente'}
             onChange={(e) => handleFontSize(e.target.value)}
-            className="appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-blue-400 px-2 pr-6 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out text-xs sm:text-sm md:text-base"
+            className="appearance-none bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-blue-600 dark:text-blue-400 px-1 pr-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out text-xs sm:text-sm md:text-base"
           >
             <option value="10px">10 px</option>
             <option value="12px">12 px</option>
@@ -282,8 +309,8 @@ export default function QuestionRichEditor({editor}: EditorProps) {
             <option value="28px">28 px</option>
           </select>
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
-            <ChevronDown className="w-3 h-3 text-gray-700 dark:text-blue-400"/>
+            className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 text-gray-700 dark:text-gray-200">
+            <ChevronDown className="w-3 h-3 text-blue-600 dark:text-blue-400"/>
           </div>
         </div>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
@@ -345,22 +372,16 @@ export default function QuestionRichEditor({editor}: EditorProps) {
           <RotateCw className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-blue-400"/>
         </button>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
-        <button
-          onClick={() => editor.chain().focus().toggleHighlight().run()}
-          className={`p-1 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            isActive('highlight') ? 'bg-gray-200 dark:bg-gray-600' : ''
-          }`}
-          type={'button'}
-          title={'Resaltar'}
-        >
-          <Highlighter
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive('highlight') ? 'text-blue-500' : 'text-gray-700 dark:text-blue-400'}`}/>
-        </button>
+        <HighlightMenu editor={editor} />
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
+        <InsertLinkButton editor={editor}/>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <ColorPicker editor={editor}/>
         <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
         <MathButton editor={editor}/>
         <TableButton editor={editor}/>
+        <div className="mx-1 w-px h-6 bg-gray-300 dark:bg-gray-600"/>
+        <CodeMenu editor={editor}/>
       </div>
     </div>
   )
