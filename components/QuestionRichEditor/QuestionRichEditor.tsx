@@ -384,5 +384,5 @@ export default function QuestionRichEditor({editor}: EditorProps) {
         <CodeMenu editor={editor}/>
       </div>
     </div>
-  )
+  );
 }

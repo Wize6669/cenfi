@@ -1,33 +1,36 @@
-'use client'
+'use client';
 
-import { EditorContent, Editor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import TextAlign from '@tiptap/extension-text-align'
-import Highlight from '@tiptap/extension-highlight'
-import MathExtension from "@aarkue/tiptap-math-extension"
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import Link from '@tiptap/extension-link'
-import { ImageResize } from '@/hooks/ImageResize'
-import Color from '@tiptap/extension-color'
-import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
-import { FontSize } from '@/hooks/FontSize'
-import TextStyle from '@tiptap/extension-text-style'
-import Placeholder from '@tiptap/extension-placeholder'
-import Header from "@/components/Header"
-import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar"
-import { IconButton } from "@mui/material"
-import { ArrowBack, KeyboardArrowDown, Add, Close, CheckCircle } from "@mui/icons-material"
-import Footer from "@/components/Footer"
-import React, { useState, useEffect, useCallback, useMemo } from "react"
-import { useRouter } from "next/navigation"
-import { Categories, PaginatedResponse } from "@/interfaces/Categories"
-import axios from "axios"
-import { config } from "@/config"
-import { cn } from "@/lib/utils"
-import "katex/dist/katex.min.css"
+import { EditorContent, Editor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TextAlign from '@tiptap/extension-text-align';
+import Highlight from '@tiptap/extension-highlight';
+import MathExtension from '@aarkue/tiptap-math-extension';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import Link from '@tiptap/extension-link';
+import { ImageResize } from '@/hooks/ImageResize';
+import Color from '@tiptap/extension-color';
+import { FontSize } from '@/hooks/FontSize';
+import TextStyle from '@tiptap/extension-text-style';
+import Placeholder from '@tiptap/extension-placeholder';
+import Header from '@/components/Header';
+import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
+import { IconButton } from '@mui/material';
+import { ArrowBack, KeyboardArrowDown, Add, Close, CheckCircle } from '@mui/icons-material';
+import Footer from '@/components/Footer';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { Categories, PaginatedResponse } from '@/interfaces/Categories';
+import { config } from '@/config';
+import { cn } from '@/lib/utils';
+import 'katex/dist/katex.min.css';
+import { RichEditorFor } from '@/interfaces/RichEditor';
+import RichEditor from '@/components/RichEditor/RichEditor';
+import { axiosInstance } from '@/lib/axios';
+import toast from 'react-hot-toast';
+import { handleAxiosError } from '@/utils/generatePassword';
 
 interface Category {
   id: number;
@@ -40,7 +43,7 @@ export default function CreateQuestions() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
-    category: '',
+    categoryId: '',
     answer: '',
     question: '',
     justification: ''
@@ -72,8 +75,9 @@ export default function CreateQuestions() {
         MathExtension.configure({
           evaluation: false,
           katexOptions:
-            { macros: { "\\B": "\\mathbb{B}" } },
-          delimiters: "dollar" }),
+            {macros: {'\\B': '\\mathbb{B}'}},
+          delimiters: 'dollar'
+        }),
         Placeholder.configure({
           placeholder: placeholder,
           emptyEditorClass: 'tiptap-placeholder',
@@ -160,7 +164,7 @@ export default function CreateQuestions() {
       let totalPages = 1;
 
       do {
-        const response = await axios.get<PaginatedResponse>(`${HOST_BACK_END}/api/v1/categories`, {
+        const response = await axiosInstance.get<PaginatedResponse>('/categories', {
           params: {
             page: currentPage,
             count: 500
@@ -188,17 +192,26 @@ export default function CreateQuestions() {
     router.back();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formDataWithEditorContent = {
-      ...formData,
-      question: questionEditorState?.getJSON() ?? {},
-      options: optionEditorsState.map((editor, index) => ({
-        [`option${index + 1}`]: editor?.getJSON() ?? {},
-      })),
-      justification: justificationEditorState?.getJSON() ?? {},
-    };
-    console.log('Form Data:', formDataWithEditorContent);
+  const handleSubmit = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+
+      const formDataWithEditorContent = {
+        ...formData,
+        question: questionEditorState?.getJSON() ?? {},
+        options: optionEditorsState.map((editor) => editor?.getJSON() ?? {}),
+        justification: justificationEditorState?.getJSON() ?? {},
+      };
+
+      console.log('Form Data:', formDataWithEditorContent);
+
+      await axiosInstance.post('/questions', formDataWithEditorContent);
+
+      toast.success('Pregunta creada con éxito');
+    } catch (error) {
+      handleAxiosError(error);
+    }
+
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -263,8 +276,10 @@ export default function CreateQuestions() {
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
+            <IconButton
+              className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
+              onClick={goBack}
+            >
               <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
@@ -272,35 +287,42 @@ export default function CreateQuestions() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <div className="container pb-10">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-              <div className="lg:col-span-3 bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2">
-                <label htmlFor="category" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className='container pb-10'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className='grid grid-cols-1 lg:grid-cols-12 gap-4 items-end'>
+              <div className='lg:col-span-3 bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2'>
+                <label
+                  htmlFor='categoryId'
+                  className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'
+                >
                   Categoría
                 </label>
                 <div className='relative'>
                   <select
-                    id='category'
-                    name='category'
-                    value={formData.category}
+                    id='categoryId'
+                    name='categoryId'
+                    value={formData.categoryId}
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
-                    className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className='h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full'
+                    required={true}
                   >
                     <option value=''>Seleccione una categoría</option>
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
+                  <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200'>
                     <KeyboardArrowDown className={`transition-transform duration-200 ease-in-out ${isOpenCategory ? 'rotate-180' : ''}`}/>
                   </div>
                 </div>
               </div>
-              <div className="lg:col-span-3 bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2">
-                <label htmlFor="answer" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <div className='lg:col-span-3 bg-white dark:bg-gray-900 px-4 sm:pt-2 lg:pt-0 pt-2'>
+                <label
+                  htmlFor='answer'
+                  className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'
+                >
                   Respuesta
                 </label>
                 <div className='relative'>
@@ -311,11 +333,12 @@ export default function CreateQuestions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenAnswer(true)}
                     onBlur={() => setIsOpenAnswer(false)}
-                    className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
+                    className='h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full'
+                    required={true}
                   >
                     <option value=''>Opción correcta</option>
                     {Array.from({length: optionsCount}, (_, i) => (
-                      <option key={i} value={`option${i + 1}`}>Opción {i + 1}</option>
+                      <option key={i} value={`${i + 1}`}>Opción {i + 1}</option>
                     ))}
                   </select>
                   <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200'>
@@ -347,27 +370,32 @@ export default function CreateQuestions() {
             )}
 
             <div
-              className={`grid grid-cols-1 gap-4 px-4 ${optionsCount % 2 !== 0 ? 'md:last:col-span-2' : ''}`}>
+              className={`grid grid-cols-1 gap-4 px-4 ${optionsCount % 2 !== 0 ? 'md:last:col-span-2' : ''}`}
+            >
               {optionEditorsState.map((editor, index) => (
                 editor && (
-                  <div key={index} className={`bg-white dark:bg-gray-900 relative ${formData.answer === `option${index + 1}` ? 'border-2 border-green-500 rounded-lg' : ''}`}>
+                  <div
+                    key={index}
+                    className={`bg-white dark:bg-gray-900 relative ${formData.answer === `option${index + 1}` ? 'border-2 border-green-500 rounded-lg' : ''}`}
+                  >
                     <label
-                      className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'
+                    >
                       Opción {index + 1}
                       {formData.answer === `option${index + 1}` && (
-                        <span className="ml-2 text-green-500">
-                          <CheckCircle className="inline-block w-5 h-5" />
-                          <span className="ml-1">Opción correcta</span>
+                        <span className='ml-2 text-green-500'>
+                          <CheckCircle className='inline-block w-5 h-5'/>
+                          <span className='ml-1'>Opción correcta</span>
                         </span>
                       )}
                     </label>
-                    <div className="relative">
-                      <QuestionRichEditor editor={editor}/>
+                    <div className='relative'>
+                      <RichEditor editor={editor} type={RichEditorFor.Options}/>
                       {optionsCount > 1 && (
                         <button
                           type='button'
                           onClick={() => handleRemoveOption(index)}
-                          className="group absolute top-9 right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
+                          className='group absolute top-9 right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2'
                         >
                           <Close className='w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6'/>
                           <span
