@@ -1,12 +1,12 @@
 'use client';
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton } from '@mui/material'
-import { ArrowBack } from "@mui/icons-material";
+import { IconButton } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 
 export default function Simulator() {
   const router = useRouter();
@@ -15,8 +15,8 @@ export default function Simulator() {
     router.push('/admin/menu');
   };
 
-  const handleButtonClickNew = () => {
-    router.push('/admin/questions/new');
+  const handleButtonClickCreate = () => {
+    router.push('/admin/questions/create');
   };
 
   const handleButtonClickEdit = () => {
@@ -32,13 +32,16 @@ export default function Simulator() {
         <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
           <div className={'w-auto col-span-2'}>
             <h1
-              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
+              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}
+            >
               Lista de Preguntas
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
+            <IconButton
+              className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
+              onClick={goBack}
+            >
               <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
             </IconButton>
           </div>
@@ -50,7 +53,7 @@ export default function Simulator() {
           <button
             className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
             type={'button'}
-            onClick={handleButtonClickNew}
+            onClick={handleButtonClickCreate}
           >
             Nueva Pregunta
           </button>
@@ -70,6 +73,5 @@ export default function Simulator() {
       </div>
       <Footer/>
     </div>
-  )
-    ;
+  );
 }

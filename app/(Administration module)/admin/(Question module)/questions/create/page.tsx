@@ -101,7 +101,10 @@ export default function CreateQuestions() {
           },
         }),
       ],
-      content: '<p></p>',
+      content: {
+        'type': 'doc',
+        'content': []
+      },
       editorProps: {
         attributes: {
           class: cn(
@@ -114,10 +117,10 @@ export default function CreateQuestions() {
           ),
         },
       },
-      onUpdate: ({ editor }) => {
+      onUpdate: ({editor}) => {
         onUpdate(editor);
       },
-    })
+    });
   }, []);
 
   const handleQuestionEditorUpdate = useCallback((editor: Editor) => {
@@ -189,19 +192,17 @@ export default function CreateQuestions() {
     e.preventDefault();
     const formDataWithEditorContent = {
       ...formData,
-      question: questionEditorState?.getJSON() ?? '',
+      question: questionEditorState?.getJSON() ?? {},
       options: optionEditorsState.map((editor, index) => ({
-        [`option${index + 1}`]: editor?.getJSON() ?? ''
+        [`option${index + 1}`]: editor?.getJSON() ?? {},
       })),
-      justification: justificationEditorState?.getJSON() ?? '',
+      justification: justificationEditorState?.getJSON() ?? {},
     };
     console.log('Form Data:', formDataWithEditorContent);
-
-
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormData(prevData => ({
       ...prevData,
       [name]: value
@@ -237,9 +238,9 @@ export default function CreateQuestions() {
     setFormData(prevData => {
       const currentAnswer = parseInt(prevData.answer.replace('option', ''));
       if (currentAnswer > indexToRemove + 1) {
-        return { ...prevData, answer: `option${currentAnswer - 1}` };
+        return {...prevData, answer: `option${currentAnswer - 1}`};
       } else if (currentAnswer === indexToRemove + 1) {
-        return { ...prevData, answer: '' };
+        return {...prevData, answer: ''};
       }
       return prevData;
     });
@@ -250,11 +251,11 @@ export default function CreateQuestions() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+    <div className='flex flex-col min-h-screen bg-white dark:bg-gray-900'>
       <Header>
         <ModuleListNavbar/>
       </Header>
-      <div className="flex-grow flex flex-col items-center px-4">
+      <div className='flex-grow flex flex-col items-center px-4'>
         <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
           <div className={'w-auto col-span-2'}>
             <h1 className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
@@ -278,17 +279,17 @@ export default function CreateQuestions() {
                 <label htmlFor="category" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Categoría
                 </label>
-                <div className="relative">
+                <div className='relative'>
                   <select
-                    id="category"
-                    name="category"
+                    id='category'
+                    name='category'
                     value={formData.category}
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
                     className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
-                    <option value="">Seleccione una categoría</option>
+                    <option value=''>Seleccione una categoría</option>
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
@@ -302,46 +303,46 @@ export default function CreateQuestions() {
                 <label htmlFor="answer" className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Respuesta
                 </label>
-                <div className="relative">
+                <div className='relative'>
                   <select
-                    id="answer"
-                    name="answer"
+                    id='answer'
+                    name='answer'
                     value={formData.answer}
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenAnswer(true)}
                     onBlur={() => setIsOpenAnswer(false)}
                     className="h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full"
                   >
-                    <option value="">Opción correcta</option>
-                    {Array.from({ length: optionsCount }, (_, i) => (
+                    <option value=''>Opción correcta</option>
+                    {Array.from({length: optionsCount}, (_, i) => (
                       <option key={i} value={`option${i + 1}`}>Opción {i + 1}</option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200">
+                  <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-200'>
                     <KeyboardArrowDown className={`transition-transform duration-200 ease-in-out ${isOpenAnswer ? 'rotate-180' : ''}`}/>
                   </div>
                 </div>
               </div>
-              <div className="lg:col-span-6 flex md:justify-end justify-center bg-white dark:bg-gray-900 px-4 sm:pt-4 lg:pt-0 pt-4">
+              <div className='lg:col-span-6 flex md:justify-end justify-center bg-white dark:bg-gray-900 px-4 sm:pt-4 lg:pt-0 pt-4'>
                 <button
-                  type="button"
+                  type='button'
                   onClick={handleAddOption}
                   disabled={optionsCount >= MAX_OPTIONS}
                   className={`w-auto text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-600 text-white font-medium py-1 px-4 rounded-full transition-colors duration-200 ease-in-out flex items-center justify-center ${optionsCount >= MAX_OPTIONS ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <Add className="mr-2" />
+                  <Add className='mr-2'/>
                   Agregar opción
                 </button>
               </div>
             </div>
 
             {isMounted && questionEditor && (
-              <div className="bg-white dark:bg-gray-900 px-4">
-                <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <div className='bg-white dark:bg-gray-900 px-4'>
+                <label className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Pregunta
                 </label>
-                <QuestionRichEditor editor={questionEditor}/>
-                <EditorContent editor={questionEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'} />
+                <RichEditor editor={questionEditor} type={RichEditorFor.Questions}/>
+                <EditorContent editor={questionEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
               </div>
             )}
 
@@ -364,11 +365,11 @@ export default function CreateQuestions() {
                       <QuestionRichEditor editor={editor}/>
                       {optionsCount > 1 && (
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => handleRemoveOption(index)}
                           className="group absolute top-9 right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
                         >
-                          <Close className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6"/>
+                          <Close className='w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6'/>
                           <span
                             className='absolute top-full left-1/2 transform -translate-x-1/2 mt-1 scale-0 transition-all duration-300 bg-red-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'
                           >
@@ -382,31 +383,32 @@ export default function CreateQuestions() {
                 )
               ))}
               {optionsCount === 1 && isMounted && justificationEditor && (
-                <div className="bg-white dark:bg-gray-900">
+                <div className='bg-white dark:bg-gray-900'>
                   <label
-                    className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'
+                  >
                     Justificación
                   </label>
-                  <QuestionRichEditor editor={justificationEditor}/>
+                  <RichEditor editor={justificationEditor} type={RichEditorFor.Justifications}/>
                   <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
                 </div>
               )}
             </div>
 
             {optionsCount > 1 && isMounted && justificationEditor && (
-              <div className="bg-white dark:bg-gray-900 px-4">
-                <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <div className='bg-white dark:bg-gray-900 px-4'>
+                <label className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Justificación
                 </label>
-                <QuestionRichEditor editor={justificationEditor}/>
+                <RichEditor editor={justificationEditor} type={RichEditorFor.Justifications}/>
                 <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
               </div>
             )}
 
-            <div className="flex justify-center">
+            <div className='flex justify-center'>
               <button
-                type="submit"
-                className="text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200"
+                type='submit'
+                className='text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-2 transition-colors ease-in-out duration-200'
               >
                 Guardar Pregunta
               </button>
@@ -416,5 +418,5 @@ export default function CreateQuestions() {
       </div>
       <Footer/>
     </div>
-  )
+  );
 }

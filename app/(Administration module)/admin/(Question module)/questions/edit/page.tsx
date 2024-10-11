@@ -4,7 +4,7 @@ import { EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
-import QuestionRichEditor from '@/components/QuestionRichEditor/QuestionRichEditor'
+import RichEditor from '@/components/RichEditor/RichEditor'
 import { FontSize } from '@/hooks/FontSize'
 import TextStyle from '@tiptap/extension-text-style'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -310,7 +310,7 @@ export default function EditQuestions() {
                 <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Pregunta
                 </label>
-                <QuestionRichEditor editor={questionEditor}/>
+                <RichEditor editor={questionEditor}/>
                 <EditorContent editor={questionEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'} />
               </div>
             )}
@@ -331,7 +331,7 @@ export default function EditQuestions() {
                       )}
                     </label>
                     <div className="relative">
-                      <QuestionRichEditor editor={editor}/>
+                      <RichEditor editor={editor}/>
                       {optionsCount > 1 && (
                         <button
                           type="button"
@@ -357,7 +357,7 @@ export default function EditQuestions() {
                     className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Justificación
                   </label>
-                  <QuestionRichEditor editor={justificationEditor}/>
+                  <RichEditor editor={justificationEditor}/>
                   <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
                 </div>
               )}
@@ -368,7 +368,7 @@ export default function EditQuestions() {
                 <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Justificación
                 </label>
-                <QuestionRichEditor editor={justificationEditor}/>
+                <RichEditor editor={justificationEditor}/>
                 <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
               </div>
             )}
