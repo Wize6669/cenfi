@@ -254,7 +254,7 @@ export default function LoginAdmin() {
           >
             <Image
               className={
-                'lg:w-2/3 hidden md:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
+                'lg:w-2/3 hidden lg:block md:w-1/3 md:mb-4 filter drop-shadow-[0_10px_8px_rgba(52,188,173,0.8)] dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]'
               }
               src={'/images/image-13.png'}
               alt={'Icon'}

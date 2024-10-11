@@ -366,7 +366,7 @@ export default function CreateQuestions() {
                         <button
                           type="button"
                           onClick={() => handleRemoveOption(index)}
-                          className="group absolute top-9 right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base lg:top-2 lg:right-2"
+                          className="group absolute top-9 right-2 md:top-11 md:right-3 lg:top-2 lg:right-2 text-gray-500 dark:text-blue-500 hover:text-red-500 transition-colors duration-200 text-xs sm:text-sm md:text-base"
                         >
                           <Close className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6"/>
                           <span

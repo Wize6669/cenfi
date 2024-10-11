@@ -61,7 +61,10 @@ const OurHistory: React.FC = () => {
                     onClick={handlePlayVideo}
                     className="absolute inset-0 flex items-center justify-center bg-blue-300 bg-opacity-20 hover:bg-opacity-40 transition-opacity duration-300"
                   >
-                    <FaPlay className={'w-8 h-8 lg:w-14 lg:h-14 text-blue-400 dark:text-button-video-color'}/>
+                    <div
+                      className="flex items-center justify-center w-14 h-14 lg:w-20 lg:h-20 rounded-full bg-black/70 hover:bg-black/90 transition-colors">
+                      <FaPlay className={'w-7 h-7 lg:w-10 lg:h-10 pl-1 lg:pl-2 text-blue-400 dark:text-button-video-color'}/>
+                    </div>
                   </button>
                 </div>
               ) : (

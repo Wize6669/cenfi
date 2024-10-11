@@ -81,7 +81,7 @@ export default function MathButton ({ editor }: EditorProps) {
       </button>
       {isOpen && (
         <div
-          className={'absolute z-10 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-2 w-48 lg:w-64 lg:left-0 lg:-translate-x-56 left-1/2 transform -translate-x-1/2'}>
+          className={'absolute z-10 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-2 w-48 lg:w-64 lg:left-0 lg:-translate-x-56 left-1/2 -translate-x-1/2'}>
           <div className={'max-h-[100px] lg:max-h-[120px] overflow-y-auto grid grid-cols-3 gap-2 left-3'}>
             {mathSymbols.map((item, index) => (
               <button

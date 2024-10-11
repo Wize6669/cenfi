@@ -80,13 +80,13 @@ export default function InsertLinkButton({ editor }: EditorProps) {
         }`}
         title="Insertar enlace"
       >
-        <LinkIcon className={`w-4 h-4 ${showForm ? 'text-blue-500' : 'text-gray-600 dark:text-blue-400'}`} />
+        <LinkIcon className={`w-3 h-3 md:w-4 md:h-4 ${showForm ? 'text-blue-500' : 'text-gray-600 dark:text-blue-400'}`} />
       </button>
 
       {showForm && (
         <div
           ref={formRef}
-          className="absolute z-10 mt-2 bg-white dark:bg-gray-800 rounded-md shadow-lg p-4 w-64 sm:w-80 transition-all duration-200 ease-in-out lg:left-20 lg:-translate-x-56 left-1/2 transform -translate-x-1/2"
+          className="absolute z-10 mt-2 bg-white dark:bg-gray-800 rounded-md shadow-lg p-4 w-64 sm:w-80 transition-all duration-200 ease-in-out lg:left-20 lg:-translate-x-56 md:right-0 md:-translate-x-4 left-1/2 transform -translate-x-1/2"
         >
           <div className="space-y-3">
             <div className="relative">

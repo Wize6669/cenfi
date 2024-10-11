@@ -10,6 +10,7 @@ export interface CategoryNewUpdate extends Pick<Categories, 'name'> {
 export interface CategoryTable {
   id: number;
   name: string;
+  questionCount: number;
 }
 
 export interface PaginatedResponse {

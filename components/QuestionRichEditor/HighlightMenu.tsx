@@ -2,9 +2,36 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Highlighter, Trash } from 'lucide-react'
 import { EditorProps } from '@/interfaces/Questions'
 
+const isColorLight = (color: string) => {
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 128;
+};
+
 export default function HighlightMenu({ editor }: EditorProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const colors = isDarkMode ? [
+    { color: '#f39c12', label: 'Amarillo Oscuro' },
+    { color: '#e67e22', label: 'Anaranjado Oscuro' },
+    { color: '#2ecc71', label: 'Verde Oscuro' },
+    { color: '#3498db', label: 'Azul Oscuro' },
+    { color: '#9b59b6', label: 'Violeta Oscuro' },
+    { color: '#e74c3c', label: 'Rojo Oscuro' },
+  ] : [
+    { color: '#fbf05a', label: 'Amarillo' },
+    { color: '#ffc078', label: 'Anaranjado' },
+    { color: '#8ce99a', label: 'Verde' },
+    { color: '#74c0fc', label: 'Azul' },
+    { color: '#b197fc', label: 'Violeta' },
+    { color: 'red', label: 'Rojo' },
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -16,18 +43,10 @@ export default function HighlightMenu({ editor }: EditorProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const colors = [
-    { color: '#fbf05a', label: 'Amarillo' },
-    { color: '#ffc078', label: 'Anaranjado' },
-    { color: '#8ce99a', label: 'Verde' },
-    { color: '#74c0fc', label: 'Azul' },
-    { color: '#b197fc', label: 'Violeta' },
-    { color: 'red', label: 'Rojo' },
-  ];
-
   const toggleHighlight = (color: string) => {
     if (editor) {
-      editor.chain().focus().toggleHighlight({ color }).run();
+      const textColor = isColorLight(color) ? 'black' : 'white';
+      editor.chain().focus().toggleHighlight({ color }).setColor(textColor).run();
       setIsMenuOpen(false);
     }
   };
@@ -55,8 +74,8 @@ export default function HighlightMenu({ editor }: EditorProps) {
           <div className="grid grid-cols-3 gap-2">
             {colors.map((colorOption, index) => (
               <button
-                key={index}
                 type={'button'}
+                key={index}
                 onClick={() => toggleHighlight(colorOption.color)}
                 title={colorOption.label}
                 className="w-6 h-6 rounded-full"
@@ -67,8 +86,7 @@ export default function HighlightMenu({ editor }: EditorProps) {
           <button
             onClick={unsetHighlight}
             type={'button'}
-            title={'Eliminar Subrayado'}
-            className="flex items-center justify-center w-full mt-2 bg-red-500 hover:bg-red-700 text-white text-xs py-1 rounded"
+            className="w-full mt-2 bg-red-500 hover:bg-red-700 text-white text-xs py-1 rounded flex items-center justify-center gap-1"
           >
             <Trash className="w-3 h-3 lg:w-4 lg:h-4 mr-1" /> Quitar
           </button>
