@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useState, useRef, useEffect} from 'react'
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
@@ -7,6 +9,7 @@ import { Label } from "@/components/ui/Label"
 import { Calendar } from "@/components/ui/Calendar"
 import { CalendarIcon, PlusCircle, X } from "lucide-react"
 import { format } from "date-fns"
+import { es } from 'date-fns/locale'
 import { cn } from "@/lib/utils"
 import {
   Popover,
@@ -28,7 +31,7 @@ export default function CourseForm() {
       schedule: '',
       startDate: null,
       endDate: null,
-      cost: 0,
+      cost: undefined,
       phone: '',
       paymentOptions: [''],
       syllabus: [''],
@@ -71,7 +74,6 @@ export default function CourseForm() {
 
   const [showLoginMessage, setShowLoginMessage] = useState(false);
 
-
   const queryClient = useQueryClient();
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -86,7 +88,6 @@ export default function CourseForm() {
       return () => clearTimeout(timer);
     }
   }, [userAuth, router, isLoggedIn]);
-
 
   const addCourse = async (data: CourseCreate) => {
     try {
@@ -192,14 +193,15 @@ export default function CourseForm() {
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal mt-1",
-                    !startDate && "text-muted-foreground"
+                    !startDate && "text-muted-foreground",
+                    "dark:bg-gray-700 dark:text-white dark:border-gray-600"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4"/>
-                  {startDate ? format(startDate, "yyyy-MM-dd") : <span>Selecciona una fecha</span>}
+                  {startDate ? format(startDate, "dd 'de' MMMM 'de' yyyy", { locale: es }) : <span className={'dark:text-gray-200'}>Selecciona una fecha</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 dark:bg-gray-800 dark:border-gray-700">
                 <Calendar
                   mode="single"
                   selected={startDate}
@@ -208,6 +210,7 @@ export default function CourseForm() {
                     register("startDate").onChange({target: {value: date}})
                   }}
                   initialFocus
+                  className="dark:bg-gray-800 dark:text-gray-200"
                 />
               </PopoverContent>
             </Popover>
@@ -220,14 +223,15 @@ export default function CourseForm() {
                   variant={"outline"}
                   className={cn(
                     "w-full justify-start text-left font-normal mt-1",
-                    !endDate && "text-muted-foreground"
+                    !endDate && "text-muted-foreground",
+                    "dark:bg-gray-700 dark:text-white dark:border-gray-600"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4"/>
-                  {endDate ? format(endDate, "yyyy-MM-dd") : <span>Selecciona una fecha</span>}
+                  {endDate ? format(endDate, "dd 'de' MMMM 'de' yyyy", { locale: es }) : <span className={'dark:text-gray-200'}>Selecciona una fecha</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 dark:bg-gray-800 dark:border-gray-700">
                 <Calendar
                   mode="single"
                   selected={endDate}
@@ -236,6 +240,7 @@ export default function CourseForm() {
                     register("endDate").onChange({target: {value: date}})
                   }}
                   initialFocus
+                  className="dark:bg-gray-800 dark:text-gray-200"
                 />
               </PopoverContent>
             </Popover>
@@ -270,8 +275,13 @@ export default function CourseForm() {
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendPayment('')}
-                    className="mt-2 mr-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendPayment('')}
+              className="mt-2 mr-4 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+            >
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar opción de pago
             </Button>
@@ -289,8 +299,13 @@ export default function CourseForm() {
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendSyllabus('')}
-                    className="mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendSyllabus('')}
+              className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+            >
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar tema
             </Button>
@@ -308,8 +323,13 @@ export default function CourseForm() {
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendBenefit('')}
-                    className="mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendBenefit('')}
+              className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+            >
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar beneficio
             </Button>
@@ -327,8 +347,13 @@ export default function CourseForm() {
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendInPersonSchedule('')}
-                    className="mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendInPersonSchedule('')}
+              className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+            >
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar horario
             </Button>
@@ -346,8 +371,13 @@ export default function CourseForm() {
                   className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendVirtualSchedule('')}
-                    className="mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendVirtualSchedule('')}
+              className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+            >
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar horario
             </Button>

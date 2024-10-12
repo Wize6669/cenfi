@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/Label"
 import { Calendar } from "@/components/ui/Calendar"
 import { CalendarIcon, PlusCircle, X } from "lucide-react"
 import { format } from "date-fns"
+import { es } from 'date-fns/locale'
 import { cn } from "@/lib/utils"
 import {
   Popover,
@@ -187,11 +188,12 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal mt-1",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
+                        "dark:bg-gray-700 dark:text-white dark:border-gray-600"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4"/>
-                      {field.value ? format(field.value, "yyyy-MM-dd") : <span>Selecciona una fecha</span>}
+                      {field.value ? format(field.value, "dd 'de' MMMM 'de' yyyy", { locale: es }) : <span>Selecciona una fecha</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -200,6 +202,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                       selected={field.value ?? undefined}
                       onSelect={field.onChange}
                       initialFocus
+                      className="dark:bg-gray-800 dark:text-gray-200"
                     />
                   </PopoverContent>
                 </Popover>
@@ -218,11 +221,12 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal mt-1",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
+                        "dark:bg-gray-700 dark:text-white dark:border-gray-600"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4"/>
-                      {field.value ? format(field.value, "yyyy-MM-dd") : <span>Selecciona una fecha</span>}
+                      {field.value ? format(field.value, "dd 'de' MMMM 'de' yyyy", { locale: es }) : <span>Selecciona una fecha</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -231,6 +235,7 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                       selected={field.value ?? undefined}
                       onSelect={field.onChange}
                       initialFocus
+                      className="dark:bg-gray-800 dark:text-gray-200"
                     />
                   </PopoverContent>
                 </Popover>
@@ -287,7 +292,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => removePayment(index)}><X className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendPayment('')} className="mt-2 mr-4">
+            <Button type="button" variant="outline" size="sm" onClick={() => appendPayment('')}
+                    className="mt-2 mr-4 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar opción de pago
             </Button>
@@ -311,7 +317,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeSyllabus(index)}><X className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendSyllabus('')} className="mt-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => appendSyllabus('')}
+                    className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar tema
             </Button>
@@ -335,7 +342,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeBenefit(index)}><X className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendBenefit('')} className="mt-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => appendBenefit('')}
+                    className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar beneficio
             </Button>
@@ -359,7 +367,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeInPersonSchedule(index)}><X className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendInPersonSchedule('')} className="mt-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => appendInPersonSchedule('')}
+                    className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar horario
             </Button>
@@ -383,7 +392,8 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeVirtualSchedule(index)}><X className="h-4 w-4"/></Button>
               </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={() => appendVirtualSchedule('')} className="mt-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => appendVirtualSchedule('')}
+                    className="mt-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
               <PlusCircle className="h-4 w-4 mr-2"/>
               Agregar horario
             </Button>

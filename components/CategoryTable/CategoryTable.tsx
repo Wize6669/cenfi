@@ -50,6 +50,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           {info.row.original.id}
         </div>
       ),
+      size: 70,
     }),
     columnHelper.accessor('name', {
       id: 'name',
@@ -59,6 +60,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           {info.row.original.name}
         </div>
       ),
+      size:200,
     }),
     columnHelper.accessor('questionCount', {
       id: 'questionCount',
@@ -72,6 +74,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           </span>
         </div>
       ),
+      size:70,
     }),
     columnHelper.accessor('id', {
       id: 'actions',
@@ -134,6 +137,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
             </div>
           </div>
         ),
+      size:100,
     }),
   ]
 

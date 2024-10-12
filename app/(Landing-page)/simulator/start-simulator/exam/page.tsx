@@ -9,16 +9,23 @@ import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulat
 import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
 import { useUserStore } from '@/store/userStore'
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 
 interface Option {
-  text: string
-  images?: string[]
+  content: {
+    type: string;
+    content: any[];
+  };
+  images?: string[];
 }
+
 
 interface Question {
   id: number
   title: string
-  content: string
+  content: any
   options: Option[]
   section: string
   correctAnswer: string
@@ -49,12 +56,22 @@ export default function ExamInterface() {
     {
       id: 1,
       title: "Pregunta 1",
-      content: "¿Cuál de las siguientes imágenes representa mejor el concepto de suma?",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál de las siguientes imágenes representa mejor el concepto de suma?' }
+            ]
+          }
+        ]
+      },
       options: [
-        { text: "Imagen A", images: ["/images/image-2.png", "/images/image-2.png"]},
-        { text: "Imagen B", images: ["/images/image-3.png"] },
-        { text: "Imagen C", images: ["/images/image-14.png"] },
-        { text: "Ninguna de las anteriores" }
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen A' }] }] }, images: ["/images/image-2.png", "/images/image-2.png"]},
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen B' }] }] }, images: ["/images/image-3.png"] },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen C' }] }] }, images: ["/images/image-14.png"] },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Ninguna de las anteriores' }] }] } }
       ],
       section: "Razonamiento Lógico",
       correctAnswer: "Imagen A",
@@ -64,30 +81,123 @@ export default function ExamInterface() {
     {
       id: 2,
       title: "Pregunta 2",
-      content: "¿Cuánto es 8 + 1?",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál es el resultado de la siguiente operación: 3 + 4 * 2 - 6 / 2?' }
+            ]
+          }
+        ]
+      },
       options: [
-        { text: "3" },
-        { text: "2" },
-        { text: "9" },
-        { text: "1" }
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '8' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '7' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '10' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '11' }] }] } }
       ],
-      section: "Razonamiento Lógico",
-      correctAnswer: "9",
+      section: "Matemáticas",
+      correctAnswer: "10",
+      justification: "Siguiendo el orden de operaciones (PEMDAS), primero se realiza la multiplicación y división, luego la suma y resta: 3 + 8 - 3 = 8."
     },
     {
       id: 3,
       title: "Pregunta 3",
-      content: "¿Cuánto es 6 + 1?",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál de las siguientes opciones NO es un tipo de dato primitivo en JavaScript?' }
+            ]
+          }
+        ]
+      },
       options: [
-        { text: "3" },
-        { text: "2" },
-        { text: "7" },
-        { text: "1" }
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Number' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'String' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Boolean' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Array' }] }] } }
       ],
-      section: "Razonamiento Lógico",
-      correctAnswer: "7",
-      justification: "La suma de 6 + 1 es igual a 7, que es el resultado básico de la adición de dos unidades."
+      section: "Programación",
+      correctAnswer: "Array",
+      justification: "Array es un tipo de objeto en JavaScript, no un tipo de dato primitivo. Los tipos primitivos son: Number, String, Boolean, Undefined, Null, Symbol y BigInt."
     },
+    {
+      id: 4,
+      title: "Pregunta 4",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál es la capital de Francia?' }
+            ]
+          }
+        ]
+      },
+      options: [
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Londres' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Berlín' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Madrid' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'París' }] }] } }
+      ],
+      section: "Geografía",
+      correctAnswer: "París",
+      justification: "París es la capital y ciudad más poblada de Francia, así como su principal centro cultural y económico."
+    },
+    {
+      id: 5,
+      title: "Pregunta 5",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál de los siguientes NO es un principio de la programación orientada a objetos?' }
+            ]
+          }
+        ]
+      },
+      options: [
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Encapsulación' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Herencia' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Polimorfismo' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Iteración' }] }] } }
+      ],
+      section: "Programación",
+      correctAnswer: "Iteración",
+      justification: "La iteración es un concepto de programación general, no específico de la programación orientada a objetos. Los principios fundamentales de POO son: Encapsulación, Herencia, Polimorfismo y Abstracción."
+    },
+    {
+      id: 6,
+      title: "Pregunta 6",
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '¿Cuál es el planeta más grande del sistema solar?' }
+            ]
+          }
+        ]
+      },
+      options: [
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Marte' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Júpiter' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Saturno' }] }] } },
+        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Neptuno' }] }] } }
+      ],
+      section: "Astronomía",
+      correctAnswer: "Júpiter",
+      justification: "Júpiter es el planeta más grande del sistema solar, con un diámetro de aproximadamente 142,984 km, más del doble que el siguiente planeta más grande, Saturno."
+    }
   ], [])
 
   const totalQuestions = questions.length
@@ -122,7 +232,6 @@ export default function ExamInterface() {
     }
     localStorage.setItem('examData', JSON.stringify(examData))
 
-    // Permitimos la revisión solo si se ha respondido más del 90% de las preguntas
     const allowReview = percentageAnswered > 90
     localStorage.setItem('reviewAvailable', allowReview.toString())
 
@@ -172,8 +281,8 @@ export default function ExamInterface() {
     }
   }
 
-  const handleAnswerSelect = (optionText: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: optionText }))
+  const handleAnswerSelect = (optionContent: any) => {
+    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: JSON.stringify(optionContent) }))
     setAnsweredQuestions((prev) => new Set(prev).add(currentQuestion))
   }
 
@@ -195,7 +304,7 @@ export default function ExamInterface() {
 
   const handleExitOrFinish = () => {
     const action = currentQuestion === totalQuestions ? 'finalizar' : 'salir'
-      showExitFinishToast(action)
+    showExitFinishToast(action)
   }
 
   const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]
@@ -233,12 +342,22 @@ export default function ExamInterface() {
     </div>
   )
 
+  const questionEditor = useEditor({
+    extensions: [StarterKit],
+    content: currentQuestionData.content,
+    editable: false,
+  })
+
+  useEffect(() => {
+    if (questionEditor) {
+      questionEditor.commands.setContent(currentQuestionData.content)
+    }
+  }, [currentQuestionData, questionEditor])
+
+
   return (
-    <div
-      className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
-      <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background"
-      />
+    <div className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background" />
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}
@@ -287,31 +406,26 @@ export default function ExamInterface() {
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <h3
-                  className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
+                <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
                   {currentQuestionData.section}
                 </h3>
                 <div className="order-2 sm:order-1">
-                  <h2
-                    className="pb-1 text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
-                  <p
-                    className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
+                  <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                  <p className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
                     {answeredQuestions.has(currentQuestion) ? 'Pregunta contestada' : 'Sin responder aún'}
                   </p>
                 </div>
               </div>
               <div className="flex flex-row items-center justify-between mt-2">
                 {isFreeNavigation && (
-                  <label
-                    className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
+                  <label className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
                     <input
                       type="checkbox"
                       checked={markedQuestions.has(currentQuestion)}
                       onChange={handleMarkQuestion}
                       className="hidden"
                     />
-                    <Flag
-                      className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
+                    <Flag className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
                     <span className="text-sm md:text-base lg:text-base">Marcar pregunta</span>
                   </label>
                 )}
@@ -328,7 +442,9 @@ export default function ExamInterface() {
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <p className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.content}</p>
+              {questionEditor && (
+                <EditorContent editor={questionEditor} className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400" />
+              )}
               {showImages && (
                 <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
                   <h3 className="text-sm font-light mb-2 flex items-center">
@@ -354,35 +470,13 @@ export default function ExamInterface() {
               </div>
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
-                  <label key={index}
-                         className={'flex flex-col p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 transition-colors duration-300 dark:text-gray-400'}>
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name="answer"
-                        value={option.text}
-                        checked={selectedOptions[currentQuestion] === option.text}
-                        onChange={() => handleAnswerSelect(option.text)}
-                        className="h-5 w-5 mr-2 rounded-full border text-blue-600 dark:text-blue-400 transition-colors duration-300"
-                      />
-                      <span className="text-sm md:text-base lg:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                      <span className="text-sm md:text-base lg:text-base font-light">{option.text}</span>
-                    </div>
-                    {option.images && option.images.length > 0 && (
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                        {option.images.map((image, imageIndex) => (
-                          <div key={imageIndex} className="relative h-32 w-full">
-                            <Image
-                              src={image}
-                              alt={`Imagen ${imageIndex + 1} para la opción ${String.fromCharCode(65 + index)}`}
-                              fill={true}
-                              className="rounded-lg object-contain"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </label>
+                  <OptionEditor
+                    key={index}
+                    option={option}
+                    index={index}
+                    isSelected={selectedOptions[currentQuestion] === JSON.stringify(option.content)}
+                    onSelect={(content) => handleAnswerSelect(content)}
+                  />
                 ))}
               </div>
             </div>
