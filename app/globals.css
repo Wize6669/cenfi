@@ -296,6 +296,22 @@ html.dark ::-webkit-scrollbar-thumb:hover {
         }
     }
 }
+
+.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd;
+    pointer-events: none;
+    height: 0;
+    font-size: 14px;
+}
+@media (max-width: 768px) {
+    /* Para pantallas sm y md (máximo ancho 768px) */
+    .is-editor-empty:first-child::before {
+        font-size: 12px;
+    }
+}
+
 /*-----------------------------------------------------------------------*/
 /*Estilos de fuente del editor*/
 .tiptap {

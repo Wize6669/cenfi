@@ -23,7 +23,6 @@ import Footer from '@/components/Footer';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Categories, PaginatedResponse } from '@/interfaces/Categories';
-import { config } from '@/config';
 import { cn } from '@/lib/utils';
 import 'katex/dist/katex.min.css';
 import { RichEditorFor } from '@/interfaces/RichEditor';
@@ -53,7 +52,13 @@ export default function CreateQuestions() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [optionsCount, setOptionsCount] = useState(1);
   const [error, setError] = useState<string | null>(null);
-  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
+  const [validationErrors, setValidationErrors] = useState<{
+    question: string;
+    options: string[];
+  }>({
+    question: '',
+    options: [],
+  });
 
   const [questionEditorState, setQuestionEditorState] = useState<Editor | undefined>(undefined);
   const [justificationEditorState, setJustificationEditorState] = useState<Editor | undefined>(undefined);
@@ -80,7 +85,7 @@ export default function CreateQuestions() {
         }),
         Placeholder.configure({
           placeholder: placeholder,
-          emptyEditorClass: 'tiptap-placeholder',
+          emptyEditorClass: 'is-editor-empty',
         }),
         TextAlign.configure({
           types: ['heading', 'paragraph'],
@@ -105,10 +110,7 @@ export default function CreateQuestions() {
           },
         }),
       ],
-      content: {
-        'type': 'doc',
-        'content': []
-      },
+      content: '',
       editorProps: {
         attributes: {
           class: cn(
@@ -129,6 +131,7 @@ export default function CreateQuestions() {
 
   const handleQuestionEditorUpdate = useCallback((editor: Editor) => {
     setQuestionEditorState(editor);
+    setValidationErrors(prev => ({ ...prev, question: '' }));
   }, []);
 
   const handleJustificationEditorUpdate = useCallback((editor: Editor) => {
@@ -140,6 +143,11 @@ export default function CreateQuestions() {
       const newState = [...prevState];
       newState[index] = editor;
       return newState;
+    });
+    setValidationErrors(prev => {
+      const newOptions = [...prev.options];
+      newOptions[index] = '';
+      return { ...prev, options: newOptions };
     });
   }, []);
 
@@ -182,7 +190,7 @@ export default function CreateQuestions() {
       setError('Error al cargar las categorías');
       console.error('Error fetching categories:', err);
     }
-  }, [HOST_BACK_END]);
+  }, []);
 
   useEffect(() => {
     fetchAllCategories();
@@ -192,10 +200,41 @@ export default function CreateQuestions() {
     router.back();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    try {
-      e.preventDefault();
+  const isEditorEmpty = (editor: Editor | undefined): boolean => {
+    if (!editor) return true;
+    const content = editor.getJSON();
+    return !content.content || content.content.length === 0 || (content.content.length === 1 && (!content.content[0].content || content.content[0].content.length === 0));
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let hasErrors = false;
+    const newValidationErrors = {
+      question: '',
+      options: optionEditorsState.map(() => ''),
+    };
+
+    if (isEditorEmpty(questionEditorState)) {
+      newValidationErrors.question = 'La pregunta es requerida';
+      hasErrors = true;
+    }
+
+    optionEditorsState.forEach((editor, index) => {
+      if (isEditorEmpty(editor)) {
+        newValidationErrors.options[index] = `La opción ${index + 1} es requerida`;
+        hasErrors = true;
+      }
+    });
+
+    setValidationErrors(newValidationErrors);
+
+    if (hasErrors) {
+      toast.error('Por favor, completa todos los campos requeridos');
+      return;
+    }
+
+    try {
       const formDataWithEditorContent = {
         ...formData,
         question: questionEditorState?.getJSON() ?? {},
@@ -208,10 +247,29 @@ export default function CreateQuestions() {
       await axiosInstance.post('/questions', formDataWithEditorContent);
 
       toast.success('Pregunta creada con éxito');
+
+      // Limpiar los editores
+      questionEditorState?.commands.setContent('');
+      justificationEditorState?.commands.setContent('');
+      optionEditorsState.forEach(editor => editor?.commands.setContent(''));
+
+      // Resetear el formulario
+      setFormData({
+        categoryId: '',
+        answer: '',
+        question: '',
+        justification: ''
+      });
+      setOptionsCount(1);
+      setOptionEditorsState([createEditor('Ingresa la opción 1 aquí...', (editor) => handleOptionEditorUpdate(0, editor))]);
+      setValidationErrors({
+        question: '',
+        options: [],
+      });
+
     } catch (error) {
       handleAxiosError(error);
     }
-
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -230,6 +288,10 @@ export default function CreateQuestions() {
         ...prevEditors,
         createEditor(`Ingresa la opción ${newIndex + 1} aquí...`, (editor) => handleOptionEditorUpdate(newIndex, editor))
       ]);
+      setValidationErrors(prev => ({
+        ...prev,
+        options: [...prev.options, '']
+      }));
     }
   }, [optionsCount, createEditor, handleOptionEditorUpdate]);
 
@@ -249,13 +311,23 @@ export default function CreateQuestions() {
     setOptionsCount(prevCount => prevCount - 1);
 
     setFormData(prevData => {
-      const currentAnswer = parseInt(prevData.answer.replace('option', ''));
+      const currentAnswer = parseInt(prevData.answer);
       if (currentAnswer > indexToRemove + 1) {
-        return {...prevData, answer: `option${currentAnswer - 1}`};
+        return {...prevData, answer: `${currentAnswer - 1}`};
       } else if (currentAnswer === indexToRemove + 1) {
         return {...prevData, answer: ''};
       }
       return prevData;
+    });
+
+    setValidationErrors(prev => {
+      const newOptions = prev.options.filter((_, index) => index !== indexToRemove);
+      return {
+        ...prev,
+        options: newOptions.map((_, index) =>
+          _ ? `La opción ${index + 1} es requerida` : ''
+        )
+      };
     });
   }, []);
 
@@ -305,7 +377,7 @@ export default function CreateQuestions() {
                     onChange={handleInputChange}
                     onFocus={() => setIsOpenCategory(true)}
                     onBlur={() => setIsOpenCategory(false)}
-                    className='h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full'
+                    className='h-[35px] appearance-none text-sm sm:text-base md:text-base bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700  dark:text-gray-200 py-1 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-colors duration-200 ease-in-out w-full'
                     required={true}
                   >
                     <option value=''>Seleccione una categoría</option>
@@ -366,6 +438,9 @@ export default function CreateQuestions() {
                 </label>
                 <RichEditor editor={questionEditor} type={RichEditorFor.Questions}/>
                 <EditorContent editor={questionEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
+                {validationErrors.question && (
+                  <p className="text-red-500 text-sm mt-1">{validationErrors.question}</p>
+                )}
               </div>
             )}
 
@@ -376,13 +451,13 @@ export default function CreateQuestions() {
                 editor && (
                   <div
                     key={index}
-                    className={`bg-white dark:bg-gray-900 relative ${formData.answer === `option${index + 1}` ? 'border-2 border-green-500 rounded-lg' : ''}`}
+                    className={`bg-white dark:bg-gray-900 relative ${formData.answer === `${index + 1}` ? 'border-2 border-green-500 rounded-lg' : ''}`}
                   >
                     <label
                       className='block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1'
                     >
                       Opción {index + 1}
-                      {formData.answer === `option${index + 1}` && (
+                      {formData.answer === `${index + 1}` && (
                         <span className='ml-2 text-green-500'>
                           <CheckCircle className='inline-block w-5 h-5'/>
                           <span className='ml-1'>Opción correcta</span>
@@ -407,6 +482,9 @@ export default function CreateQuestions() {
                       )}
                     </div>
                     <EditorContent editor={editor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
+                    {validationErrors.options[index] && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors.options[index]}</p>
+                    )}
                   </div>
                 )
               ))}

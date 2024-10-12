@@ -74,6 +74,7 @@ export default function RichEditor({editor, type}: MenuBarProps) {
         });
       }).catch((error) => {
         handleAxiosError(error);
+        console.error(error);
       });
     }
   };
@@ -104,6 +105,7 @@ export default function RichEditor({editor, type}: MenuBarProps) {
           bold: editor.isActive('bold'),
           italic: editor.isActive('italic'),
           strike: editor.isActive('strike'),
+          paragraph: editor.isActive('paragraph'),
           heading_1: editor.isActive('heading', {level: 1}),
           heading_2: editor.isActive('heading', {level: 2}),
           heading_3: editor.isActive('heading', {level: 3}),
