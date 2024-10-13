@@ -69,7 +69,7 @@ export default function RichEditor({editor, type}: MenuBarProps) {
         console.log(key, value);
       });
 
-      axiosInstance.post('/api/v1/questions/images',
+      axiosInstance.post('/questions/images',
         formData,
         {
           headers: {'Content-Type': 'multipart/form-data'},
