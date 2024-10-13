@@ -64,17 +64,35 @@ export default function RichEditor({editor, type}: MenuBarProps) {
         formData.append('question', renamedFile);
       });
 
-      axiosInstance.post('/questions/images',
+      // Log del FormData antes de enviarlo
+      formData.forEach((value, key) => {
+        console.log(key, value);
+      });
+
+      axiosInstance.post('/api/v1/questions/images',
         formData,
-        {headers: {'Content-Type': 'multipart/form-data'}}).then((data) => {
-        urls.forEach((url, index) => {
-          const src = url;
-          const title = titles[index];
-          editor.chain().focus().setImage({src, alt: `Imagen ${files[index].name}`, title}).run();
-        });
+        {
+          headers: {'Content-Type': 'multipart/form-data'},
+          validateStatus: function (status) {
+            return status < 500; // Resolver solo si el código de estado es menor que 500
+          }
+        }).then((response) => {
+        console.log('Respuesta completa:', response);
+        if (response.status === 400) {
+          console.error('Error 400:', response.data);
+          // Manejar el error 400 aquí
+        } else {
+          // Procesar la respuesta exitosa
+          urls.forEach((url, index) => {
+            const src = url;
+            const title = titles[index];
+            editor.chain().focus().setImage({src, alt: `Imagen ${files[index].name}`, title}).run();
+          });
+        }
       }).catch((error) => {
+        console.error('Error en la solicitud:', error);
+        console.error('Detalles del error:', error.response?.data);
         handleAxiosError(error);
-        console.error(error);
       });
     }
   };

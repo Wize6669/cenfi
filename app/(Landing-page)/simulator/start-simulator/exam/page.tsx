@@ -1,36 +1,38 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock, Image as ImageIcon } from 'lucide-react'
+import {ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock} from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
 import { useUserStore } from '@/store/userStore'
-import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
+import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor";
 
 interface Option {
+  id: number
   content: {
-    type: string;
-    content: any[];
-  };
-  images?: string[];
+    type: string
+    content: any[]
+  }
 }
-
 
 interface Question {
   id: number
-  title: string
-  content: any
+  content: {
+    type: string
+    content: any[]
+  }
+  justification?: {
+    type: string
+    content: any[]
+  }
+  answer: number
   options: Option[]
-  section: string
-  correctAnswer: string
-  justification?: string
-  images?: string[]
+  categoryId?: number
+  simulatorId?: string
 }
 
 export default function ExamInterface() {
@@ -38,11 +40,10 @@ export default function ExamInterface() {
   const [timeRemaining, setTimeRemaining] = useState<number>(3000)
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set())
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: string | null }>({})
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: number | null }>({})
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
   const [fiveMinWarningShown, setFiveMinWarningShown] = useState<boolean>(false)
   const [isFreeNavigation, setIsFreeNavigation] = useState<boolean>(true)
-  const [showImages, setShowImages] = useState<boolean>(false)
 
   const router = useRouter()
 
@@ -55,158 +56,64 @@ export default function ExamInterface() {
   const questions: Question[] = useMemo(() => [
     {
       id: 1,
-      title: "Pregunta 1",
       content: {
         type: 'doc',
         content: [
+          { type: 'paragraph', content: [{ type: 'text', text: '¿Cuál es la capital de Francia?' }] },
           {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál de las siguientes imágenes representa mejor el concepto de suma?' }
-            ]
+            type: "image",
+            attrs: {
+              src: "/images/image-1.png",
+              alt: "Descripción de la imagen",
+              title: "Título de la imagen"
+            }
           }
         ]
       },
       options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen A' }] }] }, images: ["/images/image-2.png", "/images/image-2.png"]},
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen B' }] }] }, images: ["/images/image-3.png"] },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen C' }] }] }, images: ["/images/image-14.png"] },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Ninguna de las anteriores' }] }] } }
+        {
+          "id": 1,
+          content: {
+            type: "doc",
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "text",
+                    text: "Imagen A-2"
+                  }
+                ]
+              },
+              {
+                type: "image",
+                attrs: {
+                  src: "/images/image-1.png",
+                  alt: "Descripción de la imagen",
+                  title: "Título de la imagen"
+                }
+              }
+            ]
+          }
+        },
+        { id: 2, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen B' }] }] } },
+        { id: 3, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen C' }] }] } },
+        { id: 4, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Ninguna de las anteriores' }] }] } }
       ],
-      section: "Razonamiento Lógico",
-      correctAnswer: "Imagen A",
-      justification: "La imagen A muestra claramente una representación visual de la suma de dos números.",
-      images: ["/images/image-1.png"]
+      answer: 1,
+      categoryId: 1,
+      simulatorId: "sim1"
     },
-    {
-      id: 2,
-      title: "Pregunta 2",
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál es el resultado de la siguiente operación: 3 + 4 * 2 - 6 / 2?' }
-            ]
-          }
-        ]
-      },
-      options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '8' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '7' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '10' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '11' }] }] } }
-      ],
-      section: "Matemáticas",
-      correctAnswer: "10",
-      justification: "Siguiendo el orden de operaciones (PEMDAS), primero se realiza la multiplicación y división, luego la suma y resta: 3 + 8 - 3 = 8."
-    },
-    {
-      id: 3,
-      title: "Pregunta 3",
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál de las siguientes opciones NO es un tipo de dato primitivo en JavaScript?' }
-            ]
-          }
-        ]
-      },
-      options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Number' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'String' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Boolean' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Array' }] }] } }
-      ],
-      section: "Programación",
-      correctAnswer: "Array",
-      justification: "Array es un tipo de objeto en JavaScript, no un tipo de dato primitivo. Los tipos primitivos son: Number, String, Boolean, Undefined, Null, Symbol y BigInt."
-    },
-    {
-      id: 4,
-      title: "Pregunta 4",
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál es la capital de Francia?' }
-            ]
-          }
-        ]
-      },
-      options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Londres' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Berlín' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Madrid' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'París' }] }] } }
-      ],
-      section: "Geografía",
-      correctAnswer: "París",
-      justification: "París es la capital y ciudad más poblada de Francia, así como su principal centro cultural y económico."
-    },
-    {
-      id: 5,
-      title: "Pregunta 5",
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál de los siguientes NO es un principio de la programación orientada a objetos?' }
-            ]
-          }
-        ]
-      },
-      options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Encapsulación' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Herencia' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Polimorfismo' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Iteración' }] }] } }
-      ],
-      section: "Programación",
-      correctAnswer: "Iteración",
-      justification: "La iteración es un concepto de programación general, no específico de la programación orientada a objetos. Los principios fundamentales de POO son: Encapsulación, Herencia, Polimorfismo y Abstracción."
-    },
-    {
-      id: 6,
-      title: "Pregunta 6",
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: '¿Cuál es el planeta más grande del sistema solar?' }
-            ]
-          }
-        ]
-      },
-      options: [
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Marte' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Júpiter' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Saturno' }] }] } },
-        { content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Neptuno' }] }] } }
-      ],
-      section: "Astronomía",
-      correctAnswer: "Júpiter",
-      justification: "Júpiter es el planeta más grande del sistema solar, con un diámetro de aproximadamente 142,984 km, más del doble que el siguiente planeta más grande, Saturno."
-    }
   ], [])
+
 
   const totalQuestions = questions.length
 
   const calculateScore = useCallback(() => {
     let correctAnswers = 0;
 
-    questions.forEach((question, index) => {
-      if (selectedOptions[index + 1] === question.correctAnswer) {
+    questions.forEach((question) => {
+      if (selectedOptions[question.id] === question.answer) {
         correctAnswers++;
       }
     });
@@ -281,8 +188,8 @@ export default function ExamInterface() {
     }
   }
 
-  const handleAnswerSelect = (optionContent: any) => {
-    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: JSON.stringify(optionContent) }))
+  const handleAnswerSelect = (optionId: number) => {
+    setSelectedOptions((prev) => ({ ...prev, [currentQuestion]: optionId }))
     setAnsweredQuestions((prev) => new Set(prev).add(currentQuestion))
   }
 
@@ -309,9 +216,6 @@ export default function ExamInterface() {
 
   const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]
 
-  useEffect(() => {
-    setShowImages(!!currentQuestionData.images && currentQuestionData.images.length > 0)
-  }, [currentQuestionData])
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
@@ -341,19 +245,6 @@ export default function ExamInterface() {
       </div>
     </div>
   )
-
-  const questionEditor = useEditor({
-    extensions: [StarterKit],
-    content: currentQuestionData.content,
-    editable: false,
-  })
-
-  useEffect(() => {
-    if (questionEditor) {
-      questionEditor.commands.setContent(currentQuestionData.content)
-    }
-  }, [currentQuestionData, questionEditor])
-
 
   return (
     <div className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
@@ -407,7 +298,7 @@ export default function ExamInterface() {
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                  {currentQuestionData.section}
+                  Categoría {currentQuestionData.categoryId}
                 </h3>
                 <div className="order-2 sm:order-1">
                   <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestion}</h2>
@@ -418,7 +309,7 @@ export default function ExamInterface() {
               </div>
               <div className="flex flex-row items-center justify-between mt-2">
                 {isFreeNavigation && (
-                  <label className={`flex items-center cursor-pointer dark:text-gray-400 ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
+                  <label className={`flex items-center cursor-pointer dark:text-gray-400  ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
                     <input
                       type="checkbox"
                       checked={markedQuestions.has(currentQuestion)}
@@ -429,7 +320,7 @@ export default function ExamInterface() {
                     <span className="text-sm md:text-base lg:text-base">Marcar pregunta</span>
                   </label>
                 )}
-                {selectedOptions[currentQuestion] && (
+                {selectedOptions[currentQuestion] !== null && selectedOptions[currentQuestion] !== undefined && (
                   <button
                     onClick={handleClearAnswer}
                     className="flex items-center text-red-500 hover:text-red-700"
@@ -442,40 +333,18 @@ export default function ExamInterface() {
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              {questionEditor && (
-                <EditorContent editor={questionEditor} className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400" />
-              )}
-              {showImages && (
-                <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <h3 className="text-sm font-light mb-2 flex items-center">
-                    <ImageIcon className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                    Imágenes de la pregunta
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {currentQuestionData.images?.map((image, index) => (
-                      <div key={index} className="relative h-48 w-full">
-                        <Image
-                          src={image}
-                          alt={`Imagen ${index + 1} de la pregunta ${currentQuestion}`}
-                          fill={true}
-                          className="rounded-lg image-class-contain"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <QuestionEditor content={currentQuestionData.content} />
               <div className="w-full flex items-center pb-5">
                 <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
               </div>
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
                   <OptionEditor
-                    key={index}
+                    key={option.id}
                     option={option}
                     index={index}
-                    isSelected={selectedOptions[currentQuestion] === JSON.stringify(option.content)}
-                    onSelect={(content) => handleAnswerSelect(content)}
+                    isSelected={selectedOptions[currentQuestion] === option.id}
+                    onSelect={() => handleAnswerSelect(option.id)}
                   />
                 ))}
               </div>

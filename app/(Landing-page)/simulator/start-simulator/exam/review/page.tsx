@@ -1,32 +1,41 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck, ImageIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
-import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview";
+import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview"
+import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
+import OptionEditor from "@/components/(Landing-page)/simulator/OptionEditor"
 
 interface Option {
-  text: string
-  images?: string[]
+  id: number
+  content: {
+    type: string
+    content: any[]
+  }
 }
 
 interface Question {
   id: number
-  title: string
-  content: string
+  content: {
+    type: string
+    content: any[]
+  }
+  justification?: {
+    type: string
+    content: any[]
+  }
+  answer: number
   options: Option[]
-  section: string
-  correctAnswer: string
-  justification?: string
-  images?: string[]
+  categoryId?: number
+  simulatorId?: string
 }
 
 interface ExamData {
   questions: Question[]
-  userAnswers: { [key: number]: string | null }
+  userAnswers: { [key: number]: number | null }
   timeSpent: number
   fullName: string
   email: string
@@ -67,8 +76,7 @@ export default function ExamReview() {
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
-      <h2
-        className="text-base md:text-lg lg:text-xl font-semibold mb-2 text-center flex items-center justify-center dark:text-white text-gray-800">
+      <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-2 text-center flex items-center justify-center dark:text-white text-gray-800">
         <BookCheck className="w-5 h-5 lg:w-6 lg:h-6 text-blue-700 dark:text-blue-400 mr-2"/>
         Revisión del Examen
       </h2>
@@ -82,7 +90,7 @@ export default function ExamReview() {
         {Array.from({length: totalQuestions}, (_, i) => i + 1).map((num) => {
           const question = examData?.questions[num - 1]
           const userAnswer = examData?.userAnswers[num]
-          const isCorrect = userAnswer === question?.correctAnswer
+          const isCorrect = userAnswer === question?.answer
           const isAnswered = userAnswer !== null && userAnswer !== undefined
 
           let bgColor
@@ -121,11 +129,8 @@ export default function ExamReview() {
   }
 
   return (
-    <div
-      className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
-      <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background"
-      />
+    <div className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background" />
       <HeaderSimulator
         currentQuestion={currentQuestion}
         totalQuestions={totalQuestions}
@@ -180,93 +185,57 @@ export default function ExamReview() {
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4'}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <h3
-                  className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                  {currentQuestionData.section}
+                <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
+                  Categoría {currentQuestionData.categoryId}
                 </h3>
                 <div className="order-2 sm:order-1">
-                  <h2
-                    className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                  <h2 className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
                 </div>
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
-              <p className="mb-6 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.content}</p>
-              {currentQuestionData.images && currentQuestionData.images.length > 0 && (
-                <div className="mb-6 p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <h3 className="text-sm font-light mb-2 flex items-center">
-                    <ImageIcon className="w-4 h-4 lg:w-5 lg:h-5 mr-2"/>
-                    Imágenes de la pregunta
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {currentQuestionData.images.map((image, index) => (
-                      <div key={index} className="relative h-48 w-full">
-                        <Image
-                          src={image}
-                          alt={`Imagen ${index + 1} de la pregunta ${currentQuestion}`}
-                          fill={true}
-                          className="rounded-lg image-class-contain"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <QuestionEditor content={currentQuestionData.content} />
               <div className="w-full flex items-center pb-5">
                 <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
               </div>
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
-                  <div key={index} className={`flex flex-col p-2 rounded ${
-                    option.text === currentQuestionData.correctAnswer
+                  <div key={option.id} className={`rounded ${
+                    option.id === currentQuestionData.answer
                       ? 'bg-green-100 dark:bg-green-800'
-                      : option.text === userAnswer && option.text !== currentQuestionData.correctAnswer
+                      : option.id === userAnswer && option.id !== currentQuestionData.answer
                         ? 'bg-red-100 dark:bg-red-800'
                         : ''
                   }`}>
-                    <div className="flex items-center">
-                      <span
-                        className="text-sm md:text-base lg:text-base mr-2 font-semibold">{String.fromCharCode(65 + index)}.</span>
-                      <span className="text-sm md:text-base lg:text-base font-light">{option.text}</span>
-                      {option.text === currentQuestionData.correctAnswer && (
-                        <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 ml-2 text-green-500"/>
+                    <OptionEditor
+                      option={option}
+                      index={index}
+                      isSelected={userAnswer === option.id}
+                      onSelect={() => {}}
+                    />
+                    <div className="flex justify-end pr-2 pb-2">
+                      {option.id === currentQuestionData.answer && (
+                        <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 text-green-500"/>
                       )}
-                      {option.text === userAnswer && option.text !== currentQuestionData.correctAnswer && (
-                        <XCircle className="w-4 h-4 lg:h-5 lg:w-5 ml-2 text-red-500"/>
+                      {option.id === userAnswer && option.id !== currentQuestionData.answer && (
+                        <XCircle className="w-4 h-4 lg:h-5 lg:w-5 text-red-500"/>
                       )}
                     </div>
-                    {option.images && option.images.length > 0 && (
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                        {option.images.map((image, imageIndex) => (
-                          <div key={imageIndex} className="relative h-32 w-full">
-                            <Image
-                              src={image}
-                              alt={`Imagen ${imageIndex + 1} para la opción ${String.fromCharCode(65 + index)}`}
-                              fill={true}
-                              className="rounded-lg object-contain"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Respuesta Correcta</h4>
-              <p
-                className="mb-4 text-sm md:text-base lg:text-base dark:text-gray-400">{currentQuestionData.correctAnswer}</p>
-              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Tu Respuesta</h4>
-              <p className="mb-4 text-sm md:text-base lg:text-base dark:text-gray-400">
-                {userAnswer || 'No respondida'}
-              </p>
               <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
-              <p className="text-sm md:text-base lg:text-base dark:text-gray-400">
-                {currentQuestionData.justification || 'Pregunta sin justificación'}
-              </p>
+              {currentQuestionData.justification ? (
+                <QuestionEditor content={currentQuestionData.justification} />
+              ) : (
+                <p className="text-sm md:text-base lg:text-base dark:text-gray-400">
+                  Pregunta sin justificación
+                </p>
+              )}
             </div>
 
             <div className="flex justify-between mt-4">
