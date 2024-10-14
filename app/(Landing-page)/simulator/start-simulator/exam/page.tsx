@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import {ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock} from 'lucide-react'
+import React, { useState, useEffect, useCallback } from 'react'
+import axios from 'axios'
+import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
@@ -9,7 +10,8 @@ import { useExitFinishToast } from '@/hooks/useExitFinishToast'
 import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
 import { useUserStore } from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
-import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor";
+import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
+import {config} from "@/config";
 
 interface Option {
   id: number
@@ -35,7 +37,16 @@ interface Question {
   simulatorId?: string
 }
 
+interface PaginatedResponse<T> {
+  data: T[]
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  itemsPerPage: number
+}
+
 export default function ExamInterface() {
+  const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestion, setCurrentQuestion] = useState<number>(1)
   const [timeRemaining, setTimeRemaining] = useState<number>(3000)
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set())
@@ -44,80 +55,59 @@ export default function ExamInterface() {
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
   const [fiveMinWarningShown, setFiveMinWarningShown] = useState<boolean>(false)
   const [isFreeNavigation, setIsFreeNavigation] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env
+
 
   const router = useRouter()
-
   const { userSimulator } = useUserStore()
+
+  const fetchAllQuestions = useCallback(async () => {
+    try {
+      let allQuestions: Question[] = []
+      let currentPage = 1
+      let totalPages = 1
+
+      do {
+        const response = await axios.get<PaginatedResponse<Question>>(`${HOST_BACK_END}/api/v1/questions`, {
+          params: {
+            page: currentPage,
+            count: 500
+          }
+        })
+
+        allQuestions = [...allQuestions, ...response.data.data]
+        currentPage++
+        totalPages = response.data.totalPages
+      } while (currentPage <= totalPages)
+
+      setQuestions(allQuestions)
+      setLoading(false)
+    } catch (err) {
+      setError('Error al cargar las preguntas')
+      console.error('Error fetching questions:', err)
+      setLoading(false)
+    }
+  }, [HOST_BACK_END])
+
+  useEffect(() => {
+    fetchAllQuestions()
+  }, [fetchAllQuestions])
 
   const handleExit = () => {
     console.log("Saliendo del examen")
   }
 
-  const questions: Question[] = useMemo(() => [
-    {
-      id: 1,
-      content: {
-        type: 'doc',
-        content: [
-          { type: 'paragraph', content: [{ type: 'text', text: '¿Cuál es la capital de Francia?' }] },
-          {
-            type: "image",
-            attrs: {
-              src: "/images/image-1.png",
-              alt: "Descripción de la imagen",
-              title: "Título de la imagen"
-            }
-          }
-        ]
-      },
-      options: [
-        {
-          "id": 1,
-          content: {
-            type: "doc",
-            content: [
-              {
-                type: "paragraph",
-                content: [
-                  {
-                    type: "text",
-                    text: "Imagen A-2"
-                  }
-                ]
-              },
-              {
-                type: "image",
-                attrs: {
-                  src: "/images/image-1.png",
-                  alt: "Descripción de la imagen",
-                  title: "Título de la imagen"
-                }
-              }
-            ]
-          }
-        },
-        { id: 2, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen B' }] }] } },
-        { id: 3, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Imagen C' }] }] } },
-        { id: 4, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Ninguna de las anteriores' }] }] } }
-      ],
-      answer: 1,
-      categoryId: 1,
-      simulatorId: "sim1"
-    },
-  ], [])
-
-
   const totalQuestions = questions.length
 
   const calculateScore = useCallback(() => {
     let correctAnswers = 0;
-
     questions.forEach((question) => {
       if (selectedOptions[question.id] === question.answer) {
         correctAnswers++;
       }
     });
-
     return (correctAnswers / totalQuestions) * 100;
   }, [questions, selectedOptions, totalQuestions]);
 
@@ -214,8 +204,7 @@ export default function ExamInterface() {
     showExitFinishToast(action)
   }
 
-  const currentQuestionData = questions.find(q => q.id === currentQuestion) || questions[0]
-
+  const currentQuestionData = questions[currentQuestion - 1]
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
@@ -245,6 +234,18 @@ export default function ExamInterface() {
       </div>
     </div>
   )
+
+  if (loading) {
+    return <div>Cargando preguntas...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
+  if (questions.length === 0) {
+    return <div>No hay preguntas disponibles.</div>
+  }
 
   return (
     <div className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
@@ -295,88 +296,92 @@ export default function ExamInterface() {
               </div>
             </div>
 
-            <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                  Categoría {currentQuestionData.categoryId}
-                </h3>
-                <div className="order-2 sm:order-1">
-                  <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestion}</h2>
-                  <p className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
-                    {answeredQuestions.has(currentQuestion) ? 'Pregunta contestada' : 'Sin responder aún'}
-                  </p>
+            {currentQuestionData && (
+              <>
+                <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
+                      Categoría {currentQuestionData.categoryId}
+                    </h3>
+                    <div className="order-2 sm:order-1">
+                      <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                      <p className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestion) ? 'text-green-500' : 'text-gray-400'}`}>
+                        {answeredQuestions.has(currentQuestion) ? 'Pregunta contestada' : 'Sin responder aún'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-row items-center justify-between mt-2">
+                    {isFreeNavigation && (
+                      <label className={`flex items-center cursor-pointer dark:text-gray-400  ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
+                        <input
+                          type="checkbox"
+                          checked={markedQuestions.has(currentQuestion)}
+                          onChange={handleMarkQuestion}
+                          className="hidden"
+                        />
+                        <Flag  className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
+                        <span className="text-sm md:text-base lg:text-base">Marcar pregunta</span>
+                      </label>
+                    )}
+                    {selectedOptions[currentQuestion] !== null && selectedOptions[currentQuestion] !== undefined && (
+                      <button
+                        onClick={handleClearAnswer}
+                        className="flex items-center text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4"/>
+                        <span className="text-sm md:text-base lg:text-base">Borrar selección</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-row items-center justify-between mt-2">
-                {isFreeNavigation && (
-                  <label className={`flex items-center cursor-pointer dark:text-gray-400  ${markedQuestions.has(currentQuestion) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
-                    <input
-                      type="checkbox"
-                      checked={markedQuestions.has(currentQuestion)}
-                      onChange={handleMarkQuestion}
-                      className="hidden"
-                    />
-                    <Flag className={`mr-2 h-4 w-4 ${markedQuestions.has(currentQuestion) ? 'text-orange-500' : 'text-gray-400'}`}/>
-                    <span className="text-sm md:text-base lg:text-base">Marcar pregunta</span>
-                  </label>
-                )}
-                {selectedOptions[currentQuestion] !== null && selectedOptions[currentQuestion] !== undefined && (
+
+                <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
+                  <QuestionEditor content={currentQuestionData.content} />
+                  <div className="w-full flex items-center pb-5">
+                    <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
+                  </div>
+                  <div className="space-y-2">
+                    {currentQuestionData.options?.map((option, index) => (
+                      <OptionEditor
+                        key={option.id}
+                        option={option}
+                        index={index}
+                        isSelected={selectedOptions[currentQuestion] === option.id}
+                        onSelect={() => handleAnswerSelect(option.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-between mt-4">
+                  {(isFreeNavigation && currentQuestion > 1) && (
+                    <button
+                      className={'border dark:border-none dark:bg-gray-700 dark:hover:bg-gray-600 bg-gray-50 hover:bg-gray-300 text-inherit font-semibold py-1 px-4 rounded-full inline-flex items-center'}
+                      onClick={() => handleQuestionChange(currentQuestion - 1)}
+                    >
+                      <ArrowLeft className="mr-2"/>
+                      <span className="text-sm sm:text-base">Atrás</span>
+                    </button>
+                  )}
+                  {(!isFreeNavigation || currentQuestion === 1) && <div></div>}
                   <button
-                    onClick={handleClearAnswer}
-                    className="flex items-center text-red-500 hover:text-red-700"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded-full inline-flex items-center"
+                    onClick={() => {
+                      if (currentQuestion < totalQuestions) {
+                        handleQuestionChange(currentQuestion + 1)
+                      } else {
+                        handleExitOrFinish()
+                      }
+                    }}
                   >
-                    <Trash2 className="mr-2 h-4 w-4"/>
-                    <span className="text-sm md:text-base lg:text-base">Borrar selección</span>
+                    <span className="text-sm sm:text-base">
+                      {currentQuestion < totalQuestions ? 'Siguiente' : 'Finalizar'}
+                    </span>
+                    {currentQuestion < totalQuestions && <ArrowRight className="ml-2"/>}
                   </button>
-                )}
-              </div>
-            </div>
-
-            <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <QuestionEditor content={currentQuestionData.content} />
-              <div className="w-full flex items-center pb-5">
-                <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
-              </div>
-              <div className="space-y-2">
-                {currentQuestionData.options.map((option, index) => (
-                  <OptionEditor
-                    key={option.id}
-                    option={option}
-                    index={index}
-                    isSelected={selectedOptions[currentQuestion] === option.id}
-                    onSelect={() => handleAnswerSelect(option.id)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              {(isFreeNavigation && currentQuestion > 1) && (
-                <button
-                  className={'border dark:border-none dark:bg-gray-700 dark:hover:bg-gray-600 bg-gray-50 hover:bg-gray-300 text-inherit font-semibold py-1 px-4 rounded-full inline-flex items-center'}
-                  onClick={() => handleQuestionChange(currentQuestion - 1)}
-                >
-                  <ArrowLeft className="mr-2"/>
-                  <span className="text-sm sm:text-base">Atrás</span>
-                </button>
-              )}
-              {(!isFreeNavigation || currentQuestion === 1) && <div></div>}
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded-full inline-flex items-center"
-                onClick={() => {
-                  if (currentQuestion < totalQuestions) {
-                    handleQuestionChange(currentQuestion + 1)
-                  } else {
-                    handleExitOrFinish()
-                  }
-                }}
-              >
-                <span className="text-sm sm:text-base">
-                  {currentQuestion < totalQuestions ? 'Siguiente' : 'Finalizar'}
-                </span>
-                {currentQuestion < totalQuestions && <ArrowRight className="ml-2"/>}
-              </button>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>

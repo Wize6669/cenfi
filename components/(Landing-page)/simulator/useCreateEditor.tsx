@@ -10,7 +10,6 @@ import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import TableCell from '@tiptap/extension-table-cell'
-import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { ImageResize } from 'tiptap-extension-resize-image'
 import MathExtension from '@aarkue/tiptap-math-extension'
@@ -20,10 +19,15 @@ type EditorProps = {
 }
 
 const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
+
+  if (!content) {
+    console.warn('El contenido del editor es undefined o null');
+    console.log('Contenido pasado al editor:', content);
+    content = JSON.parse(content);
+  }
+
   const extensions = useMemo(() => [
-    StarterKit.configure({
-      history: false,
-    }),
+    StarterKit,
     TextStyle,
     FontSize,
     Color,
@@ -46,7 +50,6 @@ const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
     Link.configure({
       openOnClick: true,
     }),
-    Image,
   ], [])
 
   const editorProps = useMemo(() => ({
@@ -60,6 +63,17 @@ const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
     content,
     editorProps,
     editable: false,
+    onCreate: ({ editor }) => {
+      try {
+        if (editor.schema) {
+          console.log('Schema creado correctamente:', editor.schema);
+        } else {
+          throw new Error('El schema no se ha creado correctamente');
+        }
+      } catch (error) {
+        console.error('Error al crear el editor:', error);
+      }
+    }
   })
 }
 

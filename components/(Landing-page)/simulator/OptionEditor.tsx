@@ -21,6 +21,10 @@ interface OptionEditorProps {
 const OptionEditor: React.FC<OptionEditorProps> = ({ option, index, isSelected, onSelect }) => {
   const editor = useCreateReadOnlyEditor({ content: option.content })
 
+  if (!editor) {
+    console.error('El editor no se ha inicializado correctamente');
+  }
+
   return (
     <label className={cn(
       'flex flex-col p-2 rounded transition-colors duration-300',
