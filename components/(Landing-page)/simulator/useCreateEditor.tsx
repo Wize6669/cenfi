@@ -13,28 +13,47 @@ import TableCell from '@tiptap/extension-table-cell'
 import Link from '@tiptap/extension-link'
 import { ImageResize } from 'tiptap-extension-resize-image'
 import MathExtension from '@aarkue/tiptap-math-extension'
+import 'katex/dist/katex.min.css';
+
 
 type EditorProps = {
   content: any
 }
 
 const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
-
-  if (!content) {
-    console.warn('El contenido del editor es undefined o null');
-    console.log('Contenido pasado al editor:', content);
-    content = JSON.parse(content);
-  }
+  const processedContent = useMemo(() => {
+    if (Array.isArray(content) && content.length > 0) {
+      return { type: 'doc', content };
+    } else if (content && typeof content === 'object' && 'type' in content && 'content' in content) {
+      return content;
+    } else {
+      console.warn('Contenido inválido para el editor:', content);
+      return { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Contenido inválido' }] }] };
+    }
+  }, [content]);
 
   const extensions = useMemo(() => [
-    StarterKit,
+    StarterKit.configure({
+      history: false
+    }),
     TextStyle,
     FontSize,
     Color,
     MathExtension.configure({
-      evaluation: false,
-      katexOptions: {macros: {'\\B': '\\mathbb{B}'}},
-      delimiters: 'dollar'
+      katexOptions: {
+        throwOnError: false,
+        macros: {
+          '\\B': '\\mathbb{B}',
+        },
+      },
+      delimiters: {
+        inlineRegex: '\\$(.+?)\\$', // Para inline math
+        blockRegex: '\\$\\$(.+?)\\$\\$', // Para block math
+        inlineStart: '\\(',
+        inlineEnd: '\\)',
+        blockStart: '\\[',
+        blockEnd: '\\]',
+      },
     }),
     TextAlign.configure({
       types: ['heading', 'paragraph'],
@@ -60,20 +79,10 @@ const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
 
   return useEditor({
     extensions,
-    content,
+    content: processedContent,
     editorProps,
     editable: false,
-    onCreate: ({ editor }) => {
-      try {
-        if (editor.schema) {
-          console.log('Schema creado correctamente:', editor.schema);
-        } else {
-          throw new Error('El schema no se ha creado correctamente');
-        }
-      } catch (error) {
-        console.error('Error al crear el editor:', error);
-      }
-    }
+    immediatelyRender: false,
   })
 }
 

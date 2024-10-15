@@ -2,20 +2,21 @@ import React from 'react'
 import { EditorContent } from '@tiptap/react'
 import useCreateReadOnlyEditor from "@/components/(Landing-page)/simulator/useCreateEditor"
 
-interface QuestionContent {
-  type: string
-  content: any[]
-}
-
 interface QuestionEditorProps {
-  content: QuestionContent
+  question: {
+    id: number
+    content: {
+      type: string
+      content: any[]
+    }
+  }
 }
 
-const QuestionEditor: React.FC<QuestionEditorProps> = ({ content }) => {
-  const editor = useCreateReadOnlyEditor({ content })
+const QuestionEditor: React.FC<QuestionEditorProps> = ({ question }) => {
+  const editor = useCreateReadOnlyEditor({ content: question.content })
 
   if (!editor) {
-    return null
+    return <div>Cargando contenido de la pregunta...</div>
   }
 
   return (

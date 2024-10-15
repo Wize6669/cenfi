@@ -5,10 +5,7 @@ import { cn } from '@/lib/utils'
 
 interface Option {
   id: number
-  content: {
-    type: string
-    content: any[]
-  }
+  content: any
 }
 
 interface OptionEditorProps {
@@ -22,7 +19,7 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ option, index, isSelected, 
   const editor = useCreateReadOnlyEditor({ content: option.content })
 
   if (!editor) {
-    console.error('El editor no se ha inicializado correctamente');
+    return <div>Cargando opción...</div>
   }
 
   return (
@@ -46,12 +43,10 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ option, index, isSelected, 
         <span className="text-sm md:text-base lg:text-base mr-2 font-semibold">
           {String.fromCharCode(65 + index)}.
         </span>
-        {editor && (
-          <EditorContent
-            editor={editor}
-            className="text-sm md:text-base lg:text-base font-light"
-          />
-        )}
+        <EditorContent
+          editor={editor}
+          className="text-sm md:text-base lg:text-base font-light"
+        />
       </div>
     </label>
   )
