@@ -12,6 +12,7 @@ import { useUserStore } from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import {config} from "@/config";
+import ContentEditor from "@/components/(Landing-page)/simulator/ContentEditor";
 
 interface Option {
   id: number
@@ -33,7 +34,7 @@ interface Question {
   }
   answer: number
   options: Option[]
-  categoryId?: number
+  categoryName?: string
   simulatorId?: string
 }
 
@@ -58,6 +59,7 @@ export default function ExamInterface() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env
+  const [contentKey, setContentKey] = useState(0)
 
   const router = useRouter()
   const { userSimulator } = useUserStore()
@@ -193,6 +195,7 @@ export default function ExamInterface() {
 
   const handleQuestionChange = (num: number) => {
     if (isFreeNavigation || num === currentQuestionIndex + 2) {
+      setContentKey(prevKey => prevKey + 1)
       setCurrentQuestionIndex(num - 1)
       setSideMenuOpen(false)
     }
@@ -300,7 +303,7 @@ export default function ExamInterface() {
                 <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4 '}>
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                      Categoría {currentQuestionData.categoryId}
+                      {currentQuestionData.categoryName}
                     </h3>
                     <div className="order-2 sm:order-1">
                       <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestionIndex + 1}</h2>
@@ -335,7 +338,10 @@ export default function ExamInterface() {
                 </div>
 
                 <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-                  <QuestionEditor question={currentQuestionData} />
+                  <ContentEditor
+                    key={contentKey}
+                    content={currentQuestionData.content}
+                  />
                   <div className="w-full flex items-center pb-5">
                     <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
                   </div>

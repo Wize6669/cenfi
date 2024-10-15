@@ -47,8 +47,8 @@ const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
         },
       },
       delimiters: {
-        inlineRegex: '\\$(.+?)\\$', // Para inline math
-        blockRegex: '\\$\\$(.+?)\\$\\$', // Para block math
+        inlineRegex: '\\$(.+?)\\$',
+        blockRegex: '\\$\\$(.+?)\\$\\$',
         inlineStart: '\\(',
         inlineEnd: '\\)',
         blockStart: '\\[',
@@ -73,7 +73,9 @@ const useCreateReadOnlyEditor = ({ content }: EditorProps) => {
 
   const editorProps = useMemo(() => ({
     attributes: {
-      class: 'prose max-w-none [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:ml-0 prose-sm md:prose-md lg:prose-lg dark:prose-invert mx-auto focus:outline-none min-h-[20px] w-full px-1 py-3 overflow-y-auto max-h-[500px]',
+      class: 'prose max-w-none [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:ml-0 ' +
+        'prose-sm md:prose-md lg:prose-lg dark:prose-invert mx-auto focus:outline-none min-h-[20px] w-full ' +
+        'px-1 py-2 overflow-y-auto max-h-[500px]',
     },
   }), [])
 
