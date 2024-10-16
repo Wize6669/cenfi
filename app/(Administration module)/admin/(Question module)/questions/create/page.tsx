@@ -237,9 +237,9 @@ export default function CreateQuestions() {
     try {
       const formDataWithEditorContent = {
         ...formData,
-        question: JSON.stringify(questionEditorState?.getJSON() ?? {}),
-        options: optionEditorsState.map((editor) => JSON.stringify(editor?.getJSON() ?? {})),
-        justification: JSON.stringify(justificationEditorState?.getJSON() ?? {}),
+        question: questionEditorState?.getJSON() ?? {},
+        options: optionEditorsState.map((editor) => editor?.getJSON() ?? {}),
+        justification: justificationEditorState?.getJSON() ?? {},
       };
 
       console.log('Form Data:', formDataWithEditorContent);
