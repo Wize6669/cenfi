@@ -3,13 +3,74 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import { IconButton } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
+import {useAuthStore} from "@/store/auth";
+import {Pagination} from "@/interfaces/Pagination";
+import {useQuery} from "@tanstack/react-query";
+import {axiosInstance} from "@/lib/axios";
+import QuestionTable from "@/components/QuestionTable/QuestionTable";
 
 export default function Simulator() {
   const router = useRouter();
+
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const userAuth = useAuthStore((state) => state.userAuth);
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: true,
+    previousPage: 0,
+    nextPage: 0,
+    total: 0,
+    pageSize: 10
+  });
+
+  useEffect(() => {
+    if (userAuth?.roleId !== 1 || !isLoggedIn) {
+      setShowLoginMessage(true);
+      const timer = setTimeout(() => {
+        router.replace('/admin');
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [userAuth, router, isLoggedIn]);
+
+  const {data: questions, isLoading} = useQuery({
+    queryFn: () => fetchQuestion(),
+    queryKey: ['questions', pagination.currentPage, pagination.pageSize],
+  });
+
+  const fetchQuestion = async () => {
+    const response = await axiosInstance.get(`/questions?page=${pagination.currentPage}&count=${pagination.pageSize}`);
+    const {
+      data,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total
+    } = response.data;
+    setPagination(prev => ({
+      ...prev,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total,
+    }));
+
+    return data;
+  }
 
   const goBack = () => {
     router.push('/admin/menu');
@@ -22,6 +83,41 @@ export default function Simulator() {
   const handleButtonClickEdit = () => {
     router.push('/admin/questions/edit');
   };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({...prev, currentPage: newPage}));
+      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
+      router.push(`/admin/questions?${urlParams.toString()}`);
+    }
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination(prev => ({...prev, pageSize: newPageSize}));
+    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
+    router.push(`/admin/questions?${urlParams.toString()}`);
+  };
+
+  if (showLoginMessage) {
+    return (
+      <div className={'flex flex-col min-h-screen'}>
+        <div className={'flex-grow flex flex-col justify-center items-center'}>
+          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5'}>
+            <p className={'text-center font-bold text-3xl mb-3'}>⚠️ Inicia sesión ⚠️</p>
+            <p className={'text-base'}>Redirigiendo a la página de Log In <b>...</b></p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
@@ -70,6 +166,13 @@ export default function Simulator() {
 
       </div>
       <div className={'flex justify-center'}>
+      </div>
+      <div className={'flex-grow flex justify-center'}>
+        <div className={'w-full md:w-5/6 lg:w-2/3 scale-90'}>
+          {!isLoading && <QuestionTable handlePageChange={handlePageChange}
+                                      handlePageSizeChange={handlePageSizeChange}
+                                      data={questions} pagination={pagination}/>}
+        </div>
       </div>
       <Footer/>
     </div>

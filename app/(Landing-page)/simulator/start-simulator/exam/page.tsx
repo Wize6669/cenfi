@@ -12,7 +12,6 @@ import { useUserStore } from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import {config} from "@/config";
-import ContentEditor from "@/components/(Landing-page)/simulator/ContentEditor";
 
 interface Option {
   id: number
@@ -104,17 +103,45 @@ export default function ExamInterface() {
 
   const calculateScore = useCallback(() => {
     let correctAnswers = 0;
+
     questions.forEach((question) => {
-      if (selectedOptions[question.id] === question.answer) {
+      // Caso 1: Pregunta con una sola opción (automáticamente correcta)
+      if (question.options.length === 1) {
         correctAnswers++;
+        return;
+      }
+
+      // Caso 2: Pregunta con múltiples opciones
+      const selectedOption = selectedOptions[question.id];
+
+      // Si el usuario seleccionó una respuesta y coincide con la respuesta correcta
+      if (selectedOption !== undefined && selectedOption !== null) {
+        if (selectedOption === question.answer) {
+          correctAnswers++;
+        }
       }
     });
+
+    // Calcula el porcentaje basado en el total de preguntas
     return (correctAnswers / totalQuestions) * 100;
   }, [questions, selectedOptions, totalQuestions]);
 
   const saveExamData = useCallback(() => {
-    const totalAnswered = Object.values(selectedOptions).filter(option => option !== null).length
+    // Calcula el total de preguntas respondidas (incluyendo las de opción única)
+    const totalAnswered = questions.reduce((count, question) => {
+      // Considera respondida si:
+      // 1. Tiene una opción seleccionada
+      // 2. O es una pregunta de opción única
+      if (selectedOptions[question.id] !== undefined && selectedOptions[question.id] !== null) {
+        return count + 1;
+      } else if (question.options.length === 1) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+
     const percentageAnswered = (totalAnswered / totalQuestions) * 100
+    const score = calculateScore()
 
     const examData = {
       questions,
@@ -122,11 +149,14 @@ export default function ExamInterface() {
       timeSpent: 3000 - timeRemaining,
       fullName: userSimulator.fullName,
       email: userSimulator.email,
-      score: calculateScore(),
+      score: score,
       lastAnsweredQuestion: currentQuestionIndex + 1,
       totalQuestions: totalQuestions,
       totalAnswered: totalAnswered,
-      percentageAnswered: percentageAnswered
+      percentageAnswered: percentageAnswered,
+      correctAnswers: Math.round((score * totalQuestions) / 100),
+      incorrectAnswers: totalAnswered - Math.round((score * totalQuestions) / 100),
+      unansweredQuestions: totalQuestions - totalAnswered
     }
     localStorage.setItem('examData', JSON.stringify(examData))
 
@@ -307,7 +337,7 @@ export default function ExamInterface() {
                     </h3>
                     <div className="order-2 sm:order-1">
                       <h2 className="pb-1 text-sm lg:text-xl md:text-lg font-bold  dark:text-gray-300">Pregunta {currentQuestionIndex + 1}</h2>
-                      <p className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestionIndex) ? 'text-green-500' : 'text-gray-400'}`}>
+                      <p className={`text-sm md:text-base lg:text-base ${answeredQuestions.has(currentQuestionIndex)   ? 'text-green-500' : 'text-gray-400'}`}>
                         {answeredQuestions.has(currentQuestionIndex) ? 'Pregunta contestada' : 'Sin responder aún'}
                       </p>
                     </div>
@@ -338,9 +368,9 @@ export default function ExamInterface() {
                 </div>
 
                 <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-                  <ContentEditor
+                  <QuestionEditor
                     key={contentKey}
-                    content={currentQuestionData.content}
+                    question={currentQuestionData}
                   />
                   <div className="w-full flex items-center pb-5">
                     <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
@@ -348,7 +378,7 @@ export default function ExamInterface() {
                   <div className="space-y-2">
                     {currentQuestionData.options?.map((option, index) => (
                       <OptionEditor
-                        key={option.id}
+                        key={`${contentKey}-${option.id}`}
                         option={option}
                         index={index}
                         isSelected={selectedOptions[currentQuestionData.id] === option.id}

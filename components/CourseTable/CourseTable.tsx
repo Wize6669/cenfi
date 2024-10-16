@@ -1,6 +1,6 @@
 'use client'
 
-import React, { MouseEvent, useState } from 'react'
+import React, {MouseEvent, useState} from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,17 +11,17 @@ import {
   ColumnDef,
   SortingState,
 } from '@tanstack/react-table';
-import { axiosInstance } from '@/lib/axios';
+import {axiosInstance} from '@/lib/axios';
 import toast from 'react-hot-toast';
-import { AxiosError } from 'axios';
+import {AxiosError} from 'axios';
 import './CourseTable.css'
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pagination } from "@/interfaces/Pagination";
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react'
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import { CourseTableInteface } from "@/interfaces/Course";
-import { useRouter } from 'next/navigation';
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Pagination} from "@/interfaces/Pagination";
+import {ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search} from 'lucide-react'
+import {Dialog, Transition} from '@headlessui/react'
+import {Fragment} from 'react'
+import {CourseTableInteface} from "@/interfaces/Course";
+import {useRouter} from 'next/navigation';
 
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
@@ -30,7 +30,7 @@ interface PropsTable {
   pagination: Pagination,
 }
 
-export default function CourseTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
+export default function CourseTable({handlePageChange, handlePageSizeChange, data, pagination}: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const columnHelper = createColumnHelper<CourseTableInteface>();
@@ -79,75 +79,86 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
       header: 'FECHA DE INICIO',
       cell: info => (
         <div className='text-center'>
+          <span
+            className={'px-2 py-1 rounded-full text-xs font-semibold bg-cyan-200 text-blue-800 dark:bg-cyan-400 dark:text-blue-800'}
+          >
           {info.row.original.startDate ? new Date(info.row.original.startDate).toISOString().split('T')[0] : 'N/A'}
+          </span>
         </div>
       ),
       size: 70,
     }),
     columnHelper.accessor('endDate', {
       id: 'endDate',
-      header: 'FECHA DE FIN',
-      cell: info => (
-        <div className='text-center'>
-          {info.row.original.endDate ? new Date(info.row.original.endDate).toISOString().split('T')[0] : 'N/A'}
-        </div>
-      ),
+      header:
+        'FECHA DE FIN',
+      cell:
+        info => (
+          <div className='text-center'>
+            <span
+              className={'px-2 py-1 rounded-full text-xs font-semibold bg-red-200 text-blue-900 dark:bg-red-400 dark:text-blue-900'}
+            >
+            {info.row.original.endDate ? new Date(info.row.original.endDate).toISOString().split('T')[0] : 'N/A'}
+            </span>
+          </div>
+        ),
       size: 70,
     }),
 
     columnHelper.accessor('id', {
       header: 'ACCIONES',
-      cell: info => (
-        <div className='flex justify-center space-x-6'>
-          <div className='relative group'>
-            <button
-              className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
-              onClick={handleEditBtn(info.row.original.id)}
-            >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-5 h-5'
+      cell:
+        info => (
+          <div className='flex justify-center space-x-6'>
+            <div className='relative group'>
+              <button
+                className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
+                onClick={handleEditBtn(info.row.original.id)}
               >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
-                />
-              </svg>
-            </button>
-            <span
-              className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-5 h-5'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
+                  />
+                </svg>
+              </button>
+              <span
+                className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
               Editar
             </span>
-          </div>
+            </div>
 
-          <div className='relative group'>
-            <button
-              className='text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200'
-              onClick={handleDeleteBtn(info.row.original.id)}
-            >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-5 h-5'
+            <div className='relative group'>
+              <button
+                className='text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200'
+                onClick={handleDeleteBtn(info.row.original.id)}
               >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-5 h-5'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-        </div>
-      ),
+        ),
       size: 150,
     }),
   ]
@@ -181,10 +192,10 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
     return response.data;
   }
 
-  const { mutateAsync: deleteCategoryMutation } = useMutation({
+  const {mutateAsync: deleteCategoryMutation} = useMutation({
     mutationFn: deleteCourse,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['courses'] });
+      await queryClient.invalidateQueries({queryKey: ['courses']});
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -237,10 +248,11 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
               className="flex items-center justify-between w-20 px-3 py-2 dark:text-gray-300 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               {table.getState().pagination.pageSize}
-              {isSelectOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {isSelectOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
             </button>
             {isSelectOpen && (
-              <div className="absolute z-20 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+              <div
+                className="absolute z-20 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
                 {[10, 20, 30, 40, 50].map(pageSize => (
                   <div
                     key={pageSize}
@@ -278,7 +290,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
                   className="px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer"
-                  style={{ width: header.getSize() }}
+                  style={{width: header.getSize()}}
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -293,7 +305,8 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300" style={{ width: cell.column.getSize() }}>
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                    style={{width: cell.column.getSize()}}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -364,7 +377,7 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-black bg-opacity-25"/>
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -378,7 +391,8 @@ export default function CourseTable({ handlePageChange, handlePageSizeChange, da
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel
+                  className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"

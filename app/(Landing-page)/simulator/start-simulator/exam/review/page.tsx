@@ -8,6 +8,7 @@ import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulat
 import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview"
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import OptionEditor from "@/components/(Landing-page)/simulator/OptionEditor"
+import JustificationEditor from "@/components/(Landing-page)/simulator/JustificationEditor"
 
 interface Option {
   id: number
@@ -29,7 +30,7 @@ interface Question {
   }
   answer: number
   options: Option[]
-  categoryId?: number
+  categoryName?: string
   simulatorId?: string
 }
 
@@ -40,6 +41,9 @@ interface ExamData {
   fullName: string
   email: string
   score: number
+  totalQuestions: number
+  totalAnswered: number
+  percentageAnswered: number
 }
 
 export default function ExamReview() {
@@ -51,13 +55,29 @@ export default function ExamReview() {
   useEffect(() => {
     const savedExamData = localStorage.getItem('examData')
     if (savedExamData) {
-      setExamData(JSON.parse(savedExamData))
+      const parsedExamData = JSON.parse(savedExamData)
+      const recalculatedScore = calculateScore(parsedExamData.questions, parsedExamData.userAnswers)
+      setExamData({
+        ...parsedExamData,
+        score: recalculatedScore
+      })
     } else {
       router.replace('/simulator/start-simulator/exam/score')
     }
   }, [router])
 
-  const totalQuestions = examData?.questions.length || 0
+  const calculateScore = (questions: Question[], userAnswers: { [key: number]: number | null }) => {
+    let correctAnswers = 0;
+    questions.forEach((question) => {
+      const userAnswer = userAnswers[question.id];
+      if (userAnswer === question.answer || (question.options.length === 1 && (userAnswer === null || userAnswer === undefined))) {
+        correctAnswers++;
+      }
+    });
+    return (correctAnswers / questions.length) * 100;
+  }
+
+  const totalQuestions = examData?.totalQuestions || 0
 
   const handleQuestionChange = (num: number) => {
     if (num >= 1 && num <= totalQuestions) {
@@ -74,6 +94,53 @@ export default function ExamReview() {
 
   const { showExitFinishToastReview } = useExitFinishToastReview();
 
+  const isQuestionAnsweredCorrectly = (question: Question, userAnswer: number | null) => {
+    // Caso especial para preguntas con una sola opción
+    if (question.options.length === 1) {
+      return true;
+    }
+    return userAnswer === question.answer;
+  }
+
+  const isQuestionAnswered = (userAnswer: number | null) => {
+    return userAnswer !== null && userAnswer !== undefined;
+  }
+
+  const getQuestionStatus = (question: Question, userAnswer: number | null) => {
+    if (!isQuestionAnswered(userAnswer)) {
+      return {
+        status: 'unanswered',
+        color: 'bg-orange-300 dark:bg-orange-600'
+      };
+    }
+
+    return isQuestionAnsweredCorrectly(question, userAnswer)
+      ? {
+        status: 'correct',
+        color: 'bg-green-300 dark:bg-green-600'
+      }
+      : {
+        status: 'incorrect',
+        color: 'bg-red-300 dark:bg-red-600'
+      };
+  }
+
+  const getOptionBackgroundColor = (option: Option, question: Question, userAnswer: number | null) => {
+    if (option.id === question.answer) {
+      return 'bg-green-100 dark:bg-green-800';
+    }
+    if (option.id === userAnswer && option.id !== question.answer) {
+      return 'bg-red-100 dark:bg-red-800';
+    }
+    return '';
+  }
+
+  const getAnswerLetter = (options: Option[], answerId: number | null) => {
+    if (answerId === null || answerId === undefined) return 'Sin respuesta';
+    const index = options.findIndex(opt => opt.id === answerId);
+    return index !== -1 ? `Opción ${String.fromCharCode(65 + index)}` : 'Opción no encontrada';
+  }
+
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
       <h2 className="text-base md:text-lg lg:text-xl font-semibold mb-2 text-center flex items-center justify-center dark:text-white text-gray-800">
@@ -88,22 +155,14 @@ export default function ExamReview() {
       </p>
       <div className="grid grid-cols-9 md:grid-cols-12 lg:grid-cols-9 gap-1">
         {Array.from({length: totalQuestions}, (_, i) => i + 1).map((num) => {
-          const question = examData?.questions[num - 1]
-          const userAnswer = examData?.userAnswers[num]
-          const isCorrect = userAnswer === question?.answer
-          const isAnswered = userAnswer !== null && userAnswer !== undefined
-
-          let bgColor
-          if (isAnswered) {
-            bgColor = isCorrect ? 'bg-green-300 dark:bg-green-600' : 'bg-red-300 dark:bg-red-600'
-          } else {
-            bgColor = 'bg-orange-300 dark:bg-orange-600'
-          }
+          const question = examData?.questions[num - 1];
+          const userAnswer = question ? examData?.userAnswers[question.id] : null;
+          const status = getQuestionStatus(question!, userAnswer);
 
           return (
             <button
               key={num}
-              className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${bgColor} ${
+              className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${status.color} ${
                 num === currentQuestion ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
               } text-gray-800 dark:text-white`}
               onClick={() => handleQuestionChange(num)}
@@ -122,7 +181,7 @@ export default function ExamReview() {
   }
 
   const currentQuestionData = examData?.questions[currentQuestion - 1]
-  const userAnswer = examData?.userAnswers[currentQuestion]
+  const userAnswer = currentQuestionData ? examData?.userAnswers[currentQuestionData.id] : null
 
   if (!examData || !currentQuestionData) {
     return <div>Cargando datos del examen...</div>
@@ -186,7 +245,7 @@ export default function ExamReview() {
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4'}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                  Categoría {currentQuestionData.categoryId}
+                  {currentQuestionData.categoryName}
                 </h3>
                 <div className="order-2 sm:order-1">
                   <h2 className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
@@ -195,24 +254,25 @@ export default function ExamReview() {
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
-              <QuestionEditor content={currentQuestionData.content} />
+              <QuestionEditor
+                question={currentQuestionData}
+                key={`question-${currentQuestionData.id}`}
+              />
               <div className="w-full flex items-center pb-5">
                 <div className={'border-t-2 container dark:border-gray-700 border-gray-300'}/>
               </div>
               <div className="space-y-2">
                 {currentQuestionData.options.map((option, index) => (
-                  <div key={option.id} className={`rounded ${
-                    option.id === currentQuestionData.answer
-                      ? 'bg-green-100 dark:bg-green-800'
-                      : option.id === userAnswer && option.id !== currentQuestionData.answer
-                        ? 'bg-red-100 dark:bg-red-800'
-                        : ''
-                  }`}>
+                  <div
+                    key={option.id}
+                    className={`rounded ${getOptionBackgroundColor(option, currentQuestionData, userAnswer)}`}
+                  >
                     <OptionEditor
                       option={option}
                       index={index}
-                      isSelected={userAnswer === option.id}
-                      onSelect={() => {}}
+                      isSelected={userAnswer === option.id || currentQuestionData.answer === option.id}
+                      onSelect={() => {
+                      }}
                     />
                     <div className="flex justify-end pr-2 pb-2">
                       {option.id === currentQuestionData.answer && (
@@ -227,12 +287,41 @@ export default function ExamReview() {
               </div>
             </div>
 
+            <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
+            <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Resumen de respuestas</h4>
+              <div className="space-y-4">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm dark:text-gray-300">Tu respuesta:</span>
+                  <span className={`text-sm ${
+                    isQuestionAnsweredCorrectly(currentQuestionData, userAnswer)
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  }`}>
+              {currentQuestionData.options.length === 1
+                ? 'Respuesta correcta (única opción)'
+                : getAnswerLetter(currentQuestionData.options, userAnswer)}
+            </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm dark:text-gray-300">Respuesta correcta:</span>
+                  <span className="text-green-500 text-sm">
+                    {getAnswerLetter(currentQuestionData.options, currentQuestionData.answer)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
               <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
               {currentQuestionData.justification ? (
-                <QuestionEditor content={currentQuestionData.justification} />
+                <JustificationEditor
+                  justification={currentQuestionData.justification}
+                  questionId={currentQuestionData.id}
+                  key={`justification-${currentQuestionData.id}`}
+                />
               ) : (
                 <p className="text-sm md:text-base lg:text-base dark:text-gray-400">
+
                   Pregunta sin justificación
                 </p>
               )}
@@ -257,7 +346,7 @@ export default function ExamReview() {
                 </button>
               ) : (
                 <button
-                  className="bg-green-500 hover:bg-green-700 text-white font-semibold py-1 px-4 rounded-full inline-flex items-center"
+                  className="bg-green-500 hover:bg-green-700 text-white font-semibold py-1  px-4 rounded-full inline-flex items-center"
                   onClick={handleExitOrFinish}
                 >
                   <span className="text-sm sm:text-base">Finalizar</span>

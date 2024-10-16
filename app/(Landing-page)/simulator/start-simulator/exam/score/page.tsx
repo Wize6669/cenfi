@@ -26,33 +26,30 @@ export default function ExamScore() {
     const reviewedStatus = localStorage.getItem('hasReviewed')
 
     if (examData) {
+      const parsedData = JSON.parse(examData)
       const {
         questions,
-        userAnswers,
         timeSpent,
-        percentageAnswered
-      } = JSON.parse(examData)
+        percentageAnswered,
+        score: examScore,
+        correctAnswers: totalCorrect,
+        incorrectAnswers: totalIncorrect,
+        unansweredQuestions: totalUnanswered
+      } = parsedData
 
-      const correct = questions.filter((q: any, index: number) =>
-        q.correctAnswer === userAnswers[index + 1] && userAnswers[index + 1] !== null
-      ).length
       const total = questions.length
-      const notAnswered = questions.filter((_: any, index: number) =>
-        userAnswers[index + 1] === null || userAnswers[index + 1] === undefined
-      ).length
-      const incorrect = questions.filter((q: any, index: number) =>
-        userAnswers[index + 1] !== null && userAnswers[index + 1] !== undefined && userAnswers[index + 1] !== q.correctAnswer
-      ).length
 
-      setScore(correct)
+      // Usar los valores calculados directamente del examData
+      setScore(examScore)
       setTotalQuestions(total)
-      setCorrectAnswers(correct)
-      setIncorrectAnswers(incorrect)
-      setUnanswered(notAnswered)
+      setCorrectAnswers(Math.round(totalCorrect))
+      setIncorrectAnswers(Math.round(totalIncorrect))
+      setUnanswered(Math.round(totalUnanswered))
       setTimeSpent(timeSpent)
       setPercentageAnswered(percentageAnswered)
 
-      if (correct === total) {
+      // Mostrar confetti si todas las respuestas son correctas
+      if (Math.round(totalCorrect) === total) {
         setShowConfetti(true)
       }
 
@@ -91,7 +88,7 @@ export default function ExamScore() {
     router.push('/')
   }
 
-  const percentage = score !== null ? (score / totalQuestions) * 100 : 0
+  const percentage = score !== null ? score : 0
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60)
@@ -100,7 +97,6 @@ export default function ExamScore() {
     }
     return `${minutes} min`
   }
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -249,6 +245,7 @@ export default function ExamScore() {
             ) : null}
             <button
               onClick={handleNewAttempt}
+
               className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Nuevo Intento
