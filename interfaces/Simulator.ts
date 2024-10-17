@@ -1,14 +1,31 @@
+export interface CategoryQuestions {
+  categoryId: number;
+  numberOfQuestions: number;
+}
+
 export interface Simulator {
-  id: string;
+  id?: string;
   name: string;
   password: string;
   duration: number;
   visibility: boolean;
   navigate: boolean;
+  review: boolean;
+  categoryQuestions?: CategoryQuestions[];
   number_of_questions?: number;
 }
 
-export interface CreateSimulator extends Pick<Simulator, 'name' | 'password' | 'duration' | 'visibility' | 'navigate'>{
-  id?: string;
-  number_of_questions?: number;
+export interface SimulatorId {
+  id: string;
+}
+
+export interface SimulatorCreate {
+  id: string;
+  name: string;
+  duration: number;
+  visibility: boolean;
+  navigate: boolean;
+  review: boolean;
+  number_of_questions: number;
+  categoryQuestions: CategoryQuestions[];
 }

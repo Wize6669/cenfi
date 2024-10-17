@@ -37,7 +37,7 @@ const CustomRadio: React.FC<CustomRadioProps> = ({ label, value, checked, onChan
 const RadioVisible: React.FC<RadioVisibleProps> = ({ value, onChange, showError }) => {
   return (
     <div className={'flex flex-col space-y-1.5 z-10'}>
-      <label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base font-medium flex lg:justify-center sm:justify-start md:justify-start">
+      <label className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-base font-medium flex lg:justify-start sm:justify-start md:justify-start">
         Visibilidad
       </label>
       <div className="flex flex-row items-center space-x-10 justify-center">
