@@ -67,7 +67,7 @@ export default function NewSimulator() {
   };
 
   const goBack = () => {
-    router.push('/admin/menu');
+    router.back()
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -93,6 +93,7 @@ export default function NewSimulator() {
       };
 
       const response = await axiosInstance.post<SimulatorCreate>('/simulators', simulatorData);
+      console.log('Datos enviados', simulatorData)
       toast.success("Simulador creado con éxito!");
       resetForm();
       return response.data;
@@ -100,6 +101,7 @@ export default function NewSimulator() {
       if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data?.message || 'Ocurrió un error al crear el simulador';
         toast.error(errorMessage);
+        console.log('Datos enviados', error)
       } else {
         toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
       }

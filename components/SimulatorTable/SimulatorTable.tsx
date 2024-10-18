@@ -1,5 +1,3 @@
-'use client'
-
 import React, {MouseEvent, useState} from 'react'
 import {
   useReactTable,
@@ -11,100 +9,111 @@ import {
   ColumnDef,
   SortingState,
 } from '@tanstack/react-table';
-import {axiosInstance} from '@/lib/axios';
+import { axiosInstance } from '@/lib/axios';
 import toast from 'react-hot-toast';
-import {AxiosError} from 'axios';
-import './CourseTable.css'
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {Pagination} from "@/interfaces/Pagination";
-import {ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search} from 'lucide-react'
-import {Dialog, Transition} from '@headlessui/react'
-import {Fragment} from 'react'
-import {CourseTableInteface} from "@/interfaces/Course";
-import {useRouter} from 'next/navigation';
+import { AxiosError } from 'axios';
+import './SimulatorTable.css'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pagination } from "@/interfaces/Pagination";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
+import { useRouter } from 'next/navigation';
+
+interface Simulator {
+  id: string;
+  name: string;
+  password: string;
+  duration: number;
+  visibility: boolean;
+  navigate: boolean;
+  review: boolean;
+  number_of_questions: number;
+}
 
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
   handlePageSizeChange: (newPageSize: number) => void,
-  data: CourseTableInteface[],
+  data: Simulator[],
   pagination: Pagination,
 }
 
-export default function CourseTable({handlePageChange, handlePageSizeChange, data, pagination}: PropsTable) {
+export default function SimulatorTable({ handlePageChange, handlePageSizeChange, data, pagination }: PropsTable) {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const columnHelper = createColumnHelper<CourseTableInteface>();
+  const columnHelper = createColumnHelper<Simulator>();
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+  const [simulatorToDelete, setSimulatorToDelete] = useState<string | null>(null);
   const router = useRouter();
 
-  const columns: ColumnDef<CourseTableInteface, any>[] = [
+  const columns: ColumnDef<Simulator, any>[] = [
     columnHelper.accessor('name', {
-      id: 'name',
-      header: 'CURSO',
+      header: 'SIMULADOR',
       cell: info => (
-        <div className='text-center truncate max-w-[250px]' title={info.row.original.name}>
-          {info.row.original.name}
+        <div className='text-center truncate max-w-[200px]' title={info.getValue()}>
+          {info.getValue()}
         </div>
       ),
-      size: 250,
+      size: 200,
     }),
-    columnHelper.accessor('university', {
-      id: 'university',
-      header: 'UNIVERSIDAD',
+    columnHelper.accessor('duration', {
+      header: 'DURACIÓN',
       cell: info => (
-        <div className='text-center truncate max-w-[250px]'>
-          {info.row.original.university}
+        <div className='text-center'>
+          {info.getValue()} minutos
         </div>
       ),
       size: 100,
     }),
-    columnHelper.accessor('cost', {
-      id: 'cost',
-      header: 'COSTO',
+    columnHelper.accessor('visibility', {
+      header: 'VISIBILIDAD',
       cell: info => (
         <div className='flex justify-center'>
-            <span
-              className={'px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'}
-            >
-              {info.row.original.cost}
-            </span>
-        </div>
-      ),
-      size: 70,
-    }),
-    columnHelper.accessor('startDate', {
-      id: 'startDate',
-      header: 'FECHA DE INICIO',
-      cell: info => (
-        <div className='text-center'>
-          <span
-            className={'px-2 py-1 rounded-full text-xs font-semibold bg-cyan-200 text-blue-800 dark:bg-cyan-400 dark:text-blue-800'}
-          >
-          {info.row.original.startDate ? new Date(info.row.original.startDate).toISOString().split('T')[0] : 'N/A'}
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            info.getValue() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {info.getValue() ? 'Visible' : 'No visible'}
           </span>
         </div>
       ),
-      size: 70,
+      size: 100,
     }),
-    columnHelper.accessor('endDate', {
-      id: 'endDate',
-      header:
-        'FECHA DE FIN',
-      cell:
-        info => (
-          <div className='text-center'>
-            <span
-              className={'px-2 py-1 rounded-full text-xs font-semibold bg-red-200 text-blue-900 dark:bg-red-400 dark:text-blue-900'}
-            >
-            {info.row.original.endDate ? new Date(info.row.original.endDate).toISOString().split('T')[0] : 'N/A'}
-            </span>
-          </div>
-        ),
-      size: 70,
+    columnHelper.accessor('navigate', {
+      header: 'NAVEGACIÓN',
+      cell: info => (
+        <div className='flex justify-center'>
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            info.getValue() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {info.getValue() ? 'Permitida' : 'No permitida'}
+          </span>
+        </div>
+      ),
+      size: 100,
     }),
-
+    columnHelper.accessor('review', {
+      header: 'REVISIÓN',
+      cell: info => (
+        <div className='flex justify-center'>
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            info.getValue() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {info.getValue() ? 'Permitida' : 'No permitida'}
+          </span>
+        </div>
+      ),
+      size: 100,
+    }),
+    columnHelper.accessor('number_of_questions', {
+      header: 'PREGUNTAS',
+      cell: info => (
+        <div className='text-center'>
+          {info.getValue()}
+        </div>
+      ),
+      size: 100,
+    }),
     columnHelper.accessor('id', {
       header: 'ACCIONES',
       cell:
@@ -113,7 +122,7 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
             <div className='relative group'>
               <button
                 className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
-                onClick={handleEditBtn(info.row.original.id)}
+                onClick={handleEditSimulator(info.row.original.id)}
               >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -139,7 +148,7 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
             <div className='relative group'>
               <button
                 className='text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200'
-                onClick={handleDeleteBtn(info.row.original.id)}
+                onClick={handleDeleteSimulator(info.row.original.id)}
               >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -163,7 +172,7 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
             </div>
           </div>
         ),
-      size: 150,
+      size: 100,
     }),
   ]
 
@@ -179,70 +188,57 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
   });
 
   const queryClient = useQueryClient();
 
-  const deleteCourse = async (id: string) => {
-    const response = await axiosInstance.delete(`/courses/${id}`);
+  const deleteSimulator = async (id: string) => {
+    const response = await axiosInstance.delete(`/simulators/${id}`);
     if (response.status === 204) {
-      toast.success('Curso eliminado');
+      toast.success('Simulador eliminado');
     }
     return response.data;
   }
 
-  const {mutateAsync: deleteCourseMutation} = useMutation({
-    mutationFn: deleteCourse,
+  const { mutateAsync: deleteSimulatorMutation } = useMutation({
+    mutationFn: deleteSimulator,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({queryKey: ['courses']});
+      await queryClient.invalidateQueries({ queryKey: ['simulators'] });
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        toast.error('No se pudo eliminar el curso');
+        toast.error('No se pudo eliminar el simulador');
       } else {
         toast.error('Hubo un error inesperado');
       }
     }
   });
 
-  const handleDeleteBtn = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteSimulator = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setCourseToDelete(id)
+    setSimulatorToDelete(id);
     setIsConfirmOpen(true);
   };
 
   const confirmDelete = async () => {
-    if (courseToDelete) {
+    if (simulatorToDelete) {
       try {
-        await deleteCourseMutation(courseToDelete);
+        await deleteSimulatorMutation(simulatorToDelete);
       } catch (error) {
-        console.error('Error al eliminar el curso:', error);
+        console.error('Error al eliminar el simulador:', error);
       }
     }
     setIsConfirmOpen(false);
   };
 
-  const handleEditBtn = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    router.push(`/admin/courses/${id}`);
-  }
-
-  if (data.length === 0) {
-    return (
-      <div className='px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
-        <div className="text-gray-600 dark:text-gray-300">No hay datos disponibles</div>
-      </div>
-    );
+  const handleEditSimulator = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push(`/admin/simulators/edit/${id}`);
   }
 
   return (
     <div className="border_table px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Cursos Disponibles</h2>
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 pt-2">Simuladores Disponibles</h2>
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-2 w-full md:w-auto">
           <span className="text-sm text-gray-700 dark:text-gray-300">Filas por página:</span>
@@ -255,8 +251,7 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
               {isSelectOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
             </button>
             {isSelectOpen && (
-              <div
-                className="absolute z-20 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+              <div className="absolute z-20 w-20 mt-1 bg-white dark:text-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
                 {[10, 20, 30, 40, 50].map(pageSize => (
                   <div
                     key={pageSize}
@@ -284,17 +279,16 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18}/>
         </div>
       </div>
-      <div className="max-h-[450px] overflow-x-auto">
-        <table id={'user-table'} className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
+      <div className='max-h-[450px] overflow-x-auto'>
+        <table id={'simulator-table'} className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
+          <thead className='bg-gray-50 dark:bg-gray-700 sticky top-0 z-10'>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className="px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer"
-                  style={{width: header.getSize()}}
+                  className='px-6 py-3 text-center text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider cursor-pointer'
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -305,12 +299,11 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
             </tr>
           ))}
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
-                    style={{width: cell.column.getSize()}}>
+                <td key={cell.id} className='px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -323,53 +316,46 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
       {/* Paginación */}
       <div className='mt-4 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0'>
         <div className='text-sm text-gray-700 dark:text-gray-300'>
-          <span className={'font-medium'}>Total: </span>{pagination.total} registros
-        </div>
-        <div className='text-sm text-gray-700 dark:text-gray-300'>
-          Mostrando {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
-        </div>
-        <div className='text-sm text-gray-700 dark:text-gray-300'>
           Mostrando {Math.max(1, (pagination.currentPage - 1) * pagination.pageSize + 1)} a {Math.min(pagination.currentPage * pagination.pageSize, pagination.total)} de {pagination.total} registros
         </div>
         <div className='flex flex-wrap justify-center gap-2'>
           <button
             onClick={() => handlePageChange(1)}
-            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-            title="Primera página"
+            disabled={pagination.currentPage === 1}
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
           >
             <ChevronLeft size={16} className="inline"/>
             <ChevronLeft size={16} className="inline"/>
           </button>
           <button
-            onClick={() => handlePageChange(pagination.previousPage ?? 1)}
-            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasPreviousPage ? 'cursor-not-allowed opacity-50' : ''}`}
+            onClick={() => handlePageChange(pagination.currentPage - 1)}
             disabled={!pagination.hasPreviousPage}
-            title="Página anterior"
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
           >
             <ChevronLeft size={16}/>
           </button>
-          <span
-            className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300'>
+          <span className='border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1  text-sm text-gray-700 dark:text-gray-300'>
             {pagination.currentPage} / {pagination.totalPages}
           </span>
           <button
-            onClick={() => handlePageChange(pagination.nextPage ?? pagination.totalPages)}
-            className={`border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${!pagination.hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
+            onClick={() => handlePageChange(pagination.currentPage + 1)}
             disabled={!pagination.hasNextPage}
-            title="Siguiente página"
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
           >
             <ChevronRight size={16}/>
           </button>
           <button
             onClick={() => handlePageChange(pagination.totalPages)}
-            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-            title="Última página"
+            disabled={pagination.currentPage === pagination.totalPages}
+            className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
           >
             <ChevronRight size={16} className="inline"/>
             <ChevronRight size={16} className="inline"/>
           </button>
         </div>
       </div>
+
+      {/* Diálogo de confirmación para eliminar */}
       <Transition appear show={isConfirmOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setIsConfirmOpen(false)}>
           <Transition.Child
@@ -395,17 +381,13 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel
-                  className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100"
-                  >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
                     Confirmar eliminación
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      ¿Estás seguro de que deseas eliminar este curso? Esta acción no se puede deshacer.
+                      ¿Estás seguro de que deseas eliminar este simulador? Esta acción no se puede deshacer.
                     </p>
                   </div>
 

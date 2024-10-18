@@ -54,7 +54,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
     }),
     columnHelper.accessor('name', {
       id: 'name',
-      header: 'NOMBRE',
+      header: 'CATEGORÍA',
       cell: info => (
         <div className='text-center'>
           {info.row.original.name}
@@ -258,7 +258,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           <Search className='absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400' size={18}/>
         </div>
       </div>
-      <div className='max-h-[250px] overflow-x-auto'>
+      <div className='max-h-[300px] overflow-x-auto'>
         <table id={'user-table'} className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
           <thead className='bg-gray-50 dark:bg-gray-700 sticky top-0 z-10'>
           {table.getHeaderGroups().map(headerGroup => (

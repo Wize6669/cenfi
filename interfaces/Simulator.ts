@@ -15,10 +15,6 @@ export interface Simulator {
   number_of_questions?: number;
 }
 
-export interface SimulatorId {
-  id: string;
-}
-
 export interface SimulatorCreate {
   id: string;
   name: string;

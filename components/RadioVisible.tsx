@@ -42,13 +42,13 @@ const RadioVisible: React.FC<RadioVisibleProps> = ({ value, onChange, showError 
       </label>
       <div className="flex flex-row items-center space-x-10 justify-center">
         <CustomRadio
-          label="Activo"
+          label="Activa"
           value={true}
           checked={value === true}
           onChange={onChange}
         />
         <CustomRadio
-          label="Inactivo"
+          label="Inactiva"
           value={false}
           checked={value === false}
           onChange={onChange}

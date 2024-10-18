@@ -1,15 +1,19 @@
 'use client'
 
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { ChevronDown, ChevronUp } from "lucide-react";
 import axios from 'axios';
 import { Categories, PaginatedResponse } from "@/interfaces/Categories";
 import { config } from "@/config";
-import { CategoryQuestions } from "@/interfaces/Simulator";
+
+interface CategoryQuestion {
+  categoryId: number;
+  numberOfQuestions: number;
+}
 
 interface DynamicInputsProps {
-  inputs: CategoryQuestions[];
-  onInputsChange: (inputs: CategoryQuestions[]) => void;
+  inputs: CategoryQuestion[];
+  onInputsChange: (inputs: CategoryQuestion[]) => void;
 }
 
 const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange }) => {
@@ -18,13 +22,15 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
   const [categories, setCategories] = useState<Categories[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [categoryQuestionCounts, setCategoryQuestionCounts] = useState<{[key: number]: number}>({});
+  const [localInputs, setLocalInputs] = useState<CategoryQuestion[]>(inputs)
   const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
-  const inputsRef = useRef(inputs);
 
   const fetchAllCategories = useCallback(async () => {
     try {
       setIsLoading(true);
       let allCategories: Categories[] = [];
+      let questionCounts: {[key: number]: number} = {};
       let currentPage = 1;
       let totalPages = 1;
 
@@ -37,11 +43,15 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
         });
 
         allCategories = [...allCategories, ...response.data.data];
+        response.data.data.forEach(category => {
+          questionCounts[category.id] = category.questionCount || 0;
+        });
         currentPage++;
         totalPages = response.data.totalPages;
       } while (currentPage <= totalPages);
 
       setCategories(allCategories);
+      setCategoryQuestionCounts(questionCounts);
       setIsLoading(false);
     } catch (err) {
       setError('Error al cargar las categorías');
@@ -55,22 +65,17 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
   }, [fetchAllCategories]);
 
   useEffect(() => {
-    inputsRef.current = inputs;
-  }, [inputs]);
+    const newInputs = Array(count).fill(null).map((_, index) =>
+      localInputs[index] || { categoryId: 0, numberOfQuestions: 0 }
+    );
+    setLocalInputs(newInputs);
+    onInputsChange(newInputs);
+  }, [count]);
 
   useEffect(() => {
-    const newInputs = [...inputsRef.current];
-    if (count > newInputs.length) {
-      for (let i = newInputs.length; i < count; i++) {
-        newInputs.push({ categoryId: 0, numberOfQuestions: 0 });
-      }
-    } else if (count < newInputs.length) {
-      newInputs.splice(count);
-    }
-    if (JSON.stringify(newInputs) !== JSON.stringify(inputsRef.current)) {
-      onInputsChange(newInputs);
-    }
-  }, [count, onInputsChange]);
+    setLocalInputs(inputs);
+    setCount(inputs.length || 1);
+  }, [inputs]);
 
   const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newCount = parseInt(e.target.value) || 1
@@ -78,14 +83,16 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
   }
 
   const handleSelectChange = (index: number, value: string) => {
-    const newInputs = [...inputsRef.current]
-    newInputs[index].categoryId = Number(value)
+    const newInputs = [...localInputs]
+    newInputs[index].categoryId = value === "" ? 0 : parseInt(value)
+    setLocalInputs(newInputs)
     onInputsChange(newInputs)
   }
 
   const handleInputChange = (index: number, value: string) => {
-    const newInputs = [...inputsRef.current]
-    newInputs[index].numberOfQuestions = parseInt(value)
+    const newInputs = [...localInputs]
+    newInputs[index].numberOfQuestions = parseInt(value) || 0
+    setLocalInputs(newInputs)
     onInputsChange(newInputs)
   }
 
@@ -115,35 +122,42 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
           className="text-sm sm:text-base md:text-base w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
-      {inputsRef.current.map((item, index) => (
+      {localInputs.map((item, index) => (
         <div key={index} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-10">
           <div className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2 lg:pl-44 sm:pb-2 lg:pb-0 pb-2">
             <label htmlFor={`category-${index}`} className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300">
               Categorías
             </label>
-            <div className="relative">
-              <select
-                id={`category-${index}`}
-                value={item.categoryId || ''}
-                onChange={(e) => handleSelectChange(index, e.target.value)}
-                onFocus={() => setOpenSelect(index)}
-                onBlur={() => setOpenSelect(null)}
-                required={true}
-                className="text-sm sm:text-base md:text-base appearance-none w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
-              >
-                <option value="">Seleccione una categoría</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                {openSelect === index ? (
-                  <ChevronUp className="w-4 h-4 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                )}
+            <div className="flex items-center space-x-3">
+              {item.categoryId !== 0 && categoryQuestionCounts[item.categoryId] !== undefined && (
+                <span className="text-sm px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">
+                  {categoryQuestionCounts[item.categoryId]}
+                </span>
+              )}
+              <div className="relative flex-grow w-full">
+                <select
+                  id={`category-${index}`}
+                  value={item.categoryId || ''}
+                  onChange={(e) => handleSelectChange(index, e.target.value)}
+                  onFocus={() => setOpenSelect(index)}
+                  onBlur={() => setOpenSelect(null)}
+                  required={true}
+                  className="text-sm sm:text-base md:text-base appearance-none w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
+                >
+                  <option value="">Seleccione una categoría</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  {openSelect === index ? (
+                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -154,7 +168,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
             <input
               type="number"
               id={`questions-${index}`}
-              value={item.numberOfQuestions}
+              value={item.numberOfQuestions || ''}
               onChange={(e) => handleInputChange(index, e.target.value)}
               className="text-sm sm:text-base md:text-base w-full h-[35px] px-3 py-2 placeholder-gray-400 text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Ingresa el número de preguntas por categoría"

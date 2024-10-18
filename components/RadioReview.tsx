@@ -42,13 +42,13 @@ const RadioReview: React.FC<RadioReviewProps> = ({ value, onChange, showError })
       </label>
       <div className="flex flex-row items-center space-x-10 justify-center">
         <CustomRadio
-          label="Activo"
+          label="Disponible"
           value={true}
           checked={value === true}
           onChange={onChange}
         />
         <CustomRadio
-          label="Inactivo"
+          label="No disponible"
           value={false}
           checked={value === false}
           onChange={onChange}
@@ -61,7 +61,7 @@ const RadioReview: React.FC<RadioReviewProps> = ({ value, onChange, showError })
       )}
       {value === false && (
         <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 flex justify-center">
-          El simulador no tiene revisión disponible
+          El simulador no tiene una revisión disponible
         </div>
       )}
       {showError && value === null && (

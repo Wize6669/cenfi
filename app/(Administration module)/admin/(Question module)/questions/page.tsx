@@ -13,7 +13,7 @@ import {useQuery} from "@tanstack/react-query";
 import {axiosInstance} from "@/lib/axios";
 import QuestionTable from "@/components/QuestionTable/QuestionTable";
 
-export default function Simulator() {
+export default function Question() {
   const router = useRouter();
 
   const [showLoginMessage, setShowLoginMessage] = useState(false);

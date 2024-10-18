@@ -3,25 +3,117 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import { IconButton } from '@mui/material'
 import { ArrowBack } from "@mui/icons-material";
+import {useAuthStore} from "@/store/auth";
+import {Pagination} from "@/interfaces/Pagination";
+import {useQuery} from "@tanstack/react-query";
+import {axiosInstance} from "@/lib/axios";
+import SimulatorTable from "@/components/SimulatorTable/SimulatorTable";
 
 export default function Simulator() {
   const router = useRouter();
+
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const userAuth = useAuthStore((state) => state.userAuth);
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    totalPages: 1,
+    hasPreviousPage: false,
+    hasNextPage: true,
+    previousPage: 0,
+    nextPage: 0,
+    total: 0,
+    pageSize: 10
+  });
+
+  useEffect(() => {
+    if (userAuth?.roleId !== 1 || !isLoggedIn) {
+      setShowLoginMessage(true);
+      const timer = setTimeout(() => {
+        router.replace('/admin');
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [userAuth, router, isLoggedIn]);
+
+  const {data: simulators, isLoading} = useQuery({
+    queryFn: () => fetchSimulator(),
+    queryKey: ['simulators', pagination.currentPage, pagination.pageSize],
+  });
+
+  const fetchSimulator = async () => {
+    const response = await axiosInstance.get(`/simulators?page=${pagination.currentPage}&count=${pagination.pageSize}`);
+    const {
+      data,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total
+    } = response.data;
+    setPagination(prev => ({
+      ...prev,
+      currentPage,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+      previousPage,
+      nextPage,
+      total,
+    }));
+
+    return data;
+  }
 
   const goBack = () => {
     router.push('/admin/menu');
   };
 
-  const handleButtonClickNew = () => {
-    router.push('/admin/simulators/new');
+  const handleButtonClickCreate = () => {
+    router.push('/admin/simulators/create');
   };
 
-  const handleButtonClickEdit = () => {
-    router.push('/admin/simulators/edit');
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({...prev, currentPage: newPage}));
+      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
+      router.push(`/admin/simulators?${urlParams.toString()}`);
+    }
   };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination(prev => ({...prev, pageSize: newPageSize}));
+    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
+    router.push(`/admin/simulators?${urlParams.toString()}`);
+  };
+
+  if (showLoginMessage) {
+    return (
+      <div className={'flex flex-col min-h-screen'}>
+        <div className={'flex-grow flex flex-col justify-center items-center'}>
+          <div className={'justify-center gap-2 border-2 rounded-md w-[330px] h-[100px] px-2.5 py-1.5'}>
+            <p className={'text-center font-bold text-3xl mb-3'}>⚠️ Inicia sesión ⚠️</p>
+            <p className={'text-base'}>Redirigiendo a la página de Log In <b>...</b></p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
@@ -50,26 +142,20 @@ export default function Simulator() {
           <button
             className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
             type={'button'}
-            onClick={handleButtonClickNew}
+            onClick={handleButtonClickCreate}
           >
             Nuevo Simulador
           </button>
         </div>
-        <div className={'lg:w-[82%] flex justify-end items-center'}>
-          <button
-            className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-            type={'button'}
-            onClick={handleButtonClickEdit}
-          >
-            Editar Simulador
-          </button>
-        </div>
-
       </div>
-      <div className={'flex justify-center'}>
+      <div className={'flex-grow flex justify-center'}>
+        <div className={'w-full md:w-5/6 lg:w-2/3 scale-90'}>
+          {!isLoading && <SimulatorTable handlePageChange={handlePageChange}
+                                        handlePageSizeChange={handlePageSizeChange}
+                                        data={simulators} pagination={pagination}/>}
+        </div>
       </div>
       <Footer/>
     </div>
-  )
-    ;
+  );
 }

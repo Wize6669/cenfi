@@ -77,7 +77,7 @@ export default function Course() {
   };
 
   const handleButtonClickNew = () => {
-    router.push('/admin/courses/new');
+    router.push('/admin/courses/create');
   };
 
   const handlePageChange = (newPage: number) => {
@@ -125,7 +125,7 @@ export default function Course() {
           <div className={'w-auto col-span-2'}>
             <h1
               className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>
-              Listado de Cursos Disponibles
+              Lista de Cursos
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
@@ -137,15 +137,15 @@ export default function Course() {
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
-          <div className={'col-span-full flex flex-grow justify-center items-center'}>
-            <button
-              className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-              type={'button'}
-              onClick={handleButtonClickNew}
-            >
-              Nuevo Curso
-            </button>
-          </div>
+        </div>
+        <div className={'lg:w-[82%] flex justify-end items-center'}>
+          <button
+            className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
+            type={'button'}
+            onClick={handleButtonClickNew}
+          >
+            Nuevo Curso
+          </button>
         </div>
       </div>
       <div className={'flex-grow flex justify-center'}>
