@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
   const [revision, setRevision] = useState<boolean | null>(null)
   const [navegacionLibre, setNavegacionLibre] = useState<boolean | null>(null)
   const [showErrors, setShowErrors] = useState(false)
-  const [dynamicInputs, setDynamicInputs] = useState<CategoryQuestions[]>([{ categoryId: 0, numberOfQuestions: 0 }])
+  const [dynamicInputs, setDynamicInputs] = useState<CategoryQuestions[]>([])
 
   const [simulator, setSimulator] = useState<Simulator>({
     name: '',
@@ -69,15 +69,14 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
 
   const updateSimulator = async () => {
     try {
-      const simulatorData: Simulator = {
-        ...simulator,
-        visibility: visibilidad!,
-        navigate: navegacionLibre!,
-        review: revision!,
-        categoryQuestions: dynamicInputs.map(input => ({
-          categoryId: input.categoryId,
-          numberOfQuestions: input.numberOfQuestions
-        }))
+      const simulatorData = {
+        name: simulator.name,
+        password: simulator.password,
+        duration: simulator.duration,
+        visibility: visibilidad,
+        navigate: navegacionLibre,
+        review: revision,
+        categoryQuestions: dynamicInputs
       };
 
       const response = await axiosInstance.post<Simulator>(`/simulators/${simulatorId}`, simulatorData);
@@ -111,6 +110,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
           className={'mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}
           ref={formRef}
     >
+      {/* Form fields remain the same */}
       <div>
         <div className={'content-start'}>
           <label

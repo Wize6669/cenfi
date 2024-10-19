@@ -15,6 +15,16 @@ export interface Simulator {
   number_of_questions?: number;
 }
 
+export interface SimulatorUpdate {
+  name: string;
+  password?: string;
+  duration: number;
+  visibility: boolean;
+  navigate: boolean;
+  review: boolean;
+  categoryQuestions: CategoryQuestions[];
+}
+
 export interface SimulatorCreate {
   id: string;
   name: string;

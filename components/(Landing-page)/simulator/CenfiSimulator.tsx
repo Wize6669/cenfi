@@ -1,27 +1,28 @@
 'use client';
 
-import React, {useState, useMemo, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, HelpCircle, Play, Shuffle, ArrowRight, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 import LoginStudentsModal from '@/components/Modal/LoginStudentsModal';
+import axios from 'axios';
+import { config } from "@/config";
 
-const simuladores = [
-  { nombre: 'Simulador Universidad Nacional de Loja', duracion: 100, preguntas: 120, navegacionLibre: true },
-  { nombre: 'Simulador Escuela Politécnica Nacional', duracion: 120, preguntas: 100, navegacionLibre: false },
-  { nombre: 'Simulador Universidad Central del Ecuador', duracion: 70, preguntas: 120, navegacionLibre: true },
-  { nombre: 'Simulador ESPE', duracion: 70, preguntas: 120, navegacionLibre: false },
-  { nombre: 'Simulador Udla', duracion: 70, preguntas: 120, navegacionLibre: true },
-  { nombre: 'Universidad Técnica Particular de Loja', duracion: 70, preguntas: 120, navegacionLibre: false },
-];
-
-interface SimuladorProps {
-  nombre: string;
-  duracion: number;
-  preguntas: number;
-  navegacionLibre: boolean;
+interface Simulator {
+  id: string;
+  name: string;
+  duration: number;
+  number_of_questions: number;
+  navigate: boolean;
+  visibility: boolean;
 }
 
-const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas, navegacionLibre }) => {
+interface PaginatedResponseSimulator {
+  data: Simulator[];
+  currentPage: number;
+  totalPages: number;
+}
+
+const SimulatorCard: React.FC<Simulator> = ({ name, duration, number_of_questions, navigate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -35,30 +36,30 @@ const SimuladorCard: React.FC<SimuladorProps> = ({ nombre, duracion, preguntas, 
     >
       <div className={'p-6 flex flex-col flex-grow'}>
         <h2 className={'text-lg md:text-base lg:text-xl font-bold text-blue-800 dark:text-blue-300 mb-4 flex-grow'}>
-          {nombre}
+          {name}
         </h2>
         <div className={'flex justify-between items-center mt-auto'}>
           <div className={'space-y-2'}>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
               <Clock className={'w-4 h-4 mr-2 text-cyan-950 dark:text-gray-200'} />
               <span className={'text-xs md:text-sm lg:text-sm'}>
-                {duracion} min
+                {duration} min
               </span>
             </div>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
               <HelpCircle className={'w-4 h-4 mr-2 text-amber-600'} />
               <span className={'text-xs md:text-sm lg:text-sm'}>
-                {preguntas} preguntas
+                {number_of_questions} preguntas
               </span>
             </div>
             <div className={'flex items-center text-gray-600 dark:text-gray-300'}>
-              {navegacionLibre ? (
+              {navigate ? (
                 <Shuffle className={'w-4 h-4 mr-2 text-green-600'} />
               ) : (
                 <ArrowRight className={'w-4 h-4 mr-2 text-blue-600'} />
               )}
               <span className={'text-xs md:text-sm lg:text-sm'}>
-                Navegación {navegacionLibre ? 'libre' : 'secuencial'}
+                Navegación {navigate ? 'libre' : 'secuencial'}
               </span>
             </div>
           </div>
@@ -84,17 +85,63 @@ export default function CenfiSimulator() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selectWidth, setSelectWidth] = useState('auto');
   const selectRef = useRef<HTMLButtonElement>(null);
+  const [simulators, setSimulators] = useState<Simulator[]>([]);
+  const [filteredSimulators, setFilteredSimulators] = useState<Simulator[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredSimuladores = useMemo(() => {
-    return simuladores.filter(simulador => {
-      const matchesSearch = simulador.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
+
+  const fetchSimulators = useCallback(async (page: number) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get<PaginatedResponseSimulator>(`${HOST_BACK_END}/api/v1/simulators`, {
+        params: {
+          page: page,
+          count: 50
+        }
+      });
+
+      const visibleSimulators = response.data.data.filter(simulator => simulator.visibility);
+
+      if (page === 1) {
+        setSimulators(visibleSimulators);
+        setFilteredSimulators(visibleSimulators);
+      } else {
+        setSimulators(prevSimulators => {
+          const newSimulators = [...prevSimulators, ...visibleSimulators];
+          setFilteredSimulators(newSimulators);
+          return newSimulators;
+        });
+      }
+
+      setCurrentPage(response.data.currentPage);
+      setTotalPages(response.data.totalPages);
+      setIsLoading(false);
+    } catch (err) {
+      setError('Error al cargar los simuladores');
+      setIsLoading(false);
+      console.error('Error fetching simulators:', err);
+    }
+  }, [HOST_BACK_END]);
+
+  useEffect(() => {
+    fetchSimulators(1);
+  }, [fetchSimulators]);
+
+  useEffect(() => {
+    const filtered = simulators.filter(simulator => {
+      const matchesSearch = simulator.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesNavegacion =
         navegacionFilter === 'todos' ||
-        (navegacionFilter === 'libre' && simulador.navegacionLibre) ||
-        (navegacionFilter === 'secuencial' && !simulador.navegacionLibre);
+        (navegacionFilter === 'libre' && simulator.navigate) ||
+        (navegacionFilter === 'secuencial' && !simulator.navigate);
       return matchesSearch && matchesNavegacion;
     });
-  }, [searchTerm, navegacionFilter]);
+    setFilteredSimulators(filtered);
+  }, [searchTerm, navegacionFilter, simulators]);
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -115,7 +162,7 @@ export default function CenfiSimulator() {
           document.body.removeChild(tempSpan);
           return width;
         }));
-        setSelectWidth(`${maxWidth + 40}px`); // Add some padding
+        setSelectWidth(`${maxWidth + 40}px`);
       }
     };
 
@@ -123,6 +170,12 @@ export default function CenfiSimulator() {
     window.addEventListener('resize', updateSelectWidth);
     return () => window.removeEventListener('resize', updateSelectWidth);
   }, []);
+
+  const loadMore = () => {
+    if (currentPage < totalPages) {
+      fetchSimulators(currentPage + 1);
+    }
+  };
 
   return (
     <div className={'container mx-auto px-4 md:py-8 py-4'}>
@@ -135,7 +188,7 @@ export default function CenfiSimulator() {
       </motion.h1>
       <div className={'mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between'}>
         <p className={'text-sm md:text-base lg:text-lg font-bold text-blue-900 dark:text-blue-500 mb-4 sm:mb-0'}>
-          Simuladores disponibles: {filteredSimuladores.length}
+          Simuladores disponibles: {filteredSimulators.length}
         </p>
         <div className={'flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto'}>
           <div className={'relative flex-grow'}>
@@ -200,10 +253,22 @@ export default function CenfiSimulator() {
         </div>
       </div>
       <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
-        {filteredSimuladores.map((simulador, index) => (
-          <SimuladorCard key={index} {...simulador} />
+        {filteredSimulators.map((simulator) => (
+          <SimulatorCard key={simulator.id} {...simulator} />
         ))}
       </div>
+      {currentPage < totalPages && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={loadMore}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Cargando...' : 'Cargar más'}
+          </button>
+        </div>
+      )}
+      {error && <p className="text-red-500 text-center mt-4">{error}</p>}
     </div>
   );
 }
