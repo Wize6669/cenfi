@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, HelpCircle, Play, Shuffle, ArrowRight, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 import LoginStudentsModal from '@/components/Modal/LoginStudentsModal';
-import axios from 'axios';
-import { config } from "@/config";
+import {axiosInstance} from "@/lib/axios";
 
 interface Simulator {
   id: string;
@@ -78,7 +77,13 @@ const SimulatorCard: React.FC<Simulator> = ({ id, name, duration, number_of_ques
           </motion.button>
         </div>
       </div>
-      <LoginStudentsModal isOpenModal={isModalOpen} setIsOpenModal={setIsModalOpen} id={id} />
+      <LoginStudentsModal
+        id={id}
+        simulatorName={name}
+        isOpenModal={isModalOpen}
+        setIsOpenModal={setIsModalOpen}
+
+      />
     </motion.div>
   );
 };
@@ -96,12 +101,10 @@ export default function CenfiSimulator() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
-
   const fetchSimulators = useCallback(async (page: number) => {
     try {
       setIsLoading(true);
-      const response = await axios.get<PaginatedResponseSimulator>(`${HOST_BACK_END}/api/v1/simulators`, {
+      const response = await axiosInstance.get<PaginatedResponseSimulator>('/simulators', {
         params: {
           page: page,
           count: 50
@@ -129,10 +132,16 @@ export default function CenfiSimulator() {
       setIsLoading(false);
       console.error('Error fetching simulators:', err);
     }
-  }, [HOST_BACK_END]);
+  }, []);
 
   useEffect(() => {
-    fetchSimulators(1);
+    fetchSimulators(1)
+      .then(() => {
+      console.log('Simuladores cargadas correctamente.');
+    })
+      .catch((error) => {
+        console.error('Error fetching simulators:', error);
+      });
   }, [fetchSimulators]);
 
   useEffect(() => {

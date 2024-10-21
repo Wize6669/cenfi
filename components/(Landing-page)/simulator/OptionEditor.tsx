@@ -29,35 +29,52 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ option, index, isSelected, 
   }
 
   return (
-    <div className={`flex items-start space-x-2 p-2 rounded-lg transition-colors duration-200 ${
-      isSelected ? (option.isCorrect ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900') : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-    }`}>
-      <div className="flex-shrink-0 mt-1">
+    <label className={cn(
+      'flex flex-col p-2 rounded transition-colors duration-300',
+      'dark:hover:bg-gray-700 hover:bg-gray-100',
+      'dark:text-gray-400',
+      isReviewMode && isSelected && option.isCorrect && 'bg-green-50 dark:bg-green-900/20',
+      isReviewMode && isSelected && !option.isCorrect && 'bg-red-50 dark:bg-red-900/20',
+      isReviewMode && !isSelected && option.isCorrect && 'bg-green-50 dark:bg-green-900/20'
+    )}>
+      <div className="flex items-center">
         <input
           type="radio"
-          id={`option-${option.id}`}
-          name={`question-${option.id}`}
+          name="answer"
           checked={isSelected}
           onChange={onSelect}
           disabled={isReviewMode}
-          className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+          className={cn(
+            'h-5 w-5 mr-2 rounded-full border',
+            'text-blue-600 dark:text-blue-400',
+            'transition-colors duration-300',
+            isReviewMode && 'cursor-not-allowed opacity-50',
+            isReviewMode && option.isCorrect && 'text-green-500 dark:text-green-400',
+            isReviewMode && isSelected && !option.isCorrect && 'text-red-500 dark:text-red-400'
+          )}
+        />
+        <span className="text-sm md:text-base lg:text-base mr-2 font-semibold">
+          {String.fromCharCode(65 + index)}
+        </span>
+        {isReviewMode && (
+          <span className="mr-2">
+            {option.isCorrect ? (
+              <CheckCircle className="w-4 h-4 text-green-500" />
+            ) : isSelected ? (
+              <XCircle className="w-4 h-4 text-red-500" />
+            ) : null}
+          </span>
+        )}
+        <EditorContent
+          editor={editor}
+          className={cn(
+            "text-sm md:text-base lg:text-base font-light",
+            isReviewMode && option.isCorrect && 'text-green-700 dark:text-green-400',
+            isReviewMode && isSelected && !option.isCorrect && 'text-red-700 dark:text-red-400'
+          )}
         />
       </div>
-      <label htmlFor={`option-${option.id}`} className="flex-grow cursor-pointer">
-        <div className="font-medium text-sm md:text-base lg:text-base mb-1 flex items-center">
-          {String.fromCharCode(65 + index)}.
-          {isReviewMode && (
-            <>
-              {option.isCorrect && <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 text-green-500 ml-2"/>}
-              {isSelected && !option.isCorrect && <XCircle className="w-4 h-4 lg:h-5 lg:w-5 text-red-500 ml-2"/>}
-            </>
-          )}
-        </div>
-        <div className="text-sm md:text-base lg:text-base option-editor">
-          <EditorContent editor={editor} />
-        </div>
-      </label>
-    </div>
+    </label>
   )
 }
 

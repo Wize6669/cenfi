@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Menu, X, Clock, CheckCircle, XCircle, Award, BookCheck } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Menu, X, Clock, Award, BookCheck } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
 import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview"
@@ -263,14 +263,6 @@ export default function ExamReview() {
                       onSelect={() => {}}
                       isReviewMode={true}
                     />
-                    <div className="flex justify-end pr-2 pb-2">
-                      {option.isCorrect && (
-                        <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 text-green-500"/>
-                      )}
-                      {option.id === userAnswer && !option.isCorrect && (
-                        <XCircle className="w-4 h-4 lg:h-5 lg:w-5 text-red-500"/>
-                      )}
-                    </div>
                   </div>
                 ))}
               </div>

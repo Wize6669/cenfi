@@ -5,27 +5,29 @@ import { useRouter } from 'next/navigation';
 import { UserStudent } from '@/interfaces/User'
 import Modal from '@/components/Modal/Modal';
 import { axiosInstance } from "@/lib/axios";
-import { handleAxiosError } from '@/utils/generatePassword';
 import { useUserStore } from '@/store/userStore';
+import { AxiosError } from "axios";
 
 interface PropsPortalSimulatorSignIn {
   id: string
   isOpenModal: boolean
   setIsOpenModal: (status: boolean) => void;
+  simulatorName: string
 }
 
-export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal}: PropsPortalSimulatorSignIn) {
+export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal, simulatorName}: PropsPortalSimulatorSignIn) {
   const [userStudent, setUserStudent] = useState<UserStudent>({
     name:'',
     email: '',
     password: '',
   })
+  const [error, setError] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false)
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false);
   const setUserSimulator = useUserStore(state => state.setUserSimulator);
 
-  const hadleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isFormValid) {
       alert('Por favor, completa todos los campos del formulario y acepta los términos y condiciones.');
@@ -53,7 +55,17 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal}: Pr
       setIsOpenModal(false);
       router.push('/simulator/exam');
     } catch (error) {
-      handleAxiosError(error);
+      setIsLoading(prev => !prev);
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.status === 400 ? 'Contraseña Incorrecta'
+          : 'Hubo un error con el servidor';
+
+        setError(errorMessage);
+
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -82,14 +94,17 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal}: Pr
             style={{ width: 'auto', height: 'auto' }}
           />
         </div>
-        <form onSubmit={hadleSubmit}>
-          <div className="flex flex-col justify-start mb-6 text-center">
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-200">
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col justify-start mb-4 text-center">
+            <h1 className="text-xl md:text-2xl font-medium text-gray-900 dark:text-gray-300">
               ¡Comienza Ahora!
             </h1>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-400">
+            <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-400">
               Ingresa tus credenciales para comenzar el simulador
             </p>
+            <h2 className={'text-base pt-1 text-gray-900 dark:text-gray-300'}>
+              Simulador: {simulatorName}
+            </h2>
           </div>
           <div className="mb-4">
             <label
@@ -147,6 +162,7 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal}: Pr
           >
             {isLoading ? 'Cargando...' : 'Iniciar Simulador'}
           </button>
+          {error && <span className={'text-red-500 dark:text-red-400 text-sm'}>{error}</span>}
         </form>
       </div>
     </Modal>

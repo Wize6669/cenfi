@@ -100,12 +100,12 @@ export default function ExamScore() {
           numberOfPieces={500}
         />
       )}
-      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-4">
+      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-2">
         <div className="container mx-auto flex justify-between items-center">
           <button onClick={handleExit}>
-            <Image src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
+            <Image src="/images/image-1.png" alt="CENFI Logo" width={70} height={60} title={'Inicio'}/>
           </button>
-          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
+          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-blue-400 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
           <h1 className="text-base font-bold text-gray-800 dark:text-blue-300 lg:hidden md:hidden">SIMULADORES CENFI</h1>
           <ThemeToggle/>
         </div>
