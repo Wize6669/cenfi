@@ -2,36 +2,71 @@ import Image from 'next/image';
 import { PasswordInput } from '@/components/PasswordInput';
 import React, { ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUserStore } from '@/store/userStore';
+import { UserStudent } from '@/interfaces/User'
 import Modal from '@/components/Modal/Modal';
+import { axiosInstance } from "@/lib/axios";
+import { handleAxiosError } from '@/utils/generatePassword';
+import { useUserStore } from '@/store/userStore';
 
+interface PropsPortalSimulatorSignIn {
+  id: string
+  isOpenModal: boolean
+  setIsOpenModal: (status: boolean) => void;
+}
 
-export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { isOpenModal: boolean, setIsOpenModal: (status: boolean) => void }) {
-  const { userSimulator, setUserSimulator } = useUserStore()
+export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal}: PropsPortalSimulatorSignIn) {
+  const [userStudent, setUserStudent] = useState<UserStudent>({
+    name:'',
+    email: '',
+    password: '',
+  })
   const [acceptTerms, setAcceptTerms] = useState(false)
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const setUserSimulator = useUserStore(state => state.setUserSimulator);
 
-  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setUserSimulator({
-      ...userSimulator,
-      [event.target.name]: event.target.value,
-    })
-  }
+  const hadleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isFormValid) {
+      alert('Por favor, completa todos los campos del formulario y acepta los términos y condiciones.');
+      return;
+    }
 
-  const handleClickStart = (event: React.FormEvent) => {
-    event.preventDefault()
-    if (acceptTerms && userSimulator.fullName && userSimulator.email && userSimulator.password) {
-      localStorage.setItem('userSimulator', JSON.stringify(userSimulator))
-      setIsOpenModal(false)
-      router.push('/simulator/start-simulator/exam')
-    } else if (!acceptTerms) {
-      alert('Por favor, acepta los términos y condiciones para continuar.')
-    } else {
-      alert('Por favor, completa todos los campos del formulario.')
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post('/auth-simulators/sign-in-simulator', { simulatorId: id, password: userStudent.password });
+      const token = response.data.token;
+      localStorage.setItem('authToken', token);
+
+      // Actualizar el userStore
+      setUserSimulator({
+        fullName: userStudent.name,
+        email: userStudent.email
+      });
+
+      // Guardar información del usuario en localStorage
+      localStorage.setItem('userStudent', JSON.stringify({
+        fullName: userStudent.name,
+        email: userStudent.email
+      }));
+
+      setIsOpenModal(false);
+      router.push('/simulator/exam');
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  const isFormValid = userSimulator.fullName && userSimulator.email && userSimulator.password && acceptTerms
+  const isFormValid = userStudent.name && userStudent.email && userStudent.password && acceptTerms
+
+  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setUserStudent({
+      ...userStudent,
+      [event.target.name]: event.target.value,
+    })
+  }
 
   return (
     <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
@@ -47,7 +82,7 @@ export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { is
             style={{ width: 'auto', height: 'auto' }}
           />
         </div>
-        <form onSubmit={handleClickStart}>
+        <form onSubmit={hadleSubmit}>
           <div className="flex flex-col justify-start mb-6 text-center">
             <h1 className="text-2xl font-medium text-gray-900 dark:text-gray-200">
               ¡Comienza Ahora!
@@ -59,17 +94,17 @@ export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { is
           <div className="mb-4">
             <label
               className="text-sm font-medium text-gray-900 dark:text-gray-300"
-              htmlFor="fullName"
+              htmlFor="name"
             >
               Nombre y Apellido
             </label>
             <input
               className="w-full mt-1 p-2 text-sm text-gray-700 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               type="text"
-              name="fullName"
+              name="name"
               placeholder="Ingresa tu nombre y apellido"
               required
-              value={userSimulator.fullName}
+              value={userStudent.name}
               onChange={handleGetDataInput}
             />
           </div>
@@ -86,11 +121,11 @@ export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { is
               name="email"
               placeholder="Ingresa tu correo electrónico"
               required
-              value={userSimulator.email}
+              value={userStudent.email}
               onChange={handleGetDataInput}
             />
           </div>
-          <PasswordInput password={userSimulator.password} handleGetDataInput={handleGetDataInput} />
+          <PasswordInput password={userStudent.password} handleGetDataInput={handleGetDataInput} />
           <div className="flex items-center mb-4 mt-4">
             <input
               type="checkbox"
@@ -106,12 +141,11 @@ export default function LoginStudentsModal({ isOpenModal, setIsOpenModal }: { is
           </div>
           <button
             type="submit"
-            className={
-              `text-white text-sm font-bold w-full border dark:border-none rounded-md p-2 hover:bg-blue-800 transition-colors duration-200 bg-button-color cursor-progress ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`
-            }
-            disabled={!isFormValid}
+            className={`text-white text-sm font-bold w-full border dark:border-none rounded-md p-2 hover:bg-blue-800
+              transition-colors duration-200 bg-button-color ${!isFormValid || isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            disabled={!isFormValid || isLoading}
           >
-            Iniciar Simulador
+            {isLoading ? 'Cargando...' : 'Iniciar Simulador'}
           </button>
         </form>
       </div>

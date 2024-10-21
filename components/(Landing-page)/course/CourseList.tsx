@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { config } from "@/config"
 import { Course, PaginatedResponseCourse } from "@/interfaces/Course"
-import axios from "axios"
 import CourseOffer from './CourseOffer'
 import CoursesFilter from './CoursesFilter'
 import { Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion';
+import {axiosInstance} from "@/lib/axios";
 
 const CourseList: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([])
@@ -23,7 +23,7 @@ const CourseList: React.FC = () => {
   const fetchCourses = useCallback(async (page: number) => {
     try {
       setIsLoading(true)
-      const response = await axios.get<PaginatedResponseCourse>(`${HOST_BACK_END}/api/v1/courses`, {
+      const response = await axiosInstance.get<PaginatedResponseCourse>(`${HOST_BACK_END}/api/v1/courses`, {
         params: {
           page: page,
           count: 50

@@ -4,17 +4,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import {IconButton } from '@mui/material'
-import { ArrowBack } from "@mui/icons-material";
 import CourseForm from "@/components/(Course module)/CourseForm";
+import GoBackButton from "@/components/GoBackButton";
 
-export default function NewCourse() {
-  const router = useRouter();
-
-  const goBack = () => {
-    router.back();
-  };
+export default function CreateCourse() {
 
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
@@ -30,9 +23,7 @@ export default function NewCourse() {
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
+            <GoBackButton/>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>
@@ -44,6 +35,5 @@ export default function NewCourse() {
       </div>
       <Footer/>
     </div>
-  )
-    ;
+  );
 }

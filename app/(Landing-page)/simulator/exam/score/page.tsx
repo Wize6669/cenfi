@@ -7,53 +7,43 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info, ChartArea } from 'lucide-react'
 import Confetti from 'react-confetti'
 
+interface ExamData {
+  questions: any[]
+  userAnswers: { [key: number]: number | null }
+  timeSpent: number
+  fullName: string
+  email: string
+  score: number
+  totalQuestions: number
+  totalAnswered: number
+  percentageAnswered: number
+  correctAnswers: number
+  incorrectAnswers: number
+  unansweredQuestions: number
+}
+
 export default function ExamScore() {
-  const [score, setScore] = useState<number | null>(null)
-  const [totalQuestions, setTotalQuestions] = useState<number>(0)
+  const [examData, setExamData] = useState<ExamData | null>(null)
   const [reviewAvailable, setReviewAvailable] = useState<boolean>(false)
-  const [correctAnswers, setCorrectAnswers] = useState<number>(0)
-  const [incorrectAnswers, setIncorrectAnswers] = useState<number>(0)
-  const [unanswered, setUnanswered] = useState<number>(0)
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
-  const [timeSpent, setTimeSpent] = useState<number>(0)
-  const [percentageAnswered, setPercentageAnswered] = useState<number>(0)
   const [hasReviewed, setHasReviewed] = useState<boolean>(false)
   const router = useRouter()
 
   useEffect(() => {
-    const examData = localStorage.getItem('examData')
+    const examDataString = localStorage.getItem('examData')
     const reviewedStatus = localStorage.getItem('hasReviewed')
 
-    if (examData) {
-      const parsedData = JSON.parse(examData)
-      const {
-        questions,
-        timeSpent,
-        percentageAnswered,
-        score: examScore,
-        correctAnswers: totalCorrect,
-        incorrectAnswers: totalIncorrect,
-        unansweredQuestions: totalUnanswered
-      } = parsedData
-
-      const total = questions.length
-
-      // Usar los valores calculados directamente del examData
-      setScore(examScore)
-      setTotalQuestions(total)
-      setCorrectAnswers(Math.round(totalCorrect))
-      setIncorrectAnswers(Math.round(totalIncorrect))
-      setUnanswered(Math.round(totalUnanswered))
-      setTimeSpent(timeSpent)
-      setPercentageAnswered(percentageAnswered)
+    if (examDataString) {
+      const parsedData: ExamData = JSON.parse(examDataString)
+      setExamData(parsedData)
 
       // Mostrar confetti si todas las respuestas son correctas
-      if (Math.round(totalCorrect) === total) {
+      if (parsedData.correctAnswers === parsedData.totalQuestions) {
         setShowConfetti(true)
       }
 
-      const canReview = percentageAnswered > 10 && !reviewedStatus
+      const canReview = parsedData.percentageAnswered > 10 && !reviewedStatus
       setReviewAvailable(canReview)
     }
 
@@ -71,7 +61,7 @@ export default function ExamScore() {
   const handleReview = () => {
     localStorage.setItem('hasReviewed', 'true')
     setHasReviewed(true)
-    router.push('/simulator/start-simulator/exam/review')
+    router.push('/simulator/exam/review')
   }
 
   const handleNewAttempt = () => {
@@ -88,14 +78,16 @@ export default function ExamScore() {
     router.push('/')
   }
 
-  const percentage = score !== null ? score : 0
-
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60)
     if (minutes % 60 === 0 && minutes >= 60) {
       return `${minutes} min`
     }
     return `${minutes} min`
+  }
+
+  if (!examData) {
+    return <div>Cargando resultados del examen...</div>
   }
 
   return (
@@ -136,7 +128,7 @@ export default function ExamScore() {
               <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500 dark:text-blue-300" />
               <div className={'flex flex-row space-x-3'}>
                 <h3 className="text-sm md:text-base lg:text-lg font-semibold text-gray-800 dark:text-gray-200">Tiempo empleado:</h3>
-                <p className="text-sm md:text-base lg:text-xl font-bold text-blue-600 dark:text-blue-400">{formatTime(timeSpent)}</p>
+                <p className="text-sm md:text-base lg:text-xl font-bold text-blue-600 dark:text-blue-400">{formatTime(examData.timeSpent)}</p>
               </div>
             </div>
           </div>
@@ -144,12 +136,12 @@ export default function ExamScore() {
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm md:text-base lg:text-base font-semibold text-gray-700 dark:text-gray-300">Progreso</span>
-              <span className="text-sm md:text-base lg:text-base font-bold text-blue-600 dark:text-blue-400">{percentage.toFixed(0)}%</span>
+              <span className="text-sm md:text-base lg:text-base font-bold text-blue-600 dark:text-blue-400">{examData.score.toFixed(0)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 lg:h-3 dark:bg-gray-700">
               <div
                 className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${percentage}%` }}
+                style={{ width: `${examData.score}%` }}
               ></div>
             </div>
           </div>
@@ -166,25 +158,25 @@ export default function ExamScore() {
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500 dark:text-green-400" />
                     Correctas
                   </span>
-                  <span className="text-green-600 dark:text-green-400 font-semibold">{correctAnswers}</span>
+                  <span className="text-green-600 dark:text-green-400 font-semibold">{examData.correctAnswers}</span>
                 </div>
                 <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
                   <span className="text-gray-600 dark:text-gray-300 flex items-center text-sm">
                     <XCircle className="w-4 h-4 mr-2 text-red-500 dark:text-red-400" />
                     Incorrectas
                   </span>
-                  <span className="text-red-600 dark:text-red-400 font-semibold">{incorrectAnswers}</span>
+                  <span className="text-red-600 dark:text-red-400 font-semibold">{examData.incorrectAnswers}</span>
                 </div>
                 <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
                   <span className="text-gray-600 dark:text-gray-300 flex items-center text-sm">
                     <AlertCircle className="w-4 h-4 mr-2 text-yellow-500 dark:text-yellow-400" />
                     Sin responder
                   </span>
-                  <span className="text-yellow-600 dark:text-yellow-400 font-semibold">{unanswered}</span>
+                  <span className="text-yellow-600 dark:text-yellow-400 font-semibold">{examData.unansweredQuestions}</span>
                 </div>
                 <div className="flex items-center justify-between bg-white dark:bg-gray-600 p-2 rounded-md shadow-sm">
                   <span className="text-gray-600 dark:text-gray-300 text-sm">Total de preguntas</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-semibold">{totalQuestions}</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-semibold">{examData.totalQuestions}</span>
                 </div>
               </div>
             </div>
@@ -194,19 +186,19 @@ export default function ExamScore() {
                 Gráfico
               </h3>
               <div className="flex items-end h-36 space-x-2">
-                <div className="flex-1 bg-green-500 dark:bg-green-600 rounded-t-lg relative group" style={{ height: `${(correctAnswers / totalQuestions) * 100}%` }}>
+                <div className="flex-1 bg-green-500 dark:bg-green-600 rounded-t-lg relative group" style={{ height: `${(examData.correctAnswers / examData.totalQuestions) * 100}%` }}>
                   <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
-                    {((correctAnswers / totalQuestions) * 100).toFixed(1)}%
+                    {((examData.correctAnswers / examData.totalQuestions) * 100).toFixed(1)}%
                   </div>
                 </div>
-                <div className="flex-1 bg-red-500 dark:bg-red-600 rounded-t-lg relative group" style={{ height: `${(incorrectAnswers / totalQuestions) * 100}%` }}>
+                <div className="flex-1 bg-red-500 dark:bg-red-600 rounded-t-lg relative group" style={{ height: `${(examData.incorrectAnswers / examData.totalQuestions) * 100}%` }}>
                   <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
-                    {((incorrectAnswers / totalQuestions) * 100).toFixed(1)}%
+                    {((examData.incorrectAnswers / examData.totalQuestions) * 100).toFixed(1)}%
                   </div>
                 </div>
-                <div className="flex-1 bg-yellow-500 dark:bg-yellow-600 rounded-t-lg relative group" style={{ height: `${(unanswered / totalQuestions) * 100}%` }}>
+                <div className="flex-1 bg-yellow-500 dark:bg-yellow-600 rounded-t-lg relative group" style={{ height: `${(examData.unansweredQuestions / examData.totalQuestions) * 100}%` }}>
                   <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
-                    {((unanswered / totalQuestions) * 100).toFixed(1)}%
+                    {((examData.unansweredQuestions / examData.totalQuestions) * 100).toFixed(1)}%
                   </div>
                 </div>
               </div>
@@ -235,7 +227,7 @@ export default function ExamScore() {
               >
                 Revisar Intento
               </button>
-            ) : percentageAnswered <= 10 && !hasReviewed ? (
+            ) : examData.percentageAnswered <= 10 && !hasReviewed ? (
               <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-start space-x-3 flex-1">
                 <Info className="flex-shrink-0 h-5 w-5 text-yellow-500" />
                 <p className="text-sm">
@@ -245,7 +237,6 @@ export default function ExamScore() {
             ) : null}
             <button
               onClick={handleNewAttempt}
-
               className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
             >
               Nuevo Intento

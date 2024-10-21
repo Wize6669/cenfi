@@ -7,8 +7,6 @@ import React, {ChangeEvent, FormEvent, useEffect, useState, useRef} from 'react'
 import {useAuthStore} from '@/store/auth';
 import {useRouter} from 'next/navigation';
 import {ChevronDown, ChevronUp} from 'lucide-react';
-import {IconButton} from '@mui/material'
-import {ArrowBack} from '@mui/icons-material';
 import UserTable from '@/components/UserTable/UserTable';
 import {PasswordInput} from '@/components/PasswordInput';
 import {UserNewUpdate} from '@/interfaces/User';
@@ -18,6 +16,7 @@ import {ErrorResponse} from '@/interfaces/ResponseAPI';
 import toast from 'react-hot-toast';
 import {Pagination} from '@/interfaces/Pagination';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import GoBackButton from "@/components/GoBackButton";
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
@@ -44,7 +43,7 @@ export default function Users() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
   const queryClient = useQueryClient();
-  const {data: users, isLoading, isError} = useQuery({
+  const {data: users, isLoading} = useQuery({
     queryFn: () => fetchUser(),
     queryKey: ['users', pagination.currentPage, pagination.pageSize],
   });
@@ -218,10 +217,6 @@ export default function Users() {
     return <div>Loading...</div>
   }
 
-  const goBack = () => {
-    router.push('/admin/menu');
-  };
-
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
       <Header>
@@ -236,10 +231,7 @@ export default function Users() {
               Usuarios</h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
+            <GoBackButton/>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>

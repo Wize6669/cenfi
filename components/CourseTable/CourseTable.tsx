@@ -1,5 +1,3 @@
-'use client'
-
 import React, {MouseEvent, useState} from 'react'
 import {
   useReactTable,
@@ -229,7 +227,7 @@ export default function CourseTable({handlePageChange, handlePageSizeChange, dat
 
   const handleEditBtn = (id: string) => (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    router.push(`/admin/courses/${id}`);
+    router.push(`/admin/courses/edit/${id}`);
   }
 
   if (data.length === 0) {

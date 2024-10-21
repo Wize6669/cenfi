@@ -16,6 +16,7 @@ interface Option {
     type: string
     content: any[]
   }
+  isCorrect: boolean
 }
 
 interface Question {
@@ -28,7 +29,6 @@ interface Question {
     type: string
     content: any[]
   }
-  answer: number
   options: Option[]
   categoryName?: string
   simulatorId?: string
@@ -44,10 +44,13 @@ interface ExamData {
   totalQuestions: number
   totalAnswered: number
   percentageAnswered: number
+  correctAnswers: number
+  incorrectAnswers: number
+  unansweredQuestions: number
 }
 
 export default function ExamReview() {
-  const [currentQuestion, setCurrentQuestion] = useState<number>(1)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
   const [examData, setExamData] = useState<ExamData | null>(null)
   const router = useRouter()
@@ -56,32 +59,17 @@ export default function ExamReview() {
     const savedExamData = localStorage.getItem('examData')
     if (savedExamData) {
       const parsedExamData = JSON.parse(savedExamData)
-      const recalculatedScore = calculateScore(parsedExamData.questions, parsedExamData.userAnswers)
-      setExamData({
-        ...parsedExamData,
-        score: recalculatedScore
-      })
+      setExamData(parsedExamData)
     } else {
       router.replace('/simulator/start-simulator/exam/score')
     }
   }, [router])
 
-  const calculateScore = (questions: Question[], userAnswers: { [key: number]: number | null }) => {
-    let correctAnswers = 0;
-    questions.forEach((question) => {
-      const userAnswer = userAnswers[question.id];
-      if (userAnswer === question.answer || (question.options.length === 1 && (userAnswer === null || userAnswer === undefined))) {
-        correctAnswers++;
-      }
-    });
-    return (correctAnswers / questions.length) * 100;
-  }
-
   const totalQuestions = examData?.totalQuestions || 0
 
-  const handleQuestionChange = (num: number) => {
-    if (num >= 1 && num <= totalQuestions) {
-      setCurrentQuestion(num)
+  const handleQuestionChange = (index: number) => {
+    if (index >= 0 && index < totalQuestions) {
+      setCurrentQuestionIndex(index)
       setSideMenuOpen(false)
     }
   }
@@ -95,11 +83,13 @@ export default function ExamReview() {
   const { showExitFinishToastReview } = useExitFinishToastReview();
 
   const isQuestionAnsweredCorrectly = (question: Question, userAnswer: number | null) => {
-    // Caso especial para preguntas con una sola opción
+    if (userAnswer === null) return false;
     if (question.options.length === 1) {
+        // Para preguntas de una sola opción, se considera correcta si se respondió
       return true;
     }
-    return userAnswer === question.answer;
+    const selectedOption = question.options.find(opt => opt.id === userAnswer);
+    return selectedOption ? selectedOption.isCorrect : false;
   }
 
   const isQuestionAnswered = (userAnswer: number | null) => {
@@ -125,11 +115,11 @@ export default function ExamReview() {
       };
   }
 
-  const getOptionBackgroundColor = (option: Option, question: Question, userAnswer: number | null) => {
-    if (option.id === question.answer) {
+  const getOptionBackgroundColor = (option: Option, userAnswer: number | null) => {
+    if (option.isCorrect) {
       return 'bg-green-100 dark:bg-green-800';
     }
-    if (option.id === userAnswer && option.id !== question.answer) {
+    if (option.id === userAnswer && !option.isCorrect) {
       return 'bg-red-100 dark:bg-red-800';
     }
     return '';
@@ -154,20 +144,19 @@ export default function ExamReview() {
         Tu calificación: {examData ? `${examData.score.toFixed(2)}/100` : 'N/A'}
       </p>
       <div className="grid grid-cols-9 md:grid-cols-12 lg:grid-cols-9 gap-1">
-        {Array.from({length: totalQuestions}, (_, i) => i + 1).map((num) => {
-          const question = examData?.questions[num - 1];
-          const userAnswer = question ? examData?.userAnswers[question.id] : null;
-          const status = getQuestionStatus(question!, userAnswer);
+        {examData?.questions.map((question, index) => {
+          const userAnswer = examData?.userAnswers[question.id];
+          const status = getQuestionStatus(question, userAnswer);
 
           return (
             <button
-              key={num}
+              key={question.id}
               className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${status.color} ${
-                num === currentQuestion ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
+                index === currentQuestionIndex ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
               } text-gray-800 dark:text-white`}
-              onClick={() => handleQuestionChange(num)}
+              onClick={() => handleQuestionChange(index)}
             >
-              {num.toString().padStart(2, '0')}
+              {(index + 1).toString().padStart(2, '0')}
             </button>
           )
         })}
@@ -176,11 +165,11 @@ export default function ExamReview() {
   )
 
   const handleExitOrFinish = () => {
-    const action = currentQuestion === totalQuestions ? 'finalizar' : 'salir'
+    const action = currentQuestionIndex === totalQuestions - 1 ? 'finalizar' : 'salir'
     showExitFinishToastReview(action)
   }
 
-  const currentQuestionData = examData?.questions[currentQuestion - 1]
+  const currentQuestionData = examData?.questions[currentQuestionIndex]
   const userAnswer = currentQuestionData ? examData?.userAnswers[currentQuestionData.id] : null
 
   if (!examData || !currentQuestionData) {
@@ -191,7 +180,7 @@ export default function ExamReview() {
     <div className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
       <div className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background" />
       <HeaderSimulator
-        currentQuestion={currentQuestion}
+        currentQuestion={currentQuestionIndex + 1}
         totalQuestions={totalQuestions}
         onExitOrFinish={handleExitOrFinish}
       />
@@ -248,7 +237,7 @@ export default function ExamReview() {
                   {currentQuestionData.categoryName}
                 </h3>
                 <div className="order-2 sm:order-1">
-                  <h2 className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestion}</h2>
+                  <h2 className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestionIndex + 1}</h2>
                 </div>
               </div>
             </div>
@@ -265,20 +254,20 @@ export default function ExamReview() {
                 {currentQuestionData.options.map((option, index) => (
                   <div
                     key={option.id}
-                    className={`rounded ${getOptionBackgroundColor(option, currentQuestionData, userAnswer)}`}
+                    className={`rounded ${getOptionBackgroundColor(option, userAnswer)}`}
                   >
                     <OptionEditor
                       option={option}
                       index={index}
-                      isSelected={userAnswer === option.id || currentQuestionData.answer === option.id}
-                      onSelect={() => {
-                      }}
+                      isSelected={userAnswer === option.id || option.isCorrect}
+                      onSelect={() => {}}
+                      isReviewMode={true}
                     />
                     <div className="flex justify-end pr-2 pb-2">
-                      {option.id === currentQuestionData.answer && (
+                      {option.isCorrect && (
                         <CheckCircle className="w-4 h-4 lg:h-5 lg:w-5 text-green-500"/>
                       )}
-                      {option.id === userAnswer && option.id !== currentQuestionData.answer && (
+                      {option.id === userAnswer && !option.isCorrect && (
                         <XCircle className="w-4 h-4 lg:h-5 lg:w-5 text-red-500"/>
                       )}
                     </div>
@@ -288,7 +277,7 @@ export default function ExamReview() {
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow mb-4'}>
-            <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Resumen de respuestas</h4>
+              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Resumen de respuestas</h4>
               <div className="space-y-4">
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm dark:text-gray-300">Tu respuesta:</span>
@@ -297,22 +286,20 @@ export default function ExamReview() {
                       ? 'text-green-500'
                       : 'text-red-500'
                   }`}>
-              {currentQuestionData.options.length === 1
-                ? 'Respuesta correcta (única opción)'
-                : getAnswerLetter(currentQuestionData.options, userAnswer)}
-            </span>
+                    {getAnswerLetter(currentQuestionData.options, userAnswer)}
+                  </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm dark:text-gray-300">Respuesta correcta:</span>
                   <span className="text-green-500 text-sm">
-                    {getAnswerLetter(currentQuestionData.options, currentQuestionData.answer)}
+                    {getAnswerLetter(currentQuestionData.options, currentQuestionData.options.find(opt => opt.isCorrect)?.id ?? null)}
                   </span>
                 </div>
               </div>
             </div>
 
             <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
-              <h4 className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
+              <h4  className="text-base md:text-base lg:text-lg font-semibold mb-4 dark:text-gray-300">Justificación</h4>
               {currentQuestionData.justification ? (
                 <JustificationEditor
                   justification={currentQuestionData.justification}
@@ -321,7 +308,6 @@ export default function ExamReview() {
                 />
               ) : (
                 <p className="text-sm md:text-base lg:text-base dark:text-gray-400">
-
                   Pregunta sin justificación
                 </p>
               )}
@@ -330,16 +316,16 @@ export default function ExamReview() {
             <div className="flex justify-between mt-4">
               <button
                 className={'border dark:border-none dark:bg-gray-700 dark:hover:bg-gray-600 bg-gray-50 hover:bg-gray-300 text-inherit font-semibold py-1 px-4 rounded-full inline-flex items-center'}
-                onClick={() => handleQuestionChange(currentQuestion - 1)}
-                disabled={currentQuestion === 1}
+                onClick={() => handleQuestionChange(currentQuestionIndex - 1)}
+                disabled={currentQuestionIndex === 0}
               >
                 <ArrowLeft className="mr-2"/>
                 <span className="text-sm sm:text-base">Anterior</span>
               </button>
-              {currentQuestion < totalQuestions ? (
+              {currentQuestionIndex < totalQuestions - 1 ? (
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded-full inline-flex items-center"
-                  onClick={() => handleQuestionChange(currentQuestion + 1)}
+                  onClick={() => handleQuestionChange(currentQuestionIndex + 1)}
                 >
                   <span className="text-sm sm:text-base">Siguiente</span>
                   <ArrowRight className="ml-2"/>

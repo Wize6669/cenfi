@@ -3,7 +3,6 @@ import { create } from 'zustand'
 interface UserStudent {
   fullName: string
   email: string
-  password: string
 }
 
 interface UserStore {
@@ -15,7 +14,6 @@ export const useUserStore = create<UserStore>((set) => ({
   userSimulator: {
     fullName: '',
     email: '',
-    password: '',
   },
   setUserSimulator: (user) => set({ userSimulator: user }),
 }))

@@ -1,10 +1,9 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { ChevronDown, ChevronUp } from "lucide-react";
-import axios from 'axios';
-import { Categories, PaginatedResponse } from "@/interfaces/Categories";
-import { config } from "@/config";
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Categories, PaginatedResponse } from '@/interfaces/Categories';
+import { axiosInstance } from '@/lib/axios';
 
 interface CategoryQuestion {
   categoryId: number;
@@ -24,7 +23,6 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
   const [error, setError] = useState<string | null>(null)
   const [categoryQuestionCounts, setCategoryQuestionCounts] = useState<{[key: number]: number}>({});
   const [localInputs, setLocalInputs] = useState<CategoryQuestion[]>(inputs)
-  const HOST_BACK_END = config.NEXT_PUBLIC_HOST_BACK_END.env;
 
   const fetchAllCategories = useCallback(async () => {
     try {
@@ -35,7 +33,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
       let totalPages = 1;
 
       do {
-        const response = await axios.get<PaginatedResponse>(`${HOST_BACK_END}/api/v1/categories`, {
+        const response = await axiosInstance.get<PaginatedResponse>(`categories`, {
           params: {
             page: currentPage,
             count: 500
@@ -58,11 +56,18 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
       setIsLoading(false);
       console.error('Error fetching categories:', err);
     }
-  }, [HOST_BACK_END]);
+  }, []);
 
   useEffect(() => {
-    fetchAllCategories();
+    fetchAllCategories()
+      .then(() => {
+        console.log('Categorías cargadas correctamente.');
+      })
+      .catch((error) => {
+        console.error('Error fetching categories:', error);
+      });
   }, [fetchAllCategories]);
+
 
   useEffect(() => {
     const newInputs = Array(count).fill(null).map((_, index) =>

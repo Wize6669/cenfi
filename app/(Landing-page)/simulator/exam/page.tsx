@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
 import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
@@ -12,6 +11,7 @@ import { useUserStore } from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import {config} from "@/config";
+import {axiosInstance} from "@/lib/axios";
 
 interface Option {
   id: number
@@ -19,6 +19,7 @@ interface Option {
     type: string
     content: any[]
   }
+  isCorrect: boolean
 }
 
 interface Question {
@@ -31,7 +32,6 @@ interface Question {
     type: string
     content: any[]
   }
-  answer: number
   options: Option[]
   categoryName?: string
   simulatorId?: string
@@ -47,6 +47,7 @@ interface PaginatedResponse<T> {
 
 export default function ExamInterface() {
   const [questions, setQuestions] = useState<Question[]>([])
+  const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
   const [timeRemaining, setTimeRemaining] = useState<number>(3000)
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set())
@@ -63,6 +64,22 @@ export default function ExamInterface() {
   const router = useRouter()
   const { userSimulator } = useUserStore()
 
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  const randomizeQuestions = useCallback((questions: Question[]): Question[] => {
+    return shuffleArray(questions).map(question => ({
+      ...question,
+      options: question.options.length > 1 ? shuffleArray(question.options) : question.options
+    }))
+  }, [])
+
   const fetchAllQuestions = useCallback(async () => {
     try {
       let allQuestions: Question[] = []
@@ -70,7 +87,7 @@ export default function ExamInterface() {
       let totalPages = 1
 
       do {
-        const response = await axios.get<PaginatedResponse<Question>>(`${HOST_BACK_END}/api/v1/questions`, {
+        const response = await axiosInstance.get<PaginatedResponse<Question>>(`${HOST_BACK_END}/api/v1/questions`, {
           params: {
             page: currentPage,
             count: 500
@@ -83,13 +100,15 @@ export default function ExamInterface() {
       } while (currentPage <= totalPages)
 
       setQuestions(allQuestions)
+      const randomized = randomizeQuestions(allQuestions)
+      setRandomizedQuestions(randomized)
       setLoading(false)
     } catch (err) {
       setError('Error al cargar las preguntas')
       console.error('Error fetching questions:', err)
       setLoading(false)
     }
-  }, [HOST_BACK_END])
+  }, [HOST_BACK_END, randomizeQuestions])
 
   useEffect(() => {
     fetchAllQuestions()
@@ -99,55 +118,44 @@ export default function ExamInterface() {
     console.log("Saliendo del examen")
   }
 
-  const totalQuestions = questions.length
+  const totalQuestions = randomizedQuestions.length
 
   const calculateScore = useCallback(() => {
     let correctAnswers = 0;
 
-    questions.forEach((question) => {
-      // Caso 1: Pregunta con una sola opción (automáticamente correcta)
+    randomizedQuestions.forEach((question) => {
+      const selectedOptionId = selectedOptions[question.id];
       if (question.options.length === 1) {
-        correctAnswers++;
-        return;
-      }
-
-      // Caso 2: Pregunta con múltiples opciones
-      const selectedOption = selectedOptions[question.id];
-
-      // Si el usuario seleccionó una respuesta y coincide con la respuesta correcta
-      if (selectedOption !== undefined && selectedOption !== null) {
-        if (selectedOption === question.answer) {
+        // Para preguntas de una sola opción, se considera correcta si se respondió
+        if (selectedOptionId !== undefined && selectedOptionId !== null) {
           correctAnswers++;
+        }
+      } else {
+        if (selectedOptionId !== undefined && selectedOptionId !== null) {
+          const selectedOption = question.options.find(option => option.id === selectedOptionId);
+          if (selectedOption && selectedOption.isCorrect) {
+            correctAnswers++;
+          }
         }
       }
     });
 
-    // Calcula el porcentaje basado en el total de preguntas
     return (correctAnswers / totalQuestions) * 100;
-  }, [questions, selectedOptions, totalQuestions]);
+  }, [randomizedQuestions, selectedOptions, totalQuestions]);
 
   const saveExamData = useCallback(() => {
-    // Calcula el total de preguntas respondidas (incluyendo las de opción única)
-    const totalAnswered = questions.reduce((count, question) => {
-      // Considera respondida si:
-      // 1. Tiene una opción seleccionada
-      // 2. O es una pregunta de opción única
-      if (selectedOptions[question.id] !== undefined && selectedOptions[question.id] !== null) {
-        return count + 1;
-      } else if (question.options.length === 1) {
-        return count + 1;
-      }
-      return count;
+    const totalAnswered = randomizedQuestions.reduce((count, question) => {
+      return selectedOptions[question.id] !== undefined ? count + 1 : count;
     }, 0);
 
     const percentageAnswered = (totalAnswered / totalQuestions) * 100
     const score = calculateScore()
 
     const examData = {
-      questions,
+      questions: randomizedQuestions,
       userAnswers: selectedOptions,
       timeSpent: 3000 - timeRemaining,
-      fullName: userSimulator.fullName,
+      name: userSimulator.fullName,
       email: userSimulator.email,
       score: score,
       lastAnsweredQuestion: currentQuestionIndex + 1,
@@ -163,8 +171,8 @@ export default function ExamInterface() {
     const allowReview = percentageAnswered > 90
     localStorage.setItem('reviewAvailable', allowReview.toString())
 
-    router.replace('/simulator/start-simulator/exam/score')
-  }, [questions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions])
+    router.replace('/simulator/exam/score')
+  }, [randomizedQuestions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions])
 
   const { showExitFinishToast } = useExitFinishToast(handleExit, saveExamData)
   const { showFiveMinuteWarning } = useFiveMinuteWarning(userSimulator.fullName ?? 'Usuario')
@@ -236,7 +244,7 @@ export default function ExamInterface() {
     showExitFinishToast(action)
   }
 
-  const currentQuestionData = questions[currentQuestionIndex]
+  const currentQuestionData = randomizedQuestions[currentQuestionIndex]
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
@@ -245,7 +253,7 @@ export default function ExamInterface() {
         Tiempo restante: <span className={'font-normal pl-2'}> {formatTime(timeRemaining)}</span>
       </h2>
       <div className="grid grid-cols-9 md:grid-cols-12 lg:grid-cols-9 gap-1">
-        {questions.map((_, index) => (
+        {randomizedQuestions.map((_, index) => (
           <button
             key={index}
             className={`w-6 h-6 sm:w-8 sm:h-8 text-xs font-medium rounded-lg transition-all duration-300 hover:scale-110 ${
@@ -275,7 +283,7 @@ export default function ExamInterface() {
     return <div>Error: {error}</div>
   }
 
-  if (questions.length === 0) {
+  if (randomizedQuestions.length === 0) {
     return <div>No hay preguntas disponibles.</div>
   }
 
@@ -289,7 +297,7 @@ export default function ExamInterface() {
       />
 
       <main className="container mx-auto px-2 pb-2 flex-grow relative z-10">
-        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 justify-end pb-2">
+        <div className="flex flex-col space-y-2 sm:flex-row  sm:space-y-0 sm:space-x-4 justify-end pb-2">
           <span className="text-xs sm:text-sm md:text-base dark:text-gray-400">
             <span className="font-bold dark:text-gray-300">Usuario: </span>{userSimulator.email}
           </span>
@@ -320,7 +328,7 @@ export default function ExamInterface() {
                 className={'p-1 dark:bg-gray-700 dark:text-white bg-gray-100 text-gray-800 rounded border dark:border-none'}
                 onClick={() => setSideMenuOpen(true)}
               >
-                <Menu className="h-6 w-6 text-blue-700 dark:text-blue-400"/>
+                <Menu className="h-6 w-6  text-blue-700 dark:text-blue-400"/>
               </button>
               <div className="lg:hidden flex items-center dark:bg-gray-800 bg-gray-50 p-2 rounded-lg">
                 <Clock className="mr-2 w-4 h-4 lg:h-5 lg:w-5 text-blue-700 dark:text-blue-400"/>
@@ -383,6 +391,7 @@ export default function ExamInterface() {
                         index={index}
                         isSelected={selectedOptions[currentQuestionData.id] === option.id}
                         onSelect={() => handleAnswerSelect(currentQuestionData.id, option.id)}
+                        isReviewMode={false}
                       />
                     ))}
                   </div>

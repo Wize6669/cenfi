@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation'
 
 const navItems = [
   { name: 'Inicio', href: '/', icon: Home },
-  { name: 'Cursos', href: '/course', icon: AppWindow },
+  { name: 'Cursos', href: '/courses', icon: AppWindow },
   { name: 'Contacto', href: '/contact', icon: Phone },
   { name: 'Sobre nosotros', href: '/about', icon: Users },
   { name: 'Administración', href: '/admin', icon: ShieldCheck },
@@ -27,7 +27,7 @@ export default function Navbar() {
   }, [pathname])
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md">
+    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-10">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-48">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">

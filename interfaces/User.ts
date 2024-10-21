@@ -26,3 +26,6 @@ export interface UserTableInterface extends Pick<User, 'id' | 'name' | 'lastName
 export interface UserModalUpdate extends Pick<User, 'name' | 'lastName' | 'email' > {
   role: string
 }
+
+export interface UserStudent extends Pick<User, 'name' | 'email' | 'password'> {
+}

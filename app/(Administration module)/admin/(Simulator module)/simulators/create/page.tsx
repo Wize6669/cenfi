@@ -4,9 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { IconButton } from '@mui/material'
-import { ArrowBack } from "@mui/icons-material";
 import DynamicInputs from "@/components/DynamicInputs";
 import PasswordInputSimulator from "@/components/PasswordInputSimulator";
 import RadioNavigation from "@/components/RadioNavigation";
@@ -17,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import axios from 'axios';
+import GoBackIconButton from '@/components/GoBackButton'
 
 export default function NewSimulator() {
   const [visibilidad, setVisibilidad] = useState<boolean | null>(null)
@@ -37,7 +35,6 @@ export default function NewSimulator() {
 
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement | null>(null);
-  const router = useRouter();
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setSimulator({
@@ -64,10 +61,6 @@ export default function NewSimulator() {
     setRevision(null);
     setNavegacionLibre(null);
     setDynamicInputs([{ categoryId: 0, numberOfQuestions: 0 }]);
-  };
-
-  const goBack = () => {
-    router.back()
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -130,9 +123,7 @@ export default function NewSimulator() {
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}} onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
+            <GoBackIconButton />
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>

@@ -20,6 +20,7 @@ import { Categories, PaginatedResponse } from "@/interfaces/Categories"
 import axios from "axios"
 import { config } from "@/config"
 import { cn } from "@/lib/utils"
+import {RichEditorFor} from "@/interfaces/RichEditor";
 
 interface Category {
   id: number;
@@ -310,7 +311,7 @@ export default function EditQuestions() {
                 <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Pregunta
                 </label>
-                <RichEditor editor={questionEditor}/>
+                <RichEditor editor={questionEditor} type={RichEditorFor.Questions}/>
                 <EditorContent editor={questionEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'} />
               </div>
             )}
@@ -331,7 +332,7 @@ export default function EditQuestions() {
                       )}
                     </label>
                     <div className="relative">
-                      <RichEditor editor={editor}/>
+                      <RichEditor editor={editor} type={RichEditorFor.Options}/>
                       {optionsCount > 1 && (
                         <button
                           type="button"
@@ -357,7 +358,7 @@ export default function EditQuestions() {
                     className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Justificación
                   </label>
-                  <RichEditor editor={justificationEditor}/>
+                  <RichEditor editor={justificationEditor} type={RichEditorFor.Justifications}/>
                   <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
                 </div>
               )}
@@ -368,7 +369,7 @@ export default function EditQuestions() {
                 <label className="block text-sm sm:text-base md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Justificación
                 </label>
-                <RichEditor editor={justificationEditor}/>
+                <RichEditor editor={justificationEditor} type={RichEditorFor.Justifications}/>
                 <EditorContent editor={justificationEditor} className={'border rounded-b-md p-2 dark:bg-gray-700'}/>
               </div>
             )}

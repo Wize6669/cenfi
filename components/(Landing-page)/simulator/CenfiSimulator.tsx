@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, HelpCircle, Play, Shuffle, ArrowRight, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 import LoginStudentsModal from '@/components/Modal/LoginStudentsModal';
@@ -22,10 +22,14 @@ interface PaginatedResponseSimulator {
   totalPages: number;
 }
 
-const SimulatorCard: React.FC<Simulator> = ({ name, duration, number_of_questions, navigate }) => {
+const SimulatorCard: React.FC<Simulator> = ({ id, name, duration, number_of_questions, navigate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [simulatorId, setSimulatorId] = useState('');
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    setSimulatorId(id);
+    setIsModalOpen(true);
+  };
 
   return (
     <motion.div
@@ -74,7 +78,7 @@ const SimulatorCard: React.FC<Simulator> = ({ name, duration, number_of_question
           </motion.button>
         </div>
       </div>
-      <LoginStudentsModal isOpenModal={isModalOpen} setIsOpenModal={setIsModalOpen} />
+      <LoginStudentsModal isOpenModal={isModalOpen} setIsOpenModal={setIsModalOpen} id={id} />
     </motion.div>
   );
 };
@@ -162,7 +166,7 @@ export default function CenfiSimulator() {
           document.body.removeChild(tempSpan);
           return width;
         }));
-        setSelectWidth(`${maxWidth + 40}px`);
+        setSelectWidth(`${maxWidth + 40}px`); // Add some padding
       }
     };
 

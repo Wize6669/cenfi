@@ -17,11 +17,9 @@ import TextStyle from '@tiptap/extension-text-style';
 import Placeholder from '@tiptap/extension-placeholder';
 import Header from '@/components/Header';
 import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
-import { IconButton } from '@mui/material';
-import { ArrowBack, KeyboardArrowDown, Add, Close, CheckCircle } from '@mui/icons-material';
+import { KeyboardArrowDown, Add, Close, CheckCircle } from '@mui/icons-material';
 import Footer from '@/components/Footer';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { Categories, PaginatedResponse } from '@/interfaces/Categories';
 import { cn } from '@/lib/utils';
 import 'katex/dist/katex.min.css';
@@ -30,6 +28,7 @@ import RichEditor from '@/components/RichEditor/RichEditor';
 import { axiosInstance } from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { handleAxiosError } from '@/utils/generatePassword';
+import GoBackButton from "@/components/GoBackButton";
 
 interface Category {
   id: number;
@@ -39,7 +38,7 @@ interface Category {
 const MAX_OPTIONS = 8;
 
 export default function CreateQuestions() {
-  const router = useRouter();
+
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
     categoryId: '',
@@ -193,12 +192,14 @@ export default function CreateQuestions() {
   }, []);
 
   useEffect(() => {
-    fetchAllCategories();
+    fetchAllCategories()
+      .then(() => {
+        console.log('Categorías cargadas correctamente.');
+      })
+      .catch((error) => {
+        console.error('Error fetching categories:', error);
+      });
   }, [fetchAllCategories]);
-
-  const goBack = () => {
-    router.back();
-  };
 
   const isEditorEmpty = (editor: Editor | undefined): boolean => {
     if (!editor) return true;
@@ -351,12 +352,7 @@ export default function CreateQuestions() {
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton
-              className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-              onClick={goBack}
-            >
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
+            <GoBackButton/>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>

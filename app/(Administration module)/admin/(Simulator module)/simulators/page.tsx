@@ -5,13 +5,12 @@ import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React, {useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton } from '@mui/material'
-import { ArrowBack } from "@mui/icons-material";
-import {useAuthStore} from "@/store/auth";
-import {Pagination} from "@/interfaces/Pagination";
-import {useQuery} from "@tanstack/react-query";
-import {axiosInstance} from "@/lib/axios";
+import { useAuthStore } from "@/store/auth";
+import { Pagination } from "@/interfaces/Pagination";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
 import SimulatorTable from "@/components/SimulatorTable/SimulatorTable";
+import GoBackButton from "@/components/GoBackButton";
 
 export default function Simulator() {
   const router = useRouter();
@@ -72,10 +71,6 @@ export default function Simulator() {
     return data;
   }
 
-  const goBack = () => {
-    router.push('/admin/menu');
-  };
-
   const handleButtonClickCreate = () => {
     router.push('/admin/simulators/create');
   };
@@ -129,10 +124,7 @@ export default function Simulator() {
             </h1>
           </div>
           <div className={'row-start-2 justify-items-center content-center'}>
-            <IconButton className={'dark:border-gray-500 dark:hover:bg-gray-600'} sx={{border: '1px solid #ccc'}}
-                        onClick={goBack}>
-              <ArrowBack className={'text-gray-400 dark:text-gray-500'}/>
-            </IconButton>
+            <GoBackButton/>
           </div>
           <div className={'w-full row-start-2 content-center justify-items-center'}>
             <div className={'border-t-2 container dark:border-gray-600'}/>

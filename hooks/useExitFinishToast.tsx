@@ -36,10 +36,10 @@ export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => voi
           <div className="flex border-l border-gray-200 dark:border-gray-700">
             <button
               onClick={() => {
-                if (action === 'finalizar' && saveExamData || 'salir' && saveExamData) {
-                  saveExamData()
+                if ((action === 'finalizar' || action === 'salir') && saveExamData) {
+                  saveExamData();
                 }
-                router.replace('/simulator/start-simulator/exam/score')
+                router.replace('/simulator/exam/score')
                 toast.dismiss(t.id)
                 if (onExit) onExit()
               }}
