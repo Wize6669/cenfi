@@ -30,7 +30,6 @@ import toast from 'react-hot-toast';
 import { handleAxiosError } from '@/utils/generatePassword';
 import GoBackButton from "@/components/GoBackButton";
 import {useParams} from "next/navigation";
-import {log} from "node:util";
 
 interface Category {
   id: number;

@@ -15,6 +15,7 @@ interface ExamData {
   simulatorId: string
   simulatorName: string
   questions: any[]
+  review: boolean
   userAnswers: { [key: number]: number | null }
   timeSpent: number
   fullName: string
@@ -38,17 +39,26 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
+  if (examData?.review) {
+    console.log('revision review',examData.review)
+  }
+  console.log('revision review desde afuera',examData?.review)
+
   useEffect(() => {
     const loadExamData = () => {
       const storedExamData = localStorage.getItem('examData')
+      const hasReviewedKey = `hasReviewed_${simulatorId}`
+      const hasReviewedValue = localStorage.getItem(hasReviewedKey)
+
+      setHasReviewed(hasReviewedValue === 'true')
+
       if (storedExamData) {
         const parsedData: ExamData = JSON.parse(storedExamData)
         if (parsedData.simulatorId === simulatorId) {
           setExamData(parsedData)
           setShowConfetti(parsedData.correctAnswers === parsedData.totalQuestions)
-          setReviewAvailable(parsedData.percentageAnswered > 90)
-          const reviewedStatus = localStorage.getItem(`hasReviewed_${simulatorId}`)
-          setHasReviewed(reviewedStatus === 'true')
+          // Solo establecer reviewAvailable como true si el porcentaje es > 90 Y no se ha revisado aún
+          setReviewAvailable(parsedData.percentageAnswered > 90 && hasReviewedValue !== 'true')
         } else {
           setError('Los datos del examen no corresponden al simulador seleccionado')
         }
@@ -71,8 +81,10 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
 
   const handleReview = () => {
     if (examData) {
+      // Marcar como revisado antes de navegar
       localStorage.setItem(`hasReviewed_${simulatorId}`, 'true')
       setHasReviewed(true)
+      setReviewAvailable(false)
       router.push(`/simulator/${simulatorId}/review`)
     }
   }

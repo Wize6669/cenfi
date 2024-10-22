@@ -148,6 +148,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
       simulatorId: simulator.id,
       simulatorName: simulator.name,
       questions: simulator.questions,
+      review: simulator.review,
       userAnswers: selectedOptions,
       timeSpent: simulator.duration * 60 - timeRemaining,
       fullName: userSimulator.fullName,
