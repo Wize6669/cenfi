@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { useRouter } from "next/navigation"
 import toast from 'react-hot-toast'
 import { AlertTriangle } from 'lucide-react'
+import { useAuthStore } from "@/store/auth"
 
 export const useLogoutTooltip = (onClose: () => void) => {
   const router = useRouter()
@@ -30,18 +31,24 @@ export const useLogoutTooltip = (onClose: () => void) => {
                 ¿Estás seguro de que quieres cerrar sesión?
               </p>
               <p className="lg:hidden text-sm text-center text-gray-500 dark:text-gray-400">
-              ¿Estás Seguro?
-            </p>
+                ¿Estás Seguro?
+              </p>
             </div>
           </div>
         </div>
         <div className={'flex border-l border-gray-200 dark:border-gray-700'}>
           <button
             onClick={() => {
+              // Primero ejecutamos el logout de Zustand
+              useAuthStore.getState().logout()
+              // Luego limpiamos localStorage
               localStorage.clear()
-              router.replace('/admin')
+              // Cerramos el toast
               toast.dismiss(t.id)
+              // Ejecutamos el callback de cierre
               onClose()
+              // Finalmente redirigimos
+              router.replace('/admin') // Cambiado a la ruta de login
             }}
             className={'w-full rounded-none p-1 flex items-center justify-center text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-red-800'}
           >
@@ -62,5 +69,5 @@ export const useLogoutTooltip = (onClose: () => void) => {
     })
   }
 
-  return {handleLogOut}
+  return { handleLogOut }
 }

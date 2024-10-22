@@ -1,5 +1,7 @@
 import ExamInterface from '@/components/(Landing-page)/exam/ExamInterface';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import Loading from './loading';
 
 export default function ExamPage({ params }: { params: { simulatorId: string } }) {
   // Verificación de autenticación del lado del cliente
@@ -14,8 +16,8 @@ export default function ExamPage({ params }: { params: { simulatorId: string } }
   };
 
   return (
-    <div>
+    <Suspense fallback={<Loading />}>
       <ExamInterface simulatorId={params.simulatorId}/>
-    </div>
+    </Suspense>
   );
 }

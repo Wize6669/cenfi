@@ -15,6 +15,8 @@ export interface Simulator {
   number_of_questions?: number;
 }
 
+export interface SimulatorUpdate extends Omit<Simulator, 'password'> {}
+
 export interface SimulatorCreate {
   id: string;
   name: string;
@@ -26,6 +28,5 @@ export interface SimulatorCreate {
   categoryQuestions: CategoryQuestions[];
 }
 
-export interface SimulatorSignIn extends Pick<Simulator, 'id' | 'password'>{}
 
 

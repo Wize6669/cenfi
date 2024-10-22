@@ -17,9 +17,9 @@ import axios from 'axios';
 import GoBackIconButton from '@/components/GoBackButton'
 
 export default function NewSimulator() {
-  const [visibilidad, setVisibilidad] = useState<boolean | null>(null)
-  const [revision, setRevision] = useState<boolean | null>(null)
-  const [navegacionLibre, setNavegacionLibre] = useState<boolean | null>(null)
+  const [visibilidad, setVisibilidad] = useState<boolean | undefined>(undefined)
+  const [revision, setRevision] = useState<boolean | undefined>(undefined)
+  const [navegacionLibre, setNavegacionLibre] = useState<boolean | undefined>(undefined)
   const [showErrors, setShowErrors] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState<CategoryQuestions[]>([{ categoryId: 0, numberOfQuestions: 0 }])
 
@@ -57,9 +57,9 @@ export default function NewSimulator() {
       review: false,
       categoryQuestions: []
     });
-    setVisibilidad(null);
-    setRevision(null);
-    setNavegacionLibre(null);
+    setVisibilidad(undefined);
+    setRevision(undefined);
+    setNavegacionLibre(undefined);
     setDynamicInputs([{ categoryId: 0, numberOfQuestions: 0 }]);
   };
 

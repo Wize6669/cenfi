@@ -3,8 +3,8 @@
 import React from 'react'
 
 interface RadioReviewProps {
-  value: boolean | null
-  onChange: (value: boolean | null) => void
+  value: boolean | undefined
+  onChange: (value: boolean | undefined) => void
   showError: boolean
 }
 

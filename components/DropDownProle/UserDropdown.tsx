@@ -21,7 +21,10 @@ const UserDropdown = () => {
   const userRol = userAuth?.roleId === 1 ? 'Administrador' : 'Profesor'
   const userName = userAuth?.name + " " + userAuth?.lastName
 
-  const { handleLogOut } = useLogoutTooltip(() => setIsOpen(false))
+  const { handleLogOut } = useLogoutTooltip(() => {
+    setIsOpen(false)
+    useAuthStore.getState().logout()
+  })
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,11 +47,6 @@ const UserDropdown = () => {
 
   const handleThemeMenuToggle = () => {
     setIsThemeOpen(prev => !prev)
-  }
-
-  const handleOptionClick = (action: () => void) => {
-    action()
-    useAuthStore.getState().logout();
   }
 
   const getThemeIcon = () => {
@@ -109,14 +107,17 @@ const UserDropdown = () => {
               <hr className={'border-gray-200 dark:border-gray-700'} />
               <button
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
-                onClick={() => handleOptionClick(() => router.push('/admin/menu'))}
+                onClick={() => {
+                  router.push('/admin/menu')
+                  setIsOpen(false)
+                }}
               >
                 <Menu className={'mr-3 h-5 w-5 text-blue-800'} />
                 Ir al menú
               </button>
               <button
                 className={'flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
-                onClick={() => handleOptionClick(handleLogOut)}
+                onClick={handleLogOut}
               >
                 <LogOut className={'mr-3 h-5 w-5 text-red-700'} />
                 Cerrar Sesión
@@ -146,21 +147,30 @@ const UserDropdown = () => {
                     >
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "light" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => handleOptionClick(() => switchTheme("light"))}
+                        onClick={() => {
+                          switchTheme("light")
+                          setIsThemeOpen(false)
+                        }}
                       >
                         <Sun className={'mr-3 h-5 w-5 text-yellow-500'} />
                         Claro
                       </button>
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "dark" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => handleOptionClick(() => switchTheme("dark"))}
+                        onClick={() => {
+                          switchTheme("dark")
+                          setIsThemeOpen(false)
+                        }}
                       >
                         <Moon className={'mr-3 h-5 w-5 text-blue-500'} />
                         Oscuro
                       </button>
                       <button
                         className={`flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${theme === "system" ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                        onClick={() => handleOptionClick(() => switchTheme("system"))}
+                        onClick={() => {
+                          switchTheme("system")
+                          setIsThemeOpen(false)
+                        }}
                       >
                         <Laptop className={'mr-3 h-5 w-5 text-gray-500'} />
                         Sistema

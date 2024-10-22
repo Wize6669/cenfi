@@ -39,11 +39,6 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  if (examData?.review) {
-    console.log('revision review',examData.review)
-  }
-  console.log('revision review desde afuera',examData?.review)
-
   useEffect(() => {
     const loadExamData = () => {
       const storedExamData = localStorage.getItem('examData')
@@ -57,8 +52,8 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
         if (parsedData.simulatorId === simulatorId) {
           setExamData(parsedData)
           setShowConfetti(parsedData.correctAnswers === parsedData.totalQuestions)
-          // Solo establecer reviewAvailable como true si el porcentaje es > 90 Y no se ha revisado aún
-          setReviewAvailable(parsedData.percentageAnswered > 90 && hasReviewedValue !== 'true')
+          // Establecer reviewAvailable basado en el atributo review y si no se ha revisado aún
+          setReviewAvailable(parsedData.review && hasReviewedValue !== 'true')
         } else {
           setError('Los datos del examen no corresponden al simulador seleccionado')
         }
@@ -80,8 +75,7 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   }, [simulatorId])
 
   const handleReview = () => {
-    if (examData) {
-      // Marcar como revisado antes de navegar
+    if (examData && examData.review && !hasReviewed) {
       localStorage.setItem(`hasReviewed_${simulatorId}`, 'true')
       setHasReviewed(true)
       setReviewAvailable(false)
@@ -125,7 +119,7 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
         <p className="text-lg text-gray-800 dark:text-gray-200 mb-4">
-          {hasReviewed ? 'Ya has revisado este intento' : 'No se encontraron datos del examen'}
+          No se encontraron datos del examen
         </p>
         <button
           onClick={handleNewAttempt}
@@ -244,6 +238,7 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
                 </div>
                 <div className="flex-1 bg-red-500 dark:bg-red-600 rounded-t-lg relative group" style={{ height: `${(examData.incorrectAnswers / examData.totalQuestions) * 100}%` }}>
                   <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-75 text-white text-center py-1 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs">
+
                     {((examData.incorrectAnswers / examData.totalQuestions) * 100).toFixed(1)}%
                   </div>
                 </div>
@@ -260,7 +255,6 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
                 </span>
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
-
                   Incorrectas
                 </span>
                 <span className="flex items-center">
@@ -279,11 +273,18 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
               >
                 Revisar Intento
               </button>
-            ) : examData.percentageAnswered <= 10 && !hasReviewed ? (
+            ) : examData.review && hasReviewed ? (
+              <div className="bg-gray-100 border-l-4 border-gray-500 text-gray-700 p-4 rounded-lg shadow-md flex items-start space-x-3 flex-1">
+                <Info className="flex-shrink-0 h-5 w-5 text-gray-500" />
+                <p className="text-sm">
+                  Ya has revisado este intento.
+                </p>
+              </div>
+            ) : !examData.review ? (
               <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-start space-x-3 flex-1">
                 <Info className="flex-shrink-0 h-5 w-5 text-yellow-500" />
                 <p className="text-sm">
-                  La revisión no está disponible porque no se respondió suficientes preguntas.
+                  La revisión no está disponible para este examen.
                 </p>
               </div>
             ) : null}

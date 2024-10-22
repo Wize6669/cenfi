@@ -6,26 +6,31 @@ import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import axios from 'axios';
 import DynamicInputs from "@/components/DynamicInputs";
-import PasswordInputSimulator from "@/components/PasswordInputSimulator";
 import RadioNavigation from "@/components/RadioNavigation";
 import RadioVisible from "@/components/RadioVisible";
 import RadioReview from "@/components/RadioReview";
-import { Simulator, CategoryQuestions } from "@/interfaces/Simulator";
+import { SimulatorUpdate, CategoryQuestions } from "@/interfaces/Simulator";
+import { FaRegCopy } from 'react-icons/fa6';
+import { generatePassword } from '@/utils/generatePassword';
+import { useClipboardCopy } from '@/hooks/useClipboardCopy';
 
 interface SimulatorEditFormProps {
   simulatorId: string;
 }
 
 export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProps) {
-  const [visibilidad, setVisibilidad] = useState<boolean | null>(null)
-  const [revision, setRevision] = useState<boolean | null>(null)
-  const [navegacionLibre, setNavegacionLibre] = useState<boolean | null>(null)
+  const [visibilidad, setVisibilidad] = useState<boolean | undefined>(undefined)
+  const [revision, setRevision] = useState<boolean | undefined>(undefined)
+  const [navegacionLibre, setNavegacionLibre] = useState<boolean | undefined>(undefined)
   const [showErrors, setShowErrors] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState<CategoryQuestions[]>([])
+  const [isResetPasswordChecked, setIsResetPasswordChecked] = useState(false)
+  const [newPassword, setNewPassword] = useState("")
+  const [isCopied, setIsCopied] = useState(false)
+  const copyToClipboard = useClipboardCopy();
 
-  const [simulator, setSimulator] = useState<Simulator>({
+  const [simulator, setSimulator] = useState<SimulatorUpdate>({
     name: '',
-    password: '',
     duration: 0,
     visibility: false,
     navigate: false,
@@ -38,7 +43,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
 
   const { data: simulatorData, isLoading, error } = useQuery({
     queryKey: ['simulator', simulatorId],
-    queryFn: () => axiosInstance.get<Simulator>(`/simulators/${simulatorId}`).then(res => res.data),
+    queryFn: () => axiosInstance.get<SimulatorUpdate>(`/simulators/${simulatorId}`).then(res => res.data),
   });
 
   useEffect(() => {
@@ -58,20 +63,37 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
     });
   };
 
+  const handleCopyClick = async () => {
+    await copyToClipboard(newPassword);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleResetPasswordCheck = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.checked) {
+       return setIsResetPasswordChecked(false);
+    }
+
+    const newPassword = generatePassword(12);
+    await resetPassword(newPassword);
+    setNewPassword(newPassword);
+    setIsResetPasswordChecked(event.target.checked);
+  };
+
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (visibilidad === null || navegacionLibre === null || revision === null || dynamicInputs.some(input => input.categoryId === 0 || input.numberOfQuestions === 0)) {
+    if (visibilidad === undefined || navegacionLibre === undefined || revision === undefined || dynamicInputs.some(input => input.categoryId === 0 || input.numberOfQuestions === 0)) {
       setShowErrors(true)
       return
     }
-    await updateSimulatorMutation()
+    await updateSimulatorMutation();
   }
 
   const updateSimulator = async () => {
     try {
       const simulatorData = {
         name: simulator.name,
-        password: simulator.password,
         duration: simulator.duration,
         visibility: visibilidad,
         navigate: navegacionLibre,
@@ -79,7 +101,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
         categoryQuestions: dynamicInputs
       };
 
-      const response = await axiosInstance.post<Simulator>(`/simulators/${simulatorId}`, simulatorData);
+      const response = await axiosInstance.post<SimulatorUpdate>(`/simulators/${simulatorId}`, simulatorData);
       console.log('Datos actualizados', simulatorData)
       toast.success("Simulador actualizado con éxito!");
       return response.data;
@@ -92,6 +114,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
         toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
       }
       console.error('Error actualizando el simulator:', error);
+      return null;
     }
   }
 
@@ -102,6 +125,27 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
     }
   });
 
+  const resetPassword = async (newPassword: string) => {
+    try {
+      const response = await axiosInstance.put('/simulators/reset-simulator-password', {
+        id: simulator.id,
+        newPassword
+      });
+      console.log('Respuesta del servidor:', response.data);
+      toast.success("Contraseña del simulador restablecida con éxito");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error detallado:', error.response?.data);
+        const errorMessage = error.response?.data?.message || 'Error al restablecer la contraseña del simulador';
+        toast.error(errorMessage);
+      } else {
+        console.error('Error no esperado:', error);
+        toast.error('Ocurrió un error inesperado al restablecer la contraseña');
+      }
+    }
+  }
+
+
   if (isLoading) return <div>Cargando...</div>;
   if (error) return <div>Error al cargar el simulador</div>;
 
@@ -110,7 +154,6 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
           className={'mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5'}
           ref={formRef}
     >
-      {/* Form fields remain the same */}
       <div>
         <div className={'content-start'}>
           <label
@@ -159,12 +202,43 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
           />
         </div>
       </div>
-
       <div>
-        <PasswordInputSimulator
-          password={simulator.password}
-          handleGetDataInput={handleGetDataInput}
-        />
+        <div className={'text-sm sm:text-base md:text-base flex justify-start items-center gap-x-2 mt-2 mb-2'}>
+          <input
+            id={'resetPassword'}
+            name={'resetPassword'}
+            type={'checkbox'}
+            onChange={handleResetPasswordCheck}
+          />
+          <label className={'text-sm sm:text-base md:text-base font-medium dark:text-gray-200'} htmlFor={'resetPassword'}>
+            Restablecer la contraseña del simulador
+          </label>
+        </div>
+
+        {isResetPasswordChecked && (
+          <>
+            <label className={'text-sm sm:text-base md:text-base font-medium'} htmlFor={'newPassword'}>
+              Nueva contraseña
+            </label>
+
+            <div className={'w-full dark:border-none text-sm sm:text-base md:text-base dark:bg-gray-700 flex items-center justify-between border rounded-md shadow-sm border-[#E5E7EB] px-2'}>
+              <input
+                type={'text'}
+                name={'newPassword'}
+                value={newPassword}
+                readOnly={true}
+                style={{height: '35px'}}
+                className={'bg-white dark:bg-gray-700 text-sm sm:text-base md:text-base dark:text-gray-300 text-gray-900'}
+              />
+              <button
+                type='button'
+                onClick={handleCopyClick}
+              >
+                {isCopied ? <p className={'text-sm'}>✅ Copiado</p> : <FaRegCopy className={'text-gray-500 dark:text-gray-200'}/>}
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <RadioNavigation
