@@ -7,7 +7,13 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info, ChartArea } from 'lucide-react'
 import Confetti from 'react-confetti'
 
+interface SimulatorExamProps {
+  simulatorId: string;
+}
+
 interface ExamData {
+  simulatorId: string
+  simulatorName: string
   questions: any[]
   userAnswers: { [key: number]: number | null }
   timeSpent: number
@@ -22,32 +28,37 @@ interface ExamData {
   unansweredQuestions: number
 }
 
-export default function ExamScore() {
+export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   const [examData, setExamData] = useState<ExamData | null>(null)
   const [reviewAvailable, setReviewAvailable] = useState<boolean>(false)
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [hasReviewed, setHasReviewed] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const examDataString = localStorage.getItem('examData')
-    const reviewedStatus = localStorage.getItem('hasReviewed')
-
-    if (examDataString) {
-      const parsedData: ExamData = JSON.parse(examDataString)
-      setExamData(parsedData)
-
-      // Mostrar confetti si todas las respuestas son correctas
-      if (parsedData.correctAnswers === parsedData.totalQuestions) {
-        setShowConfetti(true)
+    const loadExamData = () => {
+      const storedExamData = localStorage.getItem('examData')
+      if (storedExamData) {
+        const parsedData: ExamData = JSON.parse(storedExamData)
+        if (parsedData.simulatorId === simulatorId) {
+          setExamData(parsedData)
+          setShowConfetti(parsedData.correctAnswers === parsedData.totalQuestions)
+          setReviewAvailable(parsedData.percentageAnswered > 90)
+          const reviewedStatus = localStorage.getItem(`hasReviewed_${simulatorId}`)
+          setHasReviewed(reviewedStatus === 'true')
+        } else {
+          setError('Los datos del examen no corresponden al simulador seleccionado')
+        }
+      } else {
+        setError('No se encontraron datos del examen')
       }
-
-      const canReview = parsedData.percentageAnswered > 10 && !reviewedStatus
-      setReviewAvailable(canReview)
+      setLoading(false)
     }
 
-    setHasReviewed(reviewedStatus === 'true')
+    loadExamData()
 
     const updateWindowSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight })
@@ -56,25 +67,25 @@ export default function ExamScore() {
     updateWindowSize()
 
     return () => window.removeEventListener('resize', updateWindowSize)
-  }, [])
+  }, [simulatorId])
 
   const handleReview = () => {
-    localStorage.setItem('hasReviewed', 'true')
-    setHasReviewed(true)
-    router.push('/simulator/exam/review')
+    if (examData) {
+      localStorage.setItem(`hasReviewed_${simulatorId}`, 'true')
+      setHasReviewed(true)
+      router.push(`/simulator/${simulatorId}/review`)
+    }
   }
 
   const handleNewAttempt = () => {
     localStorage.removeItem('examData')
-    localStorage.removeItem('reviewAvailable')
-    localStorage.removeItem('hasReviewed')
-    router.push('/simulator/')
+    localStorage.removeItem(`hasReviewed_${simulatorId}`)
+    router.push('/simulator')
   }
 
   const handleExit = () => {
     localStorage.removeItem('examData')
-    localStorage.removeItem('reviewAvailable')
-    localStorage.removeItem('hasReviewed')
+    localStorage.removeItem(`hasReviewed_${simulatorId}`)
     router.push('/')
   }
 
@@ -86,8 +97,32 @@ export default function ExamScore() {
     return `${minutes} min`
   }
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <p className="text-lg text-gray-800 dark:text-gray-200">Cargando resultados del examen...</p>
+    </div>
+  }
+
+  if (error) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <p className="text-lg text-red-600 dark:text-red-400">{error}</p>
+    </div>
+  }
+
   if (!examData) {
-    return <div>Cargando resultados del examen...</div>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <p className="text-lg text-gray-800 dark:text-gray-200 mb-4">
+          {hasReviewed ? 'Ya has revisado este intento' : 'No se encontraron datos del examen'}
+        </p>
+        <button
+          onClick={handleNewAttempt}
+          className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+        >
+          Nuevo Intento
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -100,12 +135,12 @@ export default function ExamScore() {
           numberOfPieces={500}
         />
       )}
-      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-2">
+      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <button onClick={handleExit}>
-            <Image src="/images/image-1.png" alt="CENFI Logo" width={70} height={60} title={'Inicio'}/>
+          <button onClick={handleExit} className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg">
+            <Image src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
           </button>
-          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-blue-400 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
+          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
           <h1 className="text-base font-bold text-gray-800 dark:text-blue-300 lg:hidden md:hidden">SIMULADORES CENFI</h1>
           <ThemeToggle/>
         </div>
@@ -126,7 +161,7 @@ export default function ExamScore() {
           <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-3 rounded-lg shadow-inner">
             <div className="flex items-center justify-center space-x-3">
               <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-500 dark:text-blue-300" />
-              <div className={'flex flex-row space-x-3'}>
+              <div className="flex flex-row space-x-3">
                 <h3 className="text-sm md:text-base lg:text-lg font-semibold text-gray-800 dark:text-gray-200">Tiempo empleado:</h3>
                 <p className="text-sm md:text-base lg:text-xl font-bold text-blue-600 dark:text-blue-400">{formatTime(examData.timeSpent)}</p>
               </div>
@@ -142,6 +177,10 @@ export default function ExamScore() {
               <div
                 className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${examData.score}%` }}
+                role="progressbar"
+                aria-valuenow={examData.score}
+                aria-valuemin={0}
+                aria-valuemax={100}
               ></div>
             </div>
           </div>
@@ -209,6 +248,7 @@ export default function ExamScore() {
                 </span>
                 <span className="flex items-center">
                   <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+
                   Incorrectas
                 </span>
                 <span className="flex items-center">
@@ -223,7 +263,7 @@ export default function ExamScore() {
             {reviewAvailable ? (
               <button
                 onClick={handleReview}
-                className="text-sm md:text-base lg:text-base bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+                className="text-sm md:text-base lg:text-base bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               >
                 Revisar Intento
               </button>
@@ -237,13 +277,13 @@ export default function ExamScore() {
             ) : null}
             <button
               onClick={handleNewAttempt}
-              className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+              className="text-sm md:text-base lg:text-base bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
             >
               Nuevo Intento
             </button>
             <button
               onClick={handleExit}
-              className="text-sm md:text-base lg:text-base bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1"
+              className="text-sm md:text-base lg:text-base bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             >
               Salir
             </button>

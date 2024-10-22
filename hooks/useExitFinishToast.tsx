@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast'
 import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => void) => {
+export const useExitFinishToast = (simulatorId: string, onExit?: () => void, saveExamData?: () => void) => {
   const toastRef = useRef<string | null>(null)
   const router = useRouter()
 
@@ -39,7 +39,7 @@ export const useExitFinishToast = (onExit?: () => void, saveExamData?: () => voi
                 if ((action === 'finalizar' || action === 'salir') && saveExamData) {
                   saveExamData();
                 }
-                router.replace('/simulator/exam/score')
+                router.replace(`/simulator/${simulatorId}/score`)
                 toast.dismiss(t.id)
                 if (onExit) onExit()
               }}

@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast'
 import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export const useExitFinishToastReview = () => {
+export const useExitFinishToastReview = (simulatorId: string) => {
   const toastRef = useRef<string | null>(null)
   const router = useRouter()
 
@@ -38,7 +38,7 @@ export const useExitFinishToastReview = () => {
               onClick={() => {
                 localStorage.removeItem('reviewAvailable')
                 toast.dismiss(t.id)
-                router.replace('/simulator/exam/score')
+                router.replace(`/simulator/${simulatorId}/score`)
               }}
               className={'w-full rounded-none p-1 flex items-center justify-center text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-red-800'}
             >
