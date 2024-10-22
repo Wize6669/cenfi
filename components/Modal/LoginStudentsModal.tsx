@@ -36,9 +36,13 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal, sim
 
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post('/auth-simulators/sign-in-simulator', { simulatorId: id, password: userStudent.password });
+      const response = await axiosInstance.post('/auth-simulators/sign-in-simulator', {
+        simulatorId: id,
+        password: userStudent.password
+      });
       const token = response.data.token;
       localStorage.setItem('authToken', token);
+      localStorage.setItem('currentSimulatorId', id);
 
       // Actualizar el userStore
       setUserSimulator({
@@ -53,7 +57,7 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal, sim
       }));
 
       setIsOpenModal(false);
-      router.push('/simulator/exam');
+      router.push(`/simulator/${id}/exam`);
     } catch (error) {
       setIsLoading(prev => !prev);
       if (error instanceof AxiosError) {

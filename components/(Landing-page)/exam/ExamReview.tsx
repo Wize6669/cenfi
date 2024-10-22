@@ -10,6 +10,10 @@ import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor
 import OptionEditor from "@/components/(Landing-page)/simulator/OptionEditor"
 import JustificationEditor from "@/components/(Landing-page)/simulator/JustificationEditor"
 
+interface SimulatorExamProps {
+  simulatorId: string;
+}
+
 interface Option {
   id: number
   content: {
@@ -35,6 +39,9 @@ interface Question {
 }
 
 interface ExamData {
+  simulatorId: string
+  simulatorName: string
+  categoryName: Question["categoryName"]
   questions: Question[]
   userAnswers: { [key: number]: number | null }
   timeSpent: number
@@ -49,7 +56,7 @@ interface ExamData {
   unansweredQuestions: number
 }
 
-export default function ExamReview() {
+export default function ExamReview({ simulatorId }: SimulatorExamProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
   const [examData, setExamData] = useState<ExamData | null>(null)
@@ -59,11 +66,15 @@ export default function ExamReview() {
     const savedExamData = localStorage.getItem('examData')
     if (savedExamData) {
       const parsedExamData = JSON.parse(savedExamData)
-      setExamData(parsedExamData)
+      if (parsedExamData.simulatorId === simulatorId) {
+        setExamData(parsedExamData)
+      } else {
+        router.replace('/simulator')
+      }
     } else {
-      router.replace('/simulator/start-simulator/exam/score')
+      router.replace('/simulator')
     }
-  }, [router])
+  }, [router, simulatorId])
 
   const totalQuestions = examData?.totalQuestions || 0
 
@@ -80,12 +91,12 @@ export default function ExamReview() {
     return `${hours > 0 ? `${hours}h ` : ''}${minutes} min`
   }
 
-  const { showExitFinishToastReview } = useExitFinishToastReview();
+  const { showExitFinishToastReview } = useExitFinishToastReview(simulatorId);
 
   const isQuestionAnsweredCorrectly = (question: Question, userAnswer: number | null) => {
     if (userAnswer === null) return false;
     if (question.options.length === 1) {
-        // Para preguntas de una sola opción, se considera correcta si se respondió
+      // Para preguntas de una sola opción, se considera correcta si se respondió
       return true;
     }
     const selectedOption = question.options.find(opt => opt.id === userAnswer);
@@ -180,6 +191,7 @@ export default function ExamReview() {
     <div className={'select-none min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
       <div className="absolute inset-0 pointer-events-none z-0 opacity-5 dark:opacity-5 responsive-background" />
       <HeaderSimulator
+        simulatorName={examData.simulatorName}
         currentQuestion={currentQuestionIndex + 1}
         totalQuestions={totalQuestions}
         onExitOrFinish={handleExitOrFinish}

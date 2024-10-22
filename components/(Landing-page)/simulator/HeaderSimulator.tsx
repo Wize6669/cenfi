@@ -7,9 +7,10 @@ interface HeaderSimulatorProps {
   currentQuestion: number
   totalQuestions: number
   onExitOrFinish: () => void
+  simulatorName: string
 }
 
-const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, totalQuestions, onExitOrFinish}) => {
+const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, totalQuestions, onExitOrFinish, simulatorName}) => {
 
   return (
     <header className={'select-none dark:bg-gray-900 bg-gray-100 p-4'}>
@@ -30,7 +31,7 @@ const HeaderSimulator: React.FC<HeaderSimulatorProps> = ({currentQuestion, total
               Simuladores Preuniversitario CENFI
             </h1>
             <h2 className="text-sm md:text-lg lg:text-2xl font-medium flex justify-center mt-3 dark:text-gray-400">
-              Simulador Universidad Nacional de Loja
+              {simulatorName}
             </h2>
           </div>
           <div className="flex-grow lg:hidden md:hidden">
