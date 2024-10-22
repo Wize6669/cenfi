@@ -36,9 +36,7 @@ export default function DashboardAdmin() {
   }
 
   const handleLogOut = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setIsLoggedIn(false);
-    setUserAuth(null);
+    useAuthStore.getState().logout();
   }
 
   if (showLoginMessage) {

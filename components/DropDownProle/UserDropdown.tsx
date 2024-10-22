@@ -48,8 +48,7 @@ const UserDropdown = () => {
 
   const handleOptionClick = (action: () => void) => {
     action()
-    setIsOpen(false)
-    setIsThemeOpen(false)
+    useAuthStore.getState().logout();
   }
 
   const getThemeIcon = () => {

@@ -3,21 +3,19 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {useAuthStore} from "@/store/auth";
-import {Pagination} from "@/interfaces/Pagination";
-import {useQuery} from "@tanstack/react-query";
-import {axiosInstance} from "@/lib/axios";
-import QuestionTable from "@/components/QuestionTable/QuestionTable";
-import GoBackButton from "@/components/GoBackButton";
+import { Pagination } from '@/interfaces/Pagination';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@/lib/axios';
+import QuestionTable from '@/components/QuestionTable/QuestionTable';
+import GoBackButton from '@/components/GoBackButton';
 
 export default function Question() {
   const router = useRouter();
 
   const [showLoginMessage, setShowLoginMessage] = useState(false);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const userAuth = useAuthStore((state) => state.userAuth);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
@@ -29,21 +27,14 @@ export default function Question() {
     pageSize: 10
   });
 
-  useEffect(() => {
-    if (userAuth?.roleId !== 1 || !isLoggedIn) {
-      setShowLoginMessage(true);
-      const timer = setTimeout(() => {
-        router.replace('/admin');
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [userAuth, router, isLoggedIn]);
-
   const {data: questions, isLoading} = useQuery({
     queryFn: () => fetchQuestion(),
     queryKey: ['questions', pagination.currentPage, pagination.pageSize],
   });
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const fetchQuestion = async () => {
     const response = await axiosInstance.get(`/questions?page=${pagination.currentPage}&count=${pagination.pageSize}`);
@@ -69,14 +60,10 @@ export default function Question() {
     }));
 
     return data;
-  }
+  };
 
   const handleButtonClickCreate = () => {
     router.push('/admin/questions/create');
-  };
-
-  const handleButtonClickEdit = () => {
-    router.push('/admin/questions/edit');
   };
 
   const handlePageChange = (newPage: number) => {
@@ -106,12 +93,12 @@ export default function Question() {
     );
   }
 
-  if (!isLoggedIn) {
+  if (!isHydrated) {
     return null;
   }
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -144,24 +131,17 @@ export default function Question() {
             Nueva Pregunta
           </button>
         </div>
-        <div className={'lg:w-[82%] flex justify-end items-center'}>
-          <button
-            className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
-            type={'button'}
-            onClick={handleButtonClickEdit}
-          >
-            Editar Pregunta
-          </button>
-        </div>
 
       </div>
       <div className={'flex justify-center'}>
       </div>
       <div className={'flex-grow flex justify-center'}>
         <div className={'w-full md:w-5/6 lg:w-2/3 scale-90'}>
-          {!isLoading && <QuestionTable handlePageChange={handlePageChange}
-                                      handlePageSizeChange={handlePageSizeChange}
-                                      data={questions} pagination={pagination}/>}
+          {!isLoading && <QuestionTable
+            handlePageChange={handlePageChange}
+            handlePageSizeChange={handlePageSizeChange}
+            data={questions} pagination={pagination}
+          />}
         </div>
       </div>
       <Footer/>

@@ -265,7 +265,7 @@ export default function QuestionTable({handlePageChange, handlePageSizeChange, d
 
     const handleEditBtn = (id: number) => (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        router.push(`/admin/questions/${id}`);
+        router.push(`/admin/questions/edit/${id}`);
     };
 
     if (data.length === 0) {

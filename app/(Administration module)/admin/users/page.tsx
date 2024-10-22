@@ -3,20 +3,19 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ModuleListNavbar from '@/components/ModulesList/ModuleListNavbar';
-import React, {ChangeEvent, FormEvent, useEffect, useState, useRef} from 'react';
-import {useAuthStore} from '@/store/auth';
-import {useRouter} from 'next/navigation';
-import {ChevronDown, ChevronUp} from 'lucide-react';
+import React, { ChangeEvent, FormEvent, useEffect, useState, useRef } from 'react';
+import { useAuthStore } from '@/store/auth';
+import { useRouter } from 'next/navigation';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import UserTable from '@/components/UserTable/UserTable';
-import {PasswordInput} from '@/components/PasswordInput';
-import {UserNewUpdate} from '@/interfaces/User';
-import {axiosInstance} from '@/lib/axios';
-import {AxiosError} from 'axios';
-import {ErrorResponse} from '@/interfaces/ResponseAPI';
+import { PasswordInput } from '@/components/PasswordInput';
+import { UserNewUpdate } from '@/interfaces/User';
+import { axiosInstance } from '@/lib/axios';
 import toast from 'react-hot-toast';
-import {Pagination} from '@/interfaces/Pagination';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import GoBackButton from "@/components/GoBackButton";
+import { Pagination } from '@/interfaces/Pagination';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import GoBackButton from '@/components/GoBackButton';
+import { handleAxiosError } from '@/utils/generatePassword';
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
@@ -41,6 +40,7 @@ export default function Users() {
     pageSize: 10
   });
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const queryClient = useQueryClient();
   const {data: users, isLoading} = useQuery({
@@ -51,6 +51,8 @@ export default function Users() {
   const router = useRouter();
 
   useEffect(() => {
+    setIsMounted(true);
+
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
       setShowLoginMessage(true);
       const timer = setTimeout(() => {
@@ -72,7 +74,7 @@ export default function Users() {
     setUser({
       ...user,
       [event.target.name]: event.target.value
-    })
+    });
   };
 
   const handleGetFullNameInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -115,8 +117,8 @@ export default function Users() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    await addUserMutation()
-  }
+    await addUserMutation();
+  };
 
   const fetchUser = async () => {
     const response = await axiosInstance.get(`/users?page=${pagination.currentPage}&count=${pagination.pageSize}`);
@@ -142,7 +144,7 @@ export default function Users() {
     }));
 
     return data;
-  }
+  };
 
   const addUser = async () => {
     try {
@@ -151,31 +153,10 @@ export default function Users() {
 
       resetForm();
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-
-        if (error?.response?.status === 409) {
-
-          return toast.error('El usuario ya existe');
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error);
 
       if (formRef.current) {
+
         formRef.current.reset();
       }
 
@@ -187,7 +168,7 @@ export default function Users() {
         roleId: null,
       });
     }
-  }
+  };
 
   const {mutateAsync: addUserMutation} = useMutation({
     mutationFn: addUser,
@@ -213,8 +194,12 @@ export default function Users() {
     return null;
   }
 
+  if (!isMounted) {
+    return null;
+  }
+
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -226,7 +211,8 @@ export default function Users() {
         <div className={'w-[87%] grid grid-cols-[3%_97%] grid-rows-2 gap-x-4 justify-items-center'}>
           <div className={'w-auto col-span-2'}>
             <h1
-              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}>Administración
+              className={'font-bold text-xl lg:text-3xl mt-4 text-gray-900 dark:text-gray-200 text-center'}
+            >Administración
               de
               Usuarios</h1>
           </div>
@@ -237,8 +223,9 @@ export default function Users() {
             <div className={'border-t-2 container dark:border-gray-600'}/>
           </div>
         </div>
-        <form className={'container mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5 sm:px-6 lg:px-0 px-6'}
-              ref={formRef} onSubmit={handleSubmit}
+        <form
+          className={'container mt-2 grid md:grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-5 lg:w-1/2 md:w-4/5 sm:px-6 lg:px-0 px-6'}
+          ref={formRef} onSubmit={handleSubmit}
         >
           {/* Nombre y Apellido */}
           <div>
@@ -317,7 +304,7 @@ export default function Users() {
                   onFocus={() => setIsSelectOpen(true)}
                   onBlur={() => setIsSelectOpen(false)}
                 >
-                  <option value="">Selecciona un rol</option>
+                  <option value=''>Selecciona un rol</option>
                   <option value='1'>Admin</option>
                   <option value='2'>Profesor</option>
                 </select>
@@ -342,11 +329,13 @@ export default function Users() {
         </form>
       </div>
       <div className={'flex-grow flex justify-center'}>
-        <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
-          {!isLoading && <UserTable handlePageChange={handlePageChange}
-                                    handlePageSizeChange={handlePageSizeChange}
-                                    data={users}
-                                    pagination={pagination}/>}
+        <div className='w-full md:w-5/6 lg:w-2/3 scale-90'>
+          {!isLoading && <UserTable
+            handlePageChange={handlePageChange}
+            handlePageSizeChange={handlePageSizeChange}
+            data={users}
+            pagination={pagination}
+          />}
         </div>
       </div>
       <Footer/>

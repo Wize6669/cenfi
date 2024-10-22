@@ -47,5 +47,17 @@ function handleAxiosError(error: any) {
   toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
 }
 
+const safeStringify = (obj: any) => {
+  const seen = new WeakSet();
+  return JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return; // O devuelve `undefined` para eliminar la propiedad
+      }
+      seen.add(value);
+    }
+    return value;
+  });
+};
 
-export { generatePassword, handleAxiosError };
+export { generatePassword, handleAxiosError, safeStringify };

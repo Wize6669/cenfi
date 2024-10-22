@@ -1,6 +1,6 @@
-import { persist } from 'zustand/middleware';
 import { type StateCreator, create } from 'zustand';
-import { UserStore } from '@/interfaces/User'
+import { UserStore } from '@/interfaces/User';
+import { setCookie, getCookie, deleteCookie } from 'cookies-next';
 
 interface AuthStore {
   userAuth: UserStore | null;
@@ -10,29 +10,29 @@ interface AuthStore {
   logout: () => void;
 }
 
-// const initialUserState: UserStore = {
-//   id: "920959db-c4fe-482e-83bf-ea4fce08c215",
-//   name: "Will",
-//   lastName: "Zapata",
-//   email: "will@example.com",
-//   roleId: 1,
-// };
+const getCookieUser = (): UserStore | null => {
+  const user = getCookie('userAuth');
+  return user ? JSON.parse(user as string) : null;
+};
 
 const storeAPI: StateCreator<AuthStore> = (set) => ({
-  userAuth: null,
-  setUserAuth: (user: UserStore | null) => set({ userAuth: user }),
-  isLoggedIn: false,
+  userAuth: getCookieUser(),
+  setUserAuth: (user: UserStore | null) => {
+    if (user) {
+      setCookie('userAuth', JSON.stringify(user), { maxAge: 8 * 60 * 60 });
+    } else {
+      deleteCookie('userAuth');
+    }
+    set({ userAuth: user });
+  },
+  isLoggedIn: Boolean(getCookieUser()),
   setIsLoggedIn: (status: boolean) => set({ isLoggedIn: status }),
-  logout: () => set({ userAuth: null, isLoggedIn: false }),
+  logout: () => {
+    deleteCookie('userAuth');
+    set({ userAuth: null, isLoggedIn: false });
+  },
 });
 
-const useAuthStore = create<AuthStore>()(
-  persist(
-    storeAPI,
-    {
-      name: 'auth-store',
-    }
-  )
-);
+const useAuthStore = create<AuthStore>(storeAPI);
 
 export { useAuthStore };
