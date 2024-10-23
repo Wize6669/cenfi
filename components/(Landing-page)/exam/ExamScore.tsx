@@ -6,28 +6,10 @@ import Image from 'next/image'
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { CheckCircle, XCircle, AlertCircle, BarChart2, Clock, Info, ChartArea } from 'lucide-react'
 import Confetti from 'react-confetti'
+import { decryptData } from '@/utils/encryption';
+import { SimulatorExamProps, ExamData } from "@/interfaces/Exam";
+import {decryptUrlId, encryptLocalStorageId} from "@/utils/urlEncryption";
 
-interface SimulatorExamProps {
-  simulatorId: string;
-}
-
-interface ExamData {
-  simulatorId: string
-  simulatorName: string
-  questions: any[]
-  review: boolean
-  userAnswers: { [key: number]: number | null }
-  timeSpent: number
-  fullName: string
-  email: string
-  score: number
-  totalQuestions: number
-  totalAnswered: number
-  percentageAnswered: number
-  correctAnswers: number
-  incorrectAnswers: number
-  unansweredQuestions: number
-}
 
 export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   const [examData, setExamData] = useState<ExamData | null>(null)
@@ -39,23 +21,29 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
+
   useEffect(() => {
     const loadExamData = () => {
-      const storedExamData = localStorage.getItem('examData')
-      const hasReviewedKey = `hasReviewed_${simulatorId}`
-      const hasReviewedValue = localStorage.getItem(hasReviewedKey)
+      const encryptedExamData = localStorage.getItem('encryptedExamData')
+      const decryptedSimulatorId = decryptUrlId(simulatorId);
+      if (!decryptedSimulatorId) {
+        setError('ID del simulador inválido');
+        setLoading(false);
+        return;
+      }
+      const encryptedHasReviewedKey = encryptLocalStorageId(`hasReviewed_${decryptedSimulatorId}`);
+      const hasReviewedValue = localStorage.getItem(encryptedHasReviewedKey)
 
       setHasReviewed(hasReviewedValue === 'true')
 
-      if (storedExamData) {
-        const parsedData: ExamData = JSON.parse(storedExamData)
-        if (parsedData.simulatorId === simulatorId) {
-          setExamData(parsedData)
-          setShowConfetti(parsedData.correctAnswers === parsedData.totalQuestions)
-          // Establecer reviewAvailable basado en el atributo review y si no se ha revisado aún
-          setReviewAvailable(parsedData.review && hasReviewedValue !== 'true')
+      if (encryptedExamData) {
+        const result = decryptData<ExamData>(encryptedExamData);
+        if (result.success && result.data && result.data.simulatorId === decryptedSimulatorId) {
+          setExamData(result.data)
+          setShowConfetti(result.data.correctAnswers === result.data.totalQuestions)
+          setReviewAvailable(result.data.review && hasReviewedValue !== 'true')
         } else {
-          setError('Los datos del examen no corresponden al simulador seleccionado')
+          setError(result.error || 'Los datos del examen no corresponden al simulador seleccionado')
         }
       } else {
         setError('No se encontraron datos del examen')
@@ -76,22 +64,40 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
 
   const handleReview = () => {
     if (examData && examData.review && !hasReviewed) {
-      localStorage.setItem(`hasReviewed_${simulatorId}`, 'true')
-      setHasReviewed(true)
-      setReviewAvailable(false)
-      router.push(`/simulator/${simulatorId}/review`)
+      const decryptedSimulatorId = decryptUrlId(simulatorId);
+      if (decryptedSimulatorId) {
+        const encryptedHasReviewedKey = encryptLocalStorageId(`hasReviewed_${decryptedSimulatorId}`);
+        localStorage.setItem(encryptedHasReviewedKey, 'true')
+        setHasReviewed(true)
+        setReviewAvailable(false)
+        router.push(`/simulator/${simulatorId}/review`)
+      }
     }
   }
 
   const handleNewAttempt = () => {
     localStorage.removeItem('examData')
-    localStorage.removeItem(`hasReviewed_${simulatorId}`)
+    localStorage.removeItem('currentSimulatorId')
+    localStorage.removeItem('encryptedExamData')
+    localStorage.removeItem('userStudent')
+    const decryptedSimulatorId = decryptUrlId(simulatorId);
+    if (decryptedSimulatorId) {
+      const encryptedHasReviewedKey = encryptLocalStorageId(`hasReviewed_${decryptedSimulatorId}`);
+      localStorage.removeItem(encryptedHasReviewedKey)
+    }
     router.push('/simulator')
   }
 
   const handleExit = () => {
     localStorage.removeItem('examData')
-    localStorage.removeItem(`hasReviewed_${simulatorId}`)
+    localStorage.removeItem('encryptedExamData')
+    localStorage.removeItem('currentSimulatorId')
+    localStorage.removeItem('userStudent')
+    const decryptedSimulatorId = decryptUrlId(simulatorId);
+    if (decryptedSimulatorId) {
+      const encryptedHasReviewedKey = encryptLocalStorageId(`hasReviewed_${decryptedSimulatorId}`);
+      localStorage.removeItem(encryptedHasReviewedKey)
+    }
     router.push('/')
   }
 
@@ -141,17 +147,23 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
           numberOfPieces={500}
         />
       )}
-      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-4">
+      <header className="select-none bg-white dark:bg-gray-800 shadow-md p-3">
         <div className="container mx-auto flex justify-between items-center">
           <button onClick={handleExit} className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg">
-            <Image src="/images/image-1.png" alt="CENFI Logo" width={90} height={85}/>
+            <Image
+              src="/images/image-1.png"
+              alt="CENFI Logo"
+              width={60}
+              height={70}
+              style={{ width: 'auto', height: 'auto' }}
+            />
           </button>
-          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
+          <h1 className="md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-blue-400 hidden sm:block">Simuladores Preuniversitario CENFI</h1>
           <h1 className="text-base font-bold text-gray-800 dark:text-blue-300 lg:hidden md:hidden">SIMULADORES CENFI</h1>
           <ThemeToggle/>
         </div>
       </header>
-      <main className="select-none flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+      <main className="select-none flex-grow mx-auto container px-4 py-8 flex items-center justify-center">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-3xl">
           <div className="flex justify-center mb-4">
             <Image
@@ -159,10 +171,14 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
               alt="CENFI Logo"
               width={200}
               height={67}
+              priority={true}
               className="h-24 w-auto filter dark:drop-shadow-[0_10px_8px_rgba(24,130,172,0.8)]"
             />
           </div>
-          <h2 className="text-base md:text-lg lg:text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">Resultados del Simulador</h2>
+          <h2 className="text-base md:text-lg lg:text-2xl font-bold text-center mb-6 text-gray-800 dark:text-blue-400">
+            Resultados:
+            <span className={'pl-2 font-medium'}>{examData.simulatorName}</span>
+          </h2>
 
           <div className="mb-6 bg-blue-50 dark:bg-blue-900 p-3 rounded-lg shadow-inner">
             <div className="flex items-center justify-center space-x-3">
@@ -228,7 +244,7 @@ export default function ExamScore({ simulatorId }: SimulatorExamProps) {
             <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
               <h3 className="text-base md:text-base lg:text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
                 <ChartArea className="w-5 h-5 mr-2 text-blue-500 dark:text-blue-400" />
-                Gráfico
+                Gráfico Estadístico
               </h3>
               <div className="flex items-end h-36 space-x-2">
                 <div className="flex-1 bg-green-500 dark:bg-green-600 rounded-t-lg relative group" style={{ height: `${(examData.correctAnswers / examData.totalQuestions) * 100}%` }}>

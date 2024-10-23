@@ -11,50 +11,9 @@ import {useUserStore} from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import {axiosInstance} from "@/lib/axios";
-
-interface SimulatorExamProps {
-  simulatorId: string;
-}
-
-interface Category {
-  id: number
-  name: string
-}
-
-interface Option {
-  id: number
-  content: {
-    type: string
-    content: any[]
-  }
-  isCorrect: boolean
-}
-
-interface Question {
-  id: number
-  content: {
-    type: string
-    content: any[]
-  }
-  justification?: {
-    type: string
-    content: any[]
-  }
-  options: Option[]
-  category: Category
-  simulatorId?: string
-}
-
-interface Simulator {
-  id: string;
-  name: string;
-  duration: number;
-  navigate: boolean;
-  visibility: boolean;
-  review: boolean;
-  number_of_questions: number;
-  questions?: Question[];
-}
+import { encryptData } from '@/utils/encryption';
+import { SimulatorExamProps, Question, Simulator } from "@/interfaces/Exam";
+import {decryptLocalStorageId, decryptUrlId, encryptUrlId} from "@/utils/urlEncryption";
 
 export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
   const [simulator, setSimulator] = useState<Simulator | null>(null)
@@ -76,12 +35,15 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
 
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
-    const currentSimulatorId = localStorage.getItem('currentSimulatorId');
+    const encryptedCurrentSimulatorId = localStorage.getItem('currentSimulatorId');
+    const decryptedUrlSimulatorId = decryptUrlId(simulatorId);
+    const decryptedCurrentSimulatorId = encryptedCurrentSimulatorId ? decryptLocalStorageId(encryptedCurrentSimulatorId) : null;
 
-    if (!authToken || currentSimulatorId !== simulatorId) {
+    if (!authToken || decryptedCurrentSimulatorId !== decryptedUrlSimulatorId || !decryptedUrlSimulatorId) {
       redirect(`/simulator/${simulatorId}`);
     }
   }, [simulatorId]);
+
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array]
@@ -123,14 +85,18 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     try {
       setLoading(true)
       setIsDataReady(false)
-      const simulatorId = localStorage.getItem('currentSimulatorId')
-      if (!simulatorId) {
+      const encryptedCurrentSimulatorId = localStorage.getItem('currentSimulatorId')
+      if (!encryptedCurrentSimulatorId) {
         console.error('No se encontró el ID del simulador')
         redirect('/');
       }
+      const decryptedCurrentSimulatorId = decryptLocalStorageId(encryptedCurrentSimulatorId);
+      if (!decryptedCurrentSimulatorId) {
+        console.error('No se pudo desencriptar el ID del simulador')
+        redirect('/');
+      }
 
-      const response = await axiosInstance.get<Simulator>(`/simulators/${simulatorId}`)
-      console.log('Simulator data:', response.data)
+      const response = await axiosInstance.get<Simulator>(`/simulators/${decryptedCurrentSimulatorId}`)
 
       const randomizedQuestions = randomizeQuestionsByCategory(response.data.questions || [])
 
@@ -211,13 +177,16 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
       incorrectAnswers: totalAnswered - Math.round((score * totalQuestions) / 100),
       unansweredQuestions: totalQuestions - totalAnswered
     }
-    localStorage.setItem('examData', JSON.stringify(examData))
+
+    const encryptedExamData = encryptData(examData)
+    localStorage.setItem('encryptedExamData', encryptedExamData)
 
     const allowReview = simulator.review && percentageAnswered > 90
     localStorage.setItem('reviewAvailable', allowReview.toString())
 
-    router.replace(`/simulator/${simulatorId}/score`)
-  }, [simulator, randomizedQuestions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions, simulatorId])
+    const encryptedUrlId = encryptUrlId(simulator.id);
+    router.replace(`/simulator/${encryptedUrlId}/score`)
+  }, [simulator, randomizedQuestions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions])
 
   const { showExitFinishToast } = useExitFinishToast(simulatorId, handleExit, saveExamData)
   const { showFiveMinuteWarning } = useFiveMinuteWarning(userSimulator.fullName ?? 'Usuario')
@@ -400,7 +369,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
                   </div>
                   <div className="flex flex-row items-center justify-between mt-2">
                     {simulator.navigate && (
-                      <label className={`flex items-center cursor-pointer  dark:text-gray-400    ${markedQuestions.has(currentQuestionIndex) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
+                      <label className={`flex items-center cursor-pointer  dark:text-gray-400 ${markedQuestions.has(currentQuestionIndex) ? 'dark:text-orange-500 text-orange-500' : ''} `}>
                         <input
                           type="checkbox"
                           checked={markedQuestions.has(currentQuestionIndex)}
@@ -479,5 +448,5 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
       </main>
       <Toaster/>
     </div>
-  )
+  );
 }

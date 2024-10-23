@@ -33,9 +33,9 @@ const OptionEditor: React.FC<OptionEditorProps> = ({ option, index, isSelected, 
       'flex flex-col p-2 rounded transition-colors duration-300',
       'dark:hover:bg-gray-700 hover:bg-gray-100',
       'dark:text-gray-400',
-      isReviewMode && isSelected && option.isCorrect && 'bg-green-50 dark:bg-green-900/40',
-      isReviewMode && isSelected && !option.isCorrect && 'bg-red-50 dark:bg-red-900/20',
-      isReviewMode && !isSelected && option.isCorrect && 'bg-green-50 dark:bg-green-900/20',
+      isReviewMode && isSelected && option.isCorrect && 'bg-green-100 dark:bg-green-900/20',
+      isReviewMode && isSelected && !option.isCorrect && 'bg-red-100 dark:bg-red-900/20',
+      isReviewMode && !isSelected && option.isCorrect && 'bg-green-100 dark:bg-green-900/20',
       // Solo muestra el círculo interno cuando NO está en modo revisión
       !isReviewMode && 'before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-2.5 before:h-2.5 before:rounded-full before:bg-blue-600 dark:before:bg-blue-400 before:opacity-0 checked:before:opacity-100'
       )}>

@@ -7,6 +7,7 @@ import Modal from '@/components/Modal/Modal';
 import { axiosInstance } from "@/lib/axios";
 import { useUserStore } from '@/store/userStore';
 import { AxiosError } from "axios";
+import {encryptLocalStorageId, encryptUrlId} from '@/utils/urlEncryption';
 
 interface PropsPortalSimulatorSignIn {
   id: string
@@ -42,7 +43,8 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal, sim
       });
       const token = response.data.token;
       localStorage.setItem('authToken', token);
-      localStorage.setItem('currentSimulatorId', id);
+      const encryptedLocalId = encryptLocalStorageId(id);
+      localStorage.setItem('currentSimulatorId', encryptedLocalId);
 
       // Actualizar el userStore
       setUserSimulator({
@@ -57,7 +59,8 @@ export default function LoginStudentsModal({id, isOpenModal, setIsOpenModal, sim
       }));
 
       setIsOpenModal(false);
-      router.push(`/simulator/${id}/exam`);
+      const encryptedId = encryptUrlId(id);
+      router.push(`/simulator/${encryptedId}/exam`);
     } catch (error) {
       setIsLoading(prev => !prev);
       if (error instanceof AxiosError) {

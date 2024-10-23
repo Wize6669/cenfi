@@ -9,69 +9,24 @@ import { useExitFinishToastReview } from "@/hooks/useExitFinishToastReview"
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import OptionEditor from "@/components/(Landing-page)/simulator/OptionEditor"
 import JustificationEditor from "@/components/(Landing-page)/simulator/JustificationEditor"
-
-interface SimulatorExamProps {
-  simulatorId: string;
-}
-
-interface Option {
-  id: number
-  content: {
-    type: string
-    content: any[]
-  }
-  isCorrect: boolean
-}
-
-interface Category {
-  id: number
-  name: string
-}
-
-interface Question {
-  id: number
-  content: {
-    type: string
-    content: any[]
-  }
-  justification?: {
-    type: string
-    content: any[]
-  }
-  options: Option[]
-  category: Category
-  simulatorId?: string
-}
-
-interface ExamData {
-  simulatorId: string
-  simulatorName: string
-  questions: Question[]
-  userAnswers: { [key: number]: number | null }
-  timeSpent: number
-  fullName: string
-  email: string
-  score: number
-  totalQuestions: number
-  totalAnswered: number
-  percentageAnswered: number
-  correctAnswers: number
-  incorrectAnswers: number
-  unansweredQuestions: number
-}
+import { decryptData } from '@/utils/encryption';
+import { SimulatorExamProps, Question, Option, ExamDataReview } from "@/interfaces/Exam";
+import { decryptUrlId } from "@/utils/urlEncryption";
 
 export default function ExamReview({ simulatorId }: SimulatorExamProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
   const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false)
-  const [examData, setExamData] = useState<ExamData | null>(null)
+  const [examData, setExamData] = useState<ExamDataReview | null>(null)
   const router = useRouter()
 
+
   useEffect(() => {
-    const savedExamData = localStorage.getItem('examData')
-    if (savedExamData) {
-      const parsedExamData = JSON.parse(savedExamData)
-      if (parsedExamData.simulatorId === simulatorId) {
-        setExamData(parsedExamData)
+    const encryptedExamData = localStorage.getItem('encryptedExamData')
+    const decryptedSimulatorId = decryptUrlId(simulatorId);
+    if (encryptedExamData && decryptedSimulatorId) {
+      const result = decryptData<ExamDataReview>(encryptedExamData);
+      if (result.success && result.data && result.data.simulatorId === decryptedSimulatorId) {
+        setExamData(result.data)
       } else {
         router.replace('/simulator')
       }
