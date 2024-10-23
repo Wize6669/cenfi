@@ -23,6 +23,11 @@ interface Option {
   isCorrect: boolean
 }
 
+interface Category {
+  id: number
+  name: string
+}
+
 interface Question {
   id: number
   content: {
@@ -34,14 +39,13 @@ interface Question {
     content: any[]
   }
   options: Option[]
-  categoryName?: string
+  category: Category
   simulatorId?: string
 }
 
 interface ExamData {
   simulatorId: string
   simulatorName: string
-  categoryName: Question["categoryName"]
   questions: Question[]
   userAnswers: { [key: number]: number | null }
   timeSpent: number
@@ -246,7 +250,7 @@ export default function ExamReview({ simulatorId }: SimulatorExamProps) {
             <div className={'dark:bg-gray-800 bg-gray-50 p-4 rounded-lg shadow mb-4'}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <h3 className="text-base md:text-xl lg:text-2xl font-semibold mb-2 sm:mb-0 order-1 sm:order-2 dark:text-gray-400">
-                  {currentQuestionData.categoryName}
+                  {currentQuestionData.category.name}
                 </h3>
                 <div className="order-2 sm:order-1">
                   <h2 className="text-sm lg:text-xl md:text-lg font-bold dark:text-gray-300">Pregunta {currentQuestionIndex + 1}</h2>

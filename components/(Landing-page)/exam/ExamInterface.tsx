@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { ArrowLeft, ArrowRight, Menu, X, Flag, Trash2, Clock } from 'lucide-react'
-import { Toaster } from 'react-hot-toast'
+import React, {useCallback, useEffect, useState} from 'react'
+import {ArrowLeft, ArrowRight, Clock, Flag, Menu, Trash2, X} from 'lucide-react'
+import {Toaster} from 'react-hot-toast'
 import {redirect, useRouter} from 'next/navigation'
 import HeaderSimulator from '@/components/(Landing-page)/simulator/HeaderSimulator'
-import { useExitFinishToast } from '@/hooks/useExitFinishToast'
-import { useFiveMinuteWarning } from '@/hooks/useFiveMinuteWarning'
-import { useUserStore } from '@/store/userStore'
+import {useExitFinishToast} from '@/hooks/useExitFinishToast'
+import {useFiveMinuteWarning} from '@/hooks/useFiveMinuteWarning'
+import {useUserStore} from '@/store/userStore'
 import OptionEditor from '@/components/(Landing-page)/simulator/OptionEditor'
 import QuestionEditor from "@/components/(Landing-page)/simulator/QuestionEditor"
 import {axiosInstance} from "@/lib/axios";
@@ -68,6 +68,8 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [contentKey, setContentKey] = useState(0)
+  const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([])
+  const [isDataReady, setIsDataReady] = useState<boolean>(false)
 
   const router = useRouter()
   const { userSimulator } = useUserStore()
@@ -81,8 +83,46 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     }
   }, [simulatorId]);
 
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  const randomizeQuestionsByCategory = useCallback((questions: Question[]): Question[] => {
+    // Agrupar preguntas por categoría
+    const questionsByCategory: { [key: number]: Question[] } = {}
+    questions.forEach(question => {
+      if (!questionsByCategory[question.category.id]) {
+        questionsByCategory[question.category.id] = []
+      }
+      questionsByCategory[question.category.id].push(question)
+    })
+
+    // Aleatorizar preguntas dentro de cada categoría y aleatorizar opciones
+    Object.keys(questionsByCategory).forEach(categoryId => {
+      questionsByCategory[Number(categoryId)] = shuffleArray(questionsByCategory[Number(categoryId)]).map(question => ({
+        ...question,
+        options: shuffleArray(question.options)
+      }))
+    })
+
+    // Aleatorizar el orden de las categorías
+    const randomizedCategoryIds = shuffleArray(Object.keys(questionsByCategory))
+
+    // Combinar todas las preguntas aleatorizadas
+    return randomizedCategoryIds.flatMap(categoryId =>
+      questionsByCategory[Number(categoryId)]
+    )
+  }, [])
+
   const fetchSimulator = useCallback(async () => {
     try {
+      setLoading(true)
+      setIsDataReady(false)
       const simulatorId = localStorage.getItem('currentSimulatorId')
       if (!simulatorId) {
         console.error('No se encontró el ID del simulador')
@@ -91,15 +131,24 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
 
       const response = await axiosInstance.get<Simulator>(`/simulators/${simulatorId}`)
       console.log('Simulator data:', response.data)
-      setSimulator(response.data)
+
+      const randomizedQuestions = randomizeQuestionsByCategory(response.data.questions || [])
+
+      setSimulator({
+        ...response.data,
+        questions: randomizedQuestions
+      })
+
+      setRandomizedQuestions(randomizedQuestions)
       setTimeRemaining(response.data.duration * 60)
       setLoading(false)
+      setIsDataReady(true)
     } catch (err) {
       setError('Error al cargar el simulador')
       console.error('Error fetching simulator:', err)
       setLoading(false)
     }
-  }, [])
+  }, [randomizeQuestionsByCategory])
 
   useEffect(() => {
     fetchSimulator()
@@ -137,9 +186,9 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
   const saveExamData = useCallback(() => {
     if (!simulator) return;
 
-    const totalAnswered = simulator.questions?.reduce((count, question) => {
-      return selectedOptions[question.id] !== undefined ? count + 1 : count;
-    }, 0) || 0;
+    const totalAnswered = randomizedQuestions.reduce((count, question) => {
+      return selectedOptions[question.id] !== undefined ? count + 1 : count
+    }, 0)
 
     const percentageAnswered = (totalAnswered / totalQuestions) * 100
     const score = calculateScore()
@@ -147,7 +196,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     const examData = {
       simulatorId: simulator.id,
       simulatorName: simulator.name,
-      questions: simulator.questions,
+      questions: randomizedQuestions,
       review: simulator.review,
       userAnswers: selectedOptions,
       timeSpent: simulator.duration * 60 - timeRemaining,
@@ -168,7 +217,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     localStorage.setItem('reviewAvailable', allowReview.toString())
 
     router.replace(`/simulator/${simulatorId}/score`)
-  }, [simulator, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions, simulatorId])
+  }, [simulator, randomizedQuestions, selectedOptions, timeRemaining, router, calculateScore, userSimulator.fullName, userSimulator.email, currentQuestionIndex, totalQuestions, simulatorId])
 
   const { showExitFinishToast } = useExitFinishToast(simulatorId, handleExit, saveExamData)
   const { showFiveMinuteWarning } = useFiveMinuteWarning(userSimulator.fullName ?? 'Usuario')
@@ -242,7 +291,6 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     showExitFinishToast(action)
   }
 
-  const currentQuestionData = simulator?.questions?.[currentQuestionIndex]
 
   const QuestionGrid = () => (
     <div className="dark:bg-gray-800 bg-gray-50 p-3 rounded-lg shadow">
@@ -273,7 +321,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     </div>
   )
 
-  if (loading) {
+  if (loading || !isDataReady) {
     return <div>Cargando simulador...</div>
   }
 
@@ -281,9 +329,11 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
     return <div>Error: {error}</div>
   }
 
-  if (!simulator || !simulator.questions || simulator.questions.length === 0) {
+  if (!simulator || !randomizedQuestions || randomizedQuestions.length === 0) {
     return <div>No hay preguntas disponibles para este simulador.</div>
   }
+
+  const currentQuestionData = simulator?.questions?.[currentQuestionIndex]
 
   return (
     <div className={'select-none pb-12 min-h-screen flex flex-col bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden'}>
@@ -291,7 +341,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
       <HeaderSimulator
         simulatorName={simulator.name}
         currentQuestion={currentQuestionIndex + 1}
-        totalQuestions={totalQuestions}
+        totalQuestions={randomizedQuestions.length}
         onExitOrFinish={handleExitOrFinish}
       />
       <main className="container mx-auto px-2 pb-2 flex-grow relative z-10">
@@ -375,7 +425,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
 
                 <div className={'dark:bg-gray-800 bg-gray-50 p-6 rounded-lg shadow'}>
                   <QuestionEditor
-                    key={contentKey}
+                    key={`question-${contentKey}-${currentQuestionData.id}`}
                     question={currentQuestionData}
                   />
                   <div className="w-full flex items-center pb-5">
@@ -384,7 +434,7 @@ export default function ExamInterface({ simulatorId }: SimulatorExamProps) {
                   <div className="space-y-2">
                     {currentQuestionData.options?.map((option, index) => (
                       <OptionEditor
-                        key={`${contentKey}-${option.id}`}
+                        key={`option-${contentKey}-${option.id}`}
                         option={option}
                         index={index}
                         isSelected={selectedOptions[currentQuestionData.id] === option.id}
