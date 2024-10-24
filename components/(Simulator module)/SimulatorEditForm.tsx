@@ -4,7 +4,6 @@ import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'reac
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
-import axios from 'axios';
 import DynamicInputs from "@/components/DynamicInputs";
 import RadioNavigation from "@/components/RadioNavigation";
 import RadioVisible from "@/components/RadioVisible";
@@ -13,6 +12,7 @@ import { SimulatorUpdate, CategoryQuestions } from "@/interfaces/Simulator";
 import { FaRegCopy } from 'react-icons/fa6';
 import { generatePassword } from '@/utils/generatePassword';
 import { useClipboardCopy } from '@/hooks/useClipboardCopy';
+import {handleAxiosError} from "@/utils/errorHandler";
 
 interface SimulatorEditFormProps {
   simulatorId: string;
@@ -56,67 +56,63 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
     }
   }, [simulatorData]);
 
-  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setSimulator({
-      ...simulator,
-      [event.target.name]: event.target.value
-    });
+  const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = event.target;
+    setSimulator(prevState => ({
+      ...prevState,
+      [name]: name === 'duration' ? parseInt(value, 10) : value
+    }));
   };
 
-  const handleCopyClick = async () => {
+  const handleCopyClick = async (): Promise<void> => {
     await copyToClipboard(newPassword);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleResetPasswordCheck = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleResetPasswordCheck = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     if (!event.target.checked) {
-       return setIsResetPasswordChecked(false);
+      setIsResetPasswordChecked(false);
+      return;
     }
 
-    const newPassword = generatePassword(12);
-    await resetPassword(newPassword);
-    setNewPassword(newPassword);
-    setIsResetPasswordChecked(event.target.checked);
+    const generatedPassword = generatePassword(12);
+    await resetPassword(generatedPassword);
+    setNewPassword(generatedPassword);
+    setIsResetPasswordChecked(true);
   };
 
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
     if (visibilidad === undefined || navegacionLibre === undefined || revision === undefined || dynamicInputs.some(input => input.categoryId === 0 || input.numberOfQuestions === 0)) {
-      setShowErrors(true)
-      return
+      setShowErrors(true);
+      return;
     }
     await updateSimulatorMutation();
-  }
+  };
 
-  const updateSimulator = async () => {
+  const updateSimulator = async (): Promise<SimulatorUpdate | null> => {
     try {
-      const simulatorData = {
+      const simulatorData: SimulatorUpdate = {
         name: simulator.name,
         duration: simulator.duration,
-        visibility: visibilidad,
-        navigate: navegacionLibre,
-        review: revision,
+        visibility: visibilidad ?? false,
+        navigate: navegacionLibre ?? false,
+        review: revision ?? false,
         categoryQuestions: dynamicInputs
       };
 
       const response = await axiosInstance.post<SimulatorUpdate>(`/simulators/${simulatorId}`, simulatorData);
-      console.log('Datos actualizados', simulatorData)
       toast.success("Simulador actualizado con éxito!");
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || 'Ocurrió un error al actualizar el simulador';
-        toast.error(errorMessage);
-        console.log('Error en los datos enviados', error)
-      } else {
-        toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
-      }
-      console.error('Error actualizando el simulator:', error);
+      handleAxiosError(error, {
+        badRequest: 'Ocurrió un error al actualizar el simulador',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
       return null;
     }
-  }
+  };
 
   const { mutateAsync: updateSimulatorMutation } = useMutation({
     mutationFn: updateSimulator,
@@ -125,26 +121,20 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
     }
   });
 
-  const resetPassword = async (newPassword: string) => {
+  const resetPassword = async (newPassword: string): Promise<void> => {
     try {
-      const response = await axiosInstance.put('/simulators/reset-simulator-password', {
+      await axiosInstance.put('/simulators/reset-simulator-password', {
         id: simulator.id,
         newPassword
       });
-      console.log('Respuesta del servidor:', response.data);
       toast.success("Contraseña del simulador restablecida con éxito");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error detallado:', error.response?.data);
-        const errorMessage = error.response?.data?.message || 'Error al restablecer la contraseña del simulador';
-        toast.error(errorMessage);
-      } else {
-        console.error('Error no esperado:', error);
-        toast.error('Ocurrió un error inesperado al restablecer la contraseña');
-      }
+      handleAxiosError(error, {
+        badRequest: 'Error al restablecer la contraseña del simulador',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
     }
-  }
-
+  };
 
   if (isLoading) return <div>Cargando...</div>;
   if (error) return <div>Error al cargar el simulador</div>;
@@ -259,7 +249,7 @@ export default function SimulatorEditForm({ simulatorId }: SimulatorEditFormProp
       <div className={'col-span-full'}>
         <DynamicInputs
           inputs={dynamicInputs}
-          onInputsChange={(inputs: CategoryQuestions[]) => setDynamicInputs(inputs)}
+          onInputsChange={setDynamicInputs}
         />
       </div>
       <div className={'col-span-full flex justify-center items-center mb-3'}>

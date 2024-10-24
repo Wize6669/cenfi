@@ -19,9 +19,9 @@ import {
 import { CourseCreate } from '@/interfaces/Course'
 import { axiosInstance } from "@/lib/axios"
 import toast from "react-hot-toast"
-import { AxiosError } from "axios"
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/auth";
+import {handleAxiosError} from "@/utils/errorHandler";
 
 export default function CourseForm() {
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm<CourseCreate>({
@@ -95,27 +95,10 @@ export default function CourseForm() {
       toast.success("Curso creado con éxito!");
       formRef.current?.reset()
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: { message: string }) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-
-        if (error?.response?.status === 409) {
-          return toast.error('El curso ya existe');
-        }
-      }
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+        conflict: 'El curso ya existe',
+        default: 'Error al crear el curso, ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
     }
   }
 
@@ -208,6 +191,12 @@ export default function CourseForm() {
                   onSelect={(date) => {
                     setStartDate(date)
                     register("startDate").onChange({target: {value: date}})
+                      .then(() => {
+                      console.log("Fecha actualizada correctamente.");
+                    })
+                      .catch((error) => {
+                        console.error("Error al actualizar la fecha:", error);
+                      });
                   }}
                   initialFocus
                   className="dark:bg-gray-800 dark:text-gray-200"
@@ -238,6 +227,12 @@ export default function CourseForm() {
                   onSelect={(date) => {
                     setEndDate(date)
                     register("endDate").onChange({target: {value: date}})
+                      .then(() => {
+                      console.log("Fecha actualizada correctamente.");
+                    })
+                      .catch((error) => {
+                        console.error("Error al actualizar la fecha:", error);
+                      });
                   }}
                   initialFocus
                   className="dark:bg-gray-800 dark:text-gray-200"

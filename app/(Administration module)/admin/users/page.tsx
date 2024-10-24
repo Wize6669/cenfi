@@ -9,13 +9,14 @@ import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import UserTable from '@/components/UserTable/UserTable';
 import { PasswordInput } from '@/components/PasswordInput';
-import { UserNewUpdate } from '@/interfaces/User';
+import { UserNewUpdate, UserTableInterface } from '@/interfaces/User';
 import { axiosInstance } from '@/lib/axios';
 import toast from 'react-hot-toast';
-import { Pagination } from '@/interfaces/Pagination';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import GoBackButton from '@/components/GoBackButton';
 import { handleAxiosError } from '@/utils/generatePassword';
+import { usePagination } from "@/hooks/usePaginationQuery";
+
 
 export default function Users() {
   const userAuth = useAuthStore((state) => state.userAuth);
@@ -29,24 +30,23 @@ export default function Users() {
     password: '',
     roleId: null,
   });
-  const [pagination, setPagination] = useState<Pagination>({
-    currentPage: 1,
-    totalPages: 1,
-    hasPreviousPage: false,
-    hasNextPage: true,
-    previousPage: 0,
-    nextPage: 0,
-    total: 0,
-    pageSize: 10
+
+  const {
+    data: users,
+    pagination,
+    isLoading,
+    handlePageChange,
+    handlePageSizeChange
+  } = usePagination<UserTableInterface>({
+    baseUrl: '/users',
+    initialPageSize: 10,
+    queryKey: 'users'
   });
+
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   const queryClient = useQueryClient();
-  const {data: users, isLoading} = useQuery({
-    queryFn: () => fetchUser(),
-    queryKey: ['users', pagination.currentPage, pagination.pageSize],
-  });
   const formRef = useRef<HTMLFormElement | null>(null);
   const router = useRouter();
 
@@ -101,49 +101,9 @@ export default function Users() {
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({...prev, currentPage: newPage}));
-      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
-      router.push(`/admin/users?${urlParams.toString()}`);
-    }
-  };
-
-  const handlePageSizeChange = (newPageSize: number) => {
-    setPagination(prev => ({...prev, pageSize: newPageSize}));
-    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
-    router.push(`/admin/users?${urlParams.toString()}`);
-  };
-
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     await addUserMutation();
-  };
-
-  const fetchUser = async () => {
-    const response = await axiosInstance.get(`/users?page=${pagination.currentPage}&count=${pagination.pageSize}`);
-    const {
-      data,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total
-    } = response.data;
-    setPagination(prev => ({
-      ...prev,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total,
-    }));
-
-    return data;
   };
 
   const addUser = async () => {
@@ -196,10 +156,6 @@ export default function Users() {
 
   if (!isMounted) {
     return null;
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -329,14 +285,23 @@ export default function Users() {
         </form>
       </div>
       <div className={'flex-grow flex justify-center'}>
-        <div className='w-full md:w-5/6 lg:w-2/3 scale-90'>
-          {!isLoading && <UserTable
-            handlePageChange={handlePageChange}
-            handlePageSizeChange={handlePageSizeChange}
-            data={users}
-            pagination={pagination}
-          />}
-        </div>
+        {isLoading ? (
+          <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-xl flex flex-col items-center">
+              <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+              <p className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">Cargando usuarios...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
+            <UserTable
+              handlePageChange={handlePageChange}
+              handlePageSizeChange={handlePageSizeChange}
+              data={users}
+              pagination={pagination}
+            />
+          </div>
+        )}
       </div>
       <Footer/>
     </div>

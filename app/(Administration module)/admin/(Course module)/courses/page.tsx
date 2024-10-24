@@ -6,28 +6,41 @@ import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
 import React, {useEffect, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import CourseTable from "@/components/CourseTable/CourseTable";
-import {Pagination} from "@/interfaces/Pagination";
-import {useQuery} from "@tanstack/react-query";
-import {axiosInstance} from "@/lib/axios";
 import {useAuthStore} from "@/store/auth";
 import GoBackButton from "@/components/GoBackButton";
+import { usePagination } from "@/hooks/usePaginationQuery";
+import {CourseTableInteface} from "@/interfaces/Course";
+import LoadingDialog from "@/components/LoadingDialog";
 
 export default function Course() {
+
   const router = useRouter();
 
   const [showLoginMessage, setShowLoginMessage] = useState(false);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const userAuth = useAuthStore((state) => state.userAuth);
-  const [pagination, setPagination] = useState<Pagination>({
-    currentPage: 1,
-    totalPages: 1,
-    hasPreviousPage: false,
-    hasNextPage: true,
-    previousPage: 0,
-    nextPage: 0,
-    total: 0,
-    pageSize: 10
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const {
+    data: courses,
+    pagination,
+    isLoading,
+    handlePageChange,
+    handlePageSizeChange,
+    handleCreateNew: handleButtonClickNew,
+  } = usePagination<CourseTableInteface>({
+    baseUrl: '/courses',
+    initialPageSize: 10,
+    queryKey: 'courses'
   });
+
+  const handleNewQuestionClick = () => {
+    setIsModalOpen(true);
+    setTimeout(() => {
+      setIsModalOpen(false);
+      handleButtonClickNew();
+    }, 2000);
+  };
 
   useEffect(() => {
     if (userAuth?.roleId !== 1 || !isLoggedIn) {
@@ -40,54 +53,6 @@ export default function Course() {
     }
   }, [userAuth, router, isLoggedIn]);
 
-  const {data: courses, isLoading} = useQuery({
-    queryFn: () => fetchCourse(),
-    queryKey: ['courses', pagination.currentPage, pagination.pageSize],
-  });
-
-  const fetchCourse = async () => {
-    const response = await axiosInstance.get(`/courses?page=${pagination.currentPage}&count=${pagination.pageSize}`);
-    const {
-      data,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total
-    } = response.data;
-    setPagination(prev => ({
-      ...prev,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total,
-    }));
-
-    return data;
-  }
-
-  const handleButtonClickNew = () => {
-    router.push('/admin/courses/create');
-  };
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({...prev, currentPage: newPage}));
-      const urlParams = new URLSearchParams({page: newPage.toString(), count: pagination.pageSize.toString()}); // Update both page and count params
-      router.push(`/admin/courses?${urlParams.toString()}`);
-    }
-  };
-
-  const handlePageSizeChange = (newPageSize: number) => {
-    setPagination(prev => ({...prev, pageSize: newPageSize}));
-    const urlParams = new URLSearchParams({page: pagination.currentPage.toString(), count: newPageSize.toString()}); // Update both page and count params
-    router.push(`/admin/courses?${urlParams.toString()}`);
-  };
 
   if (showLoginMessage) {
     return (
@@ -104,10 +69,6 @@ export default function Course() {
 
   if (!isLoggedIn) {
     return null;
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>
   }
 
   return (
@@ -134,20 +95,38 @@ export default function Course() {
           <button
             className={'text-sm sm:text-base md:text-base bg-button-color hover:bg-blue-800 text-white font-medium py-2 px-6 rounded-full mt-1 transition-colors ease-in-out duration-200'}
             type={'button'}
-            onClick={handleButtonClickNew}
+            onClick={handleNewQuestionClick}
           >
             Nuevo Curso
           </button>
         </div>
       </div>
       <div className={'flex-grow flex justify-center'}>
-        <div className={'w-full md:w-5/6 lg:w-2/3 scale-90'}>
-          {!isLoading && <CourseTable handlePageChange={handlePageChange}
-                                      handlePageSizeChange={handlePageSizeChange}
-                                      data={courses} pagination={pagination}/>}
-        </div>
+        {isLoading ? (
+          <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-xl flex flex-col items-center">
+              <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+              <p className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">Cargando cursos...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
+            <CourseTable
+              handlePageChange={handlePageChange}
+              handlePageSizeChange={handlePageSizeChange}
+              data={courses}
+              pagination={pagination}
+            />
+          </div>
+        )}
       </div>
       <Footer/>
+      <LoadingDialog
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Cargando formulario"
+        message="Preparando el formulario para crear un nuevo curso..."
+      />
     </div>
   );
 }

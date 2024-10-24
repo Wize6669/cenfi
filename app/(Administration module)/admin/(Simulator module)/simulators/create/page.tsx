@@ -13,8 +13,8 @@ import RadioReview from "@/components/RadioReview";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
-import axios from 'axios';
 import GoBackIconButton from '@/components/GoBackButton'
+import {handleAxiosError} from "@/utils/errorHandler";
 
 export default function NewSimulator() {
   const [visibilidad, setVisibilidad] = useState<boolean | undefined>(undefined)
@@ -91,14 +91,10 @@ export default function NewSimulator() {
       resetForm();
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || 'Ocurrió un error al crear el simulador';
-        toast.error(errorMessage);
-        console.log('Datos enviados', error)
-      } else {
-        toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
-      }
-      console.error('Error creando el simulator:', error);
+      handleAxiosError(error, {
+        badRequest: 'Ocurrió un error al crear el simulador',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
     }
   }
 

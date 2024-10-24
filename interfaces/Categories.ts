@@ -8,7 +8,7 @@ export interface CategoryNewUpdate extends Pick<Categories, 'name'> {
   id?: number
 }
 
-export interface CategoryTable {
+export interface CategoryTableInterface {
   id: number;
   name: string;
   questionCount: number;

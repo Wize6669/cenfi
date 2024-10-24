@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Categories, PaginatedResponse } from '@/interfaces/Categories';
 import { axiosInstance } from '@/lib/axios';
@@ -16,13 +16,13 @@ interface DynamicInputsProps {
 }
 
 const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange }) => {
-  const [count, setCount] = useState(inputs.length || 1)
-  const [openSelect, setOpenSelect] = useState<number | null>(null)
-  const [categories, setCategories] = useState<Categories[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [count, setCount] = useState(() => inputs.length || 1);
+  const [openSelect, setOpenSelect] = useState<number | null>(null);
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [categoryQuestionCounts, setCategoryQuestionCounts] = useState<{[key: number]: number}>({});
-  const [localInputs, setLocalInputs] = useState<CategoryQuestion[]>(inputs)
+  const [localInputs, setLocalInputs] = useState<CategoryQuestion[]>(inputs);
 
   const fetchAllCategories = useCallback(async () => {
     try {
@@ -33,7 +33,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
       let totalPages = 1;
 
       do {
-        const response = await axiosInstance.get<PaginatedResponse>(`categories`, {
+        const response = await axiosInstance.get<PaginatedResponse>('categories', {
           params: {
             page: currentPage,
             count: 500
@@ -54,27 +54,25 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
     } catch (err) {
       setError('Error al cargar las categorías');
       setIsLoading(false);
-      console.error('Error fetching categories:', err);
     }
   }, []);
 
   useEffect(() => {
-    fetchAllCategories()
-      .then(() => {
-        console.log('Categorías cargadas correctamente.');
-      })
-      .catch((error) => {
-        console.error('Error fetching categories:', error);
-      });
+    fetchAllCategories().catch((error) => {
+      console.error('Error fetching categories:', error);
+    });
   }, [fetchAllCategories]);
 
+  const updateInputs = useCallback((newInputs: CategoryQuestion[]) => {
+    setLocalInputs(newInputs);
+    onInputsChange(newInputs);
+  }, [onInputsChange]);
 
   useEffect(() => {
     const newInputs = Array(count).fill(null).map((_, index) =>
       localInputs[index] || { categoryId: 0, numberOfQuestions: 0 }
     );
-    setLocalInputs(newInputs);
-    onInputsChange(newInputs);
+    updateInputs(newInputs);
   }, [count]);
 
   useEffect(() => {
@@ -82,24 +80,36 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
     setCount(inputs.length || 1);
   }, [inputs]);
 
-  const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCount = parseInt(e.target.value) || 1
-    setCount(newCount)
-  }
+  const handleCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newCount = parseInt(e.target.value) || 1;
+    setCount(newCount);
+  }, []);
 
-  const handleSelectChange = (index: number, value: string) => {
-    const newInputs = [...localInputs]
-    newInputs[index].categoryId = value === "" ? 0 : parseInt(value)
-    setLocalInputs(newInputs)
-    onInputsChange(newInputs)
-  }
+  const handleSelectChange = useCallback((index: number, value: string) => {
+    setLocalInputs(prevInputs => {
+      const newInputs = [...prevInputs];
+      newInputs[index] = {
+        ...newInputs[index],
+        categoryId: value === "" ? 0 : parseInt(value, 10)
+      };
+      onInputsChange(newInputs);
+      return newInputs;
+    });
+  }, [onInputsChange]);
 
-  const handleInputChange = (index: number, value: string) => {
-    const newInputs = [...localInputs]
-    newInputs[index].numberOfQuestions = parseInt(value) || 0
-    setLocalInputs(newInputs)
-    onInputsChange(newInputs)
-  }
+  const handleInputChange = useCallback((index: number, value: string) => {
+    setLocalInputs(prevInputs => {
+      const newInputs = [...prevInputs];
+      newInputs[index] = {
+        ...newInputs[index],
+        numberOfQuestions: parseInt(value, 10) || 0
+      };
+      onInputsChange(newInputs);
+      return newInputs;
+    });
+  }, [onInputsChange]);
+
+  const memoizedCategories = useMemo(() => categories, [categories]);
 
   if (isLoading) {
     return <div>Cargando categorías...</div>;
@@ -150,7 +160,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
                   className="text-sm sm:text-base md:text-base appearance-none w-full h-[35px] py-1.5 px-1.5 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-gray-200"
                 >
                   <option value="">Seleccione una categoría</option>
-                  {categories.map((category) => (
+                  {memoizedCategories.map((category) => (
                     <option key={category.id} value={category.id.toString()}>
                       {category.name}
                     </option>
@@ -183,7 +193,7 @@ const DynamicInputs: React.FC<DynamicInputsProps> = ({ inputs, onInputsChange })
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default DynamicInputs
+export default DynamicInputs;

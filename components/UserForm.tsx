@@ -1,14 +1,13 @@
 import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react';
-import {UserModalUpdate} from '@/interfaces/User';
+import { UserModalUpdate } from '@/interfaces/User';
 import {axiosInstance} from '@/lib/axios';
 import toast from 'react-hot-toast';
-import {AxiosError} from 'axios';
-import {ErrorResponse} from '@/interfaces/ResponseAPI';
-import {useClipboardCopy} from '@/hooks/useClipboardCopy';
-import {FaRegCopy} from 'react-icons/fa6';
-import {generatePassword} from '@/utils/generatePassword';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
-import {ChevronDown, ChevronUp} from "lucide-react";
+import { useClipboardCopy } from '@/hooks/useClipboardCopy';
+import { FaRegCopy } from 'react-icons/fa6';
+import { generatePassword } from '@/utils/generatePassword';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { handleAxiosError } from "@/utils/errorHandler";
 
 interface PropsUserForm {
   id: string
@@ -35,24 +34,10 @@ export default function UserForm({id}: PropsUserForm) {
       setUser({...user, name, lastName, email, role})
 
     }).catch(error => {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+        badRequest: 'Datos inválidos',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
 
       if (formRef.current) {
         formRef.current.reset();
@@ -124,24 +109,10 @@ export default function UserForm({id}: PropsUserForm) {
 
       toast.success('Usuario actualizado con éxito');
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+        badRequest: 'Datos inválidos',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
     }
   }
 

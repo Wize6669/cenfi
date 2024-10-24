@@ -18,9 +18,8 @@ import {
 } from "@/components/ui/Popover"
 import { axiosInstance } from "@/lib/axios"
 import toast from "react-hot-toast"
-import { AxiosError } from "axios"
-import { ErrorResponse } from '@/interfaces/ResponseAPI';
 import { CourseUpdate } from "@/interfaces/Course";
+import {handleAxiosError} from "@/utils/errorHandler";
 
 interface CourseEditFormProps {
   courseId: string;
@@ -63,24 +62,10 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
       setValue('startDate', courseData.startDate ? new Date(courseData.startDate) : undefined);
       setValue('endDate', courseData.endDate ? new Date(courseData.endDate) : undefined);
     }).catch(error => {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+        badRequest: 'Datos del curso inválidos',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
 
       if (formRef.current) {
         formRef.current.reset();
@@ -93,24 +78,10 @@ export default function CourseEditForm({ courseId }: CourseEditFormProps) {
       await axiosInstance.post(`/courses/${courseId}`, data);
       toast.success('Curso actualizado con éxito');
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-      }
-
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+        badRequest: 'Datos del curso inválidos',
+        default: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
     }
   }
 

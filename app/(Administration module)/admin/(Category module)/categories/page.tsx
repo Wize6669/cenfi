@@ -3,39 +3,35 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ModuleListNavbar from "@/components/ModulesList/ModuleListNavbar";
-import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
-import { CategoryNewUpdate } from "@/interfaces/Categories";
-import { Pagination } from "@/interfaces/Pagination";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CategoryNewUpdate, CategoryTableInterface } from "@/interfaces/Categories";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
-import { ErrorResponse } from "@/interfaces/ResponseAPI";
 import CategoryTable from "@/components/CategoryTable/CategoryTable";
 import GoBackButton from "@/components/GoBackButton";
+import { handleAxiosError } from "@/utils/errorHandler";
+import { usePagination } from "@/hooks/usePaginationQuery";
 
 export default function Categories() {
   const [category, setCategories] = useState<CategoryNewUpdate>({
     name: '',
   });
-  const [pagination, setPagination] = useState<Pagination>({
-    currentPage: 1,
-    totalPages: 1,
-    hasPreviousPage: false,
-    hasNextPage: true,
-    previousPage: 0,
-    nextPage: 0,
-    total: 0,
-    pageSize: 10
-  })
-  const queryClient = useQueryClient();
-  const { data: categories, isLoading } = useQuery({
-    queryFn: () => fetchCategory(),
-    queryKey: ['categories', pagination.currentPage, pagination.pageSize],
+
+  const {
+    data: categories,
+    pagination,
+    isLoading,
+    handlePageChange,
+    handlePageSizeChange
+  } = usePagination<CategoryTableInterface>({
+    baseUrl: '/categories',
+    initialPageSize: 10,
+    queryKey: 'categories'
   });
+
+  const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement | null>(null);
-  const router = useRouter();
 
   const handleGetDataInput = (event: ChangeEvent<HTMLInputElement>) => {
     setCategories({
@@ -54,50 +50,12 @@ export default function Categories() {
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({ ...prev, currentPage: newPage }));
-      const urlParams = new URLSearchParams({ page: newPage.toString(), count: pagination.pageSize.toString() });
-      router.push(`/admin/categories?${urlParams.toString()}`);
-    }
-  }
-
-  const handlePageSizeChange = (newPageSize: number) => {
-    setPagination(prev => ({ ...prev, pageSize: newPageSize }));
-    const urlParams = new URLSearchParams({ page: pagination.currentPage.toString(), count: newPageSize.toString() });
-    router.push(`/admin/categories?${urlParams.toString()}`);
-  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     await addCategoryMutation()
   }
 
-  const fetchCategory = async () => {
-    const response = await axiosInstance.get(`/categories?page=${pagination.currentPage}&count=${pagination.pageSize}`);
-    const {
-      data,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total
-    } = response.data;
-    setPagination(prev => ({
-      ...prev,
-      currentPage,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      previousPage,
-      nextPage,
-      total,
-    }));
-
-    return data;
-  }
 
   const addCategories = async () => {
     try {
@@ -105,27 +63,11 @@ export default function Categories() {
       toast.success("Categoría creada con éxito!");
       resetForm()
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status === 400) {
-          const errors = error?.response?.data.errors;
-          const errorApi = error?.response?.data.error;
-
-          if (Array.isArray(errors)) {
-            const errorsMessages = errors
-              .map((errorMessage: ErrorResponse) => errorMessage?.message)
-              .join('\n');
-
-            return toast.error(errorsMessages);
-          }
-
-          return toast.error(errorApi.message);
-        }
-
-        if (error?.response?.status === 409) {
-          return toast.error('La categoría ya existe');
-        }
-      }
-      toast.error('Ocurrió un error inesperado, inténtelo nuevamente más tarde');
+      handleAxiosError(error, {
+          conflict: 'La categoría ya existe',
+          default: 'Error en la solicitud',
+          badRequest: 'Ocurrió un error inesperado, inténtelo nuevamente más tarde'
+      });
 
       if (formRef.current) {
         formRef.current.reset();
@@ -143,10 +85,6 @@ export default function Categories() {
       await queryClient.invalidateQueries({ queryKey: ['categories'] })
     }
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className={'flex flex-col min-h-screen bg-white dark:bg-gray-900'}>
@@ -205,12 +143,23 @@ export default function Categories() {
         </form>
       </div>
       <div className="flex-grow flex justify-center">
-        <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
-          {!isLoading && <CategoryTable handlePageChange={handlePageChange}
-                                    handlePageSizeChange={handlePageSizeChange}
-                                    data={categories}
-                                    pagination={pagination}/>}
-        </div>
+          {isLoading ? (
+            <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-xl flex flex-col items-center">
+                <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+                <p className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">Cargando categorías...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full md:w-5/6 lg:w-2/3 scale-90">
+              <CategoryTable
+                handlePageChange={handlePageChange}
+                handlePageSizeChange={handlePageSizeChange}
+                data={categories}
+                pagination={pagination}
+              />
+            </div>
+          )}
       </div>
       <Footer />
     </div>

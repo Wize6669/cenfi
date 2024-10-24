@@ -15,6 +15,10 @@ export interface Simulator {
   number_of_questions?: number;
 }
 
+export interface SimulatorListTable extends Omit<Simulator, 'categoryQuestions'>{
+  id: string;
+}
+
 export interface SimulatorUpdate extends Omit<Simulator, 'password'> {}
 
 export interface SimulatorCreate {

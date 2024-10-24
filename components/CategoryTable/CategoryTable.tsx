@@ -10,7 +10,7 @@ import {
   SortingState,
 } from '@tanstack/react-table';
 import { axiosInstance } from '@/lib/axios';
-import { CategoryTable } from '@/interfaces/Categories';
+import { CategoryTableInterface } from '@/interfaces/Categories';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import './CategoryTable.css'
@@ -18,14 +18,14 @@ import Modal from '@/components/Modal/Modal';
 import CategoryForm from '@/components/CategoryForm';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pagination } from '@/interfaces/Pagination';
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import {ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, Loader} from 'lucide-react';
+import ConfirmationDialog from "@/components/ConfirmationDialog";
+import LoadingIndicatorEdit from "@/components/LoadingIndicatorEdit";
 
 interface PropsTable {
   handlePageChange: (newPage: number) => void,
   handlePageSizeChange: (newPageSize: number) => void,
-  data: CategoryTable[],
+  data: CategoryTableInterface[],
   pagination: Pagination,
 }
 
@@ -36,11 +36,12 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
   const [categoryId, setCategoryId] = useState(0);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
 
-  const columnHelper = createColumnHelper<CategoryTable>();
+  const columnHelper = createColumnHelper<CategoryTableInterface>();
 
-  const columns: ColumnDef<CategoryTable, any>[] = [
+  const columns: ColumnDef<CategoryTableInterface, any>[] = [
     columnHelper.accessor('id', {
       id: 'id',
       header: 'ID',
@@ -89,20 +90,24 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
                 className='text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200'
                 onClick={handleEditBtn(info.row.original.id)}
               >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='w-5 h-5'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
-                  />
-                </svg>
+                {isLoading ? (
+                  <Loader className="animate-spin w-5 h-5" />
+                ) : (
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-5 h-5'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
+                    />
+                  </svg>
+                )}
               </button>
               <span className='absolute top-full left-1/2 transform -translate-x-1/2 mt-2 scale-0 transition-all duration-300 bg-blue-800 text-white text-xs rounded-lg px-2 py-1 group-hover:scale-100'>
               Editar
@@ -200,13 +205,21 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
     setIsConfirmOpen(false);
   };
 
-  const handleEditBtn = (id: number) => (event: MouseEvent<HTMLButtonElement>) => {
+  const handleEditBtn = (id: number) => async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setCategoryId(id);
-    setIsOpenModal(prevState => !prevState);
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setCategoryId(id);
+      setIsOpenModal(prevState => !prevState);
+    }catch (error) {
+      toast.error('Hubo un error al intentar editar el curso');
+    }finally {
+      setIsLoading(false);
+    }
   };
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className='px-6 pb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg'>
         <div className='text-gray-600 dark:text-gray-300'>No hay datos disponibles</div>
@@ -256,6 +269,7 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
           />
           <Search className='absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400' size={18}/>
         </div>
+        {isLoading && <LoadingIndicatorEdit message="Cargando información..." />}
       </div>
       <div className='max-h-[300px] overflow-x-auto'>
         <table id={'user-table'} className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
@@ -343,66 +357,15 @@ export default function CateTable({ handlePageChange, handlePageSizeChange, data
         <CategoryForm id={categoryId}/>
       </Modal>
 
-      <Transition appear show={isConfirmOpen} as={Fragment}>
-        <Dialog as='div' className='relative z-10' onClose={() => setIsConfirmOpen(false)}>
-          <Transition.Child
-            as={Fragment}
-            enter='ease-out duration-300'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='ease-in duration-200'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
-          >
-            <div className='fixed inset-0 bg-black bg-opacity-25' />
-          </Transition.Child>
-
-          <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex min-h-full items-center justify-center p-4 text-center'>
-              <Transition.Child
-                as={Fragment}
-                enter='ease-out duration-300'
-                enterFrom='opacity-0 scale-95'
-                enterTo='opacity-100 scale-100'
-                leave='ease-in duration-200'
-                leaveFrom='opacity-100 scale-100'
-                leaveTo='opacity-0 scale-95'
-              >
-                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all'>
-                  <Dialog.Title
-                    as='h3'
-                    className='text-lg font-medium leading-6 text-gray-900 dark:text-gray-100'
-                  >
-                    Confirmar eliminación
-                  </Dialog.Title>
-                  <div className='mt-2'>
-                    <p className='text-sm text-gray-500 dark:text-gray-400'>
-                      ¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.
-                    </p>
-                  </div>
-
-                  <div className='mt-4 flex justify-end space-x-3'>
-                    <button
-                      type='button'
-                      className='inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2'
-                      onClick={confirmDelete}
-                    >
-                      Eliminar
-                    </button>
-                    <button
-                      type='button'
-                      className='inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-                      onClick={() => setIsConfirmOpen(false)}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
+      <ConfirmationDialog
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Confirmar eliminación"
+        message="¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+      />
     </div>
   )
 }
